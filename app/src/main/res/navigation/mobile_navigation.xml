@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.akram.prioritymatrix.ui.tasks.TaskFragment"
+        android:label="My Tasks"
+        tools:layout="@layout/fragment_task" >
+        <action
+            android:id="@+id/action_navigation_home_to_loginFragment"
+            app:destination="@id/navigation_login" />
+        <action
+            android:id="@+id/action_navigation_home_to_addTaskFragment"
+            app:destination="@id/navigation_add_task" />
+        <action
+            android:id="@+id/action_navigation_home_to_detailTaskFragment"
+            app:destination="@id/navigation_detail_task" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_matrix"
+            app:destination="@id/navigation_matrix" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_list"
+        android:name="com.akram.prioritymatrix.ui.lists.ProjectFragment"
+        android:label="My Lists"
+        tools:layout="@layout/fragment_list" >
+        <action
+            android:id="@+id/action_navigation_list_to_addProjectFragment"
+            app:destination="@id/addProjectFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_calendar"
+        android:name="com.akram.prioritymatrix.ui.calendar.CalendarFragment"
+        android:label="Calendar"
+        tools:layout="@layout/fragment_calendar" />
+
+    <fragment
+        android:id="@+id/navigation_report"
+        android:name="com.akram.prioritymatrix.ui.report.ReportFragment"
+        android:label="Report"
+        tools:layout="@layout/fragment_report" />
+    <fragment
+        android:id="@+id/navigation_login"
+        android:name="com.akram.prioritymatrix.user.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_navigation_login_to_signUpFragment"
+            app:destination="@id/navigation_sign_up" />
+        <action
+            android:id="@+id/action_navigation_login_to_navigation_home"
+            app:destination="@id/navigation_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_sign_up"
+        android:name="com.akram.prioritymatrix.user.SignUpFragment"
+        android:label="Sign Up"
+        tools:layout="@layout/fragment_sign_up" >
+        <action
+            android:id="@+id/action_navigation_sign_up_to_navigation_home2"
+            app:destination="@id/navigation_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_add_task"
+        android:name="com.akram.prioritymatrix.ui.tasks.AddTaskFragment"
+        android:label="New Task"
+        tools:layout="@layout/fragment_add_task" >
+        <action
+            android:id="@+id/action_addTaskFragment_to_navigation_home"
+            app:destination="@id/navigation_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_detail_task"
+        android:name="com.akram.prioritymatrix.ui.tasks.DetailTaskFragment"
+        android:label="Task Details"
+        tools:layout="@layout/fragment_detail_task" >
+        <action
+            android:id="@+id/action_detailTaskFragment_to_navigation_home"
+            app:destination="@id/navigation_home" />
+        <argument
+            android:name="Task"
+            app:argType="com.akram.prioritymatrix.database.Task" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_matrix"
+        android:name="com.akram.prioritymatrix.ui.matrix.MatrixFragment"
+        android:label="fragment_matrix"
+        tools:layout="@layout/fragment_matrix" />
+    <fragment
+        android:id="@+id/addProjectFragment"
+        android:name="com.akram.prioritymatrix.ui.lists.AddProjectFragment"
+        android:label="Add Project"
+        tools:layout="@layout/fragment_add_project">
+        <argument
+            android:name="Project"
+            app:argType="com.akram.prioritymatrix.database.Project" />
+        <action
+            android:id="@+id/action_addProjectFragment_to_navigation_list"
+            app:destination="@id/navigation_list" />
+    </fragment>
+</navigation>

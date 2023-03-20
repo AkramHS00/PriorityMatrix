@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginEnd="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:backgroundTint="@android:color/transparent"
+    android:elevation="0dp"
+    app:cardCornerRadius="10dp"
+    >
+
+    <RelativeLayout
+        android:id="@+id/taskRelativeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:background="@drawable/edit_text_background">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/taskTitle"
+            android:maxLines="1"
+            android:text="Title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_alignParentStart="true"
+            android:layout_alignEnd="@id/taskRating"
+            android:ellipsize="end"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="48dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/taskRating"
+            android:maxLines="1"
+            android:text="0"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:ellipsize="end"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="12dp"
+            android:layout_alignParentEnd="true"
+            android:visibility="gone"/>
+
+
+        <CheckBox
+            android:id="@+id/taskCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
+            android:buttonTint="@color/black"/>
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/taskDescription"
+            android:text="Description"
+            android:maxLines="4"
+            android:textSize="18dp"
+            android:layout_alignParentStart="true"
+            android:ellipsize="end"
+            android:layout_alignParentEnd="true"
+            android:layout_marginLeft="12dp"
+            android:layout_below="@id/taskTitle"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/deadlineText"
+            android:text="Deadline: "
+            android:textSize="18dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="12dp"
+            android:layout_below="@id/taskDescription"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/deadlineDate"
+            android:text="date"
+            android:textSize="18dp"
+            android:layout_marginLeft="12dp"
+            android:layout_toEndOf="@+id/deadlineText"
+            android:layout_below="@id/taskDescription"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/deadlineTime"
+            android:text="time"
+            android:maxLines="1"
+            android:textSize="18dp"
+            android:ellipsize="end"
+            android:layout_alignParentEnd="true"
+            android:layout_marginLeft="12dp"
+            android:layout_below="@id/taskDescription"
+            android:layout_toEndOf="@+id/deadlineDate"
+            android:layout_marginStart="32dp"/>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
