@@ -1,5 +1,6 @@
 package com.akram.prioritymatrix.ui.tasks;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -42,7 +43,7 @@ import java.util.List;
 
 public class AddTaskFragment extends Fragment {
 
-    User currentUser;
+    /*User currentUser;
 
     EditText editTitle, editDescription, editRating;
     Switch switchDeadline, switchReminder;
@@ -51,6 +52,9 @@ public class AddTaskFragment extends Fragment {
 
     String[] categories = {"Do", "Schedule", "Delegate", "Delete"};
     List<String> projectStrings = new ArrayList<String>();
+
+    List<Project> userProjects;
+    int projectId;
 
     AutoCompleteTextView categoryAutoComplete;
     AutoCompleteTextView projectAutoComplete;
@@ -80,6 +84,7 @@ public class AddTaskFragment extends Fragment {
                 for (Project p: projects) {
                     projectStrings.add(p.getName().toString());
                 }
+                userProjects = projects;
             }
         });
 
@@ -196,11 +201,16 @@ public class AddTaskFragment extends Fragment {
                         editRating.getText().toString().trim().isEmpty()){
                     Toast.makeText(getActivity(), "Please fill in required fields", Toast.LENGTH_SHORT).show();
                 } else {
+                    for (Project p: userProjects) {
+                        if (p.getName().toString().equals(projectAutoComplete.getText().toString())){
+                            projectId = p.getId();
+                        }
+                    }
                     Task newTask = new Task(currentUser.getName().toString(), editTitle.getText().toString(), editDescription.getText().toString(),
                             Integer.valueOf(editRating.getText().toString()), switchDeadline.isChecked(), deadlineDate,
                             deadlineTime, switchReminder.isChecked(), reminderDate, reminderTime, false, categoryAutoComplete.getText().toString(),
-                            projectAutoComplete.getText().toString());
-
+                            projectId);
+//projectAutoComplete.getText().toString()
                     addTaskViewModel.insertTask(newTask);
                     Toast.makeText(getActivity(), "New task added successfully.", Toast.LENGTH_SHORT).show();
                     Log.i("AHS", "New task:  Username: " + currentUser.getName() + " Title: " + editTitle.getText().toString() +
@@ -272,7 +282,7 @@ public class AddTaskFragment extends Fragment {
 
     public String checkDigit(int number) { //https://stackoverflow.com/questions/38191945/android-timepicker-dialog-returns-no-preceding-zeros/38196212
         return number <= 9 ? "0" + number : String.valueOf(number);
-    }
+    }*/
 
 
 }

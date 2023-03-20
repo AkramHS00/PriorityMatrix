@@ -105,7 +105,9 @@ public class MainActivity extends AppCompatActivity {
         currentUser = null;
     }
 
-
+    public void setActionBarTitle(String title){
+        getSupportActionBar().setTitle(title);
+    }
 
 
     //Enables back arrow support in action bar

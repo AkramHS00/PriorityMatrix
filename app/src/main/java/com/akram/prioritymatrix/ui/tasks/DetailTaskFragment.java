@@ -56,6 +56,9 @@ public class DetailTaskFragment extends Fragment {
     String[] categories = {"Do", "Schedule", "Delegate", "Delete"};
     List<String> projectStrings = new ArrayList<String>();
 
+    List<Project> userProjects;
+    int projectId;
+
     AutoCompleteTextView categoryAutoComplete;
     AutoCompleteTextView projectAutoComplete;
 
@@ -70,17 +73,7 @@ public class DetailTaskFragment extends Fragment {
 
         currentUser = ((MainActivity) getActivity()).getCurrentUser();
 
-        detailTaskViewModel.getUserProjects(currentUser.getUserName()).observe(getActivity(), new Observer<List<Project>>() {
-            @Override
-            public void onChanged(List<Project> projects) {
-                for (Project p: projects) {
-                    projectStrings.add(p.getName().toString());
-                }
-            }
-        });
 
-        Bundle bundle = getArguments();
-        currentTask = (Task) bundle.getSerializable("Task");
 
 
 
@@ -118,6 +111,29 @@ public class DetailTaskFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Bundle bundle = getArguments();
+        currentTask = (Task) bundle.getSerializable("Task");
+
+        detailTaskViewModel.getUserProjects(currentUser.getUserName()).observe(getViewLifecycleOwner(), new Observer<List<Project>>() {
+            @Override
+            public void onChanged(List<Project> projects) {
+                userProjects = projects;
+                Log.i("AHS", "Set user projects");
+                for (Project p: projects) {
+                    projectStrings.add(p.getName().toString());
+                    if (currentTask != null){
+                        if (currentTask.getProjectId() == p.getId()){
+                            projectAutoComplete = getView().findViewById(R.id.projectAutoComplete);
+                            projectAutoComplete.setText(p.getName());
+                        }
+                    }
+                }
+
+            }
+        });
+
+
+
         editTitle = getView().findViewById(R.id.editTitle);
         editDescription = getView().findViewById(R.id.editDescription);
         editRating = getView().findViewById(R.id.editRating);
@@ -149,8 +165,10 @@ public class DetailTaskFragment extends Fragment {
             textReminderTime.setText(formatTime(currentTask.getReminderTime()));
 
             categoryAutoComplete.setText(currentTask.getCategory());
-            projectAutoComplete.setText(currentTask.getProjectName());
 
+        } else {
+            Log.i("AHS", "Current task is = null so creating blank task screen.");
+            ((MainActivity) getActivity()).setActionBarTitle("New Task");
         }
 
         if (!switchDeadline.isChecked()){
@@ -245,20 +263,27 @@ public class DetailTaskFragment extends Fragment {
                         editRating.getText().toString().trim().isEmpty()){
                     Toast.makeText(getActivity(), "Please fill in required fields", Toast.LENGTH_SHORT).show();
                 } else {
+
+                    for (Project p: userProjects) {
+                        if (p.getName().toString().equals(projectAutoComplete.getText().toString())){
+                            projectId = p.getId();
+                        }
+                    }
+
                     Task newTask = new Task(currentUser.getName().toString(), editTitle.getText().toString(), editDescription.getText().toString(),
                             Integer.valueOf(editRating.getText().toString()), switchDeadline.isChecked(), deadlineDate,
                             deadlineTime, switchReminder.isChecked(), reminderDate, reminderTime, false, categoryAutoComplete.getText().toString(),
-                            projectAutoComplete.getText().toString());
+                            projectId);
 
-                    newTask.setId(currentTask.getId());
+                    if (currentTask != null){
+                        newTask.setId(currentTask.getId());
+                        detailTaskViewModel.updateTask(newTask);
+                        Toast.makeText(getActivity(), "Task updated successfully.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        detailTaskViewModel.insertTask(newTask);
+                        Toast.makeText(getActivity(), "New task added successfully.", Toast.LENGTH_SHORT).show();
+                    }
 
-                    detailTaskViewModel.updateTask(newTask);
-                    Toast.makeText(getActivity(), "New task added successfully.", Toast.LENGTH_SHORT).show();
-                    Log.i("AHS", "New task:  Username: " + currentUser.getName() + " Title: " + editTitle.getText().toString() +
-                            " Description: " + editDescription.getText().toString() + " Rating: " + editRating.getText().toString() +
-                            " Deadline switch: " + switchDeadline.isChecked() + " Deadline date: " + textDeadlineDate.getText().toString() +
-                            " Deadline time: " + textDeadlineTime.getText().toString() + " Reminder switch: " + switchReminder.isChecked() +
-                            " Reminder date: " + textReminderDate.getText().toString() + " Reminder time: " + textReminderTime.getText().toString() );
 
                     NavHostFragment.findNavController(DetailTaskFragment.this)
                             .navigate(R.id.action_detailTaskFragment_to_navigation_home);

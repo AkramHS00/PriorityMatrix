@@ -32,4 +32,7 @@ public interface TaskDao {
 
     @Query("SELECT * FROM task_table WHERE ownerName = :userName AND complete = 0 ORDER BY rating DESC")
     LiveData<List<Task>> getOutstandingUserTasks(String userName);
+
+    @Query("SELECT * FROM task_table WHERE projectId = :projectId ORDER BY rating DESC")
+    LiveData<List<Task>> getProjectTasks(int projectId);
 }

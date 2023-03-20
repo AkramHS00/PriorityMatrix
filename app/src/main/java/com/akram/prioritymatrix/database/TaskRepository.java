@@ -14,6 +14,7 @@ public class TaskRepository {
     private LiveData<List<Task>> userTasks;
     private LiveData<List<Task>> orderedUserTasks;
     private LiveData<List<Task>> outstandingUserTasks;
+    private LiveData<List<Task>> projectTasks;
 
     public TaskRepository(Application application){
         PriorityDatabase database = PriorityDatabase.getInstance(application);
@@ -50,6 +51,11 @@ public class TaskRepository {
     public LiveData<List<Task>> getOutstandingUserTasks(String userName) {
         outstandingUserTasks = taskDao.getOutstandingUserTasks(userName);
         return outstandingUserTasks;
+    }
+
+    public LiveData<List<Task>> getProjectTasks(int projectId) {
+        projectTasks = taskDao.getProjectTasks(projectId);
+        return projectTasks;
     }
 
     private static class InsertTaskAsyncTask extends AsyncTask<Task, Void, Void> {

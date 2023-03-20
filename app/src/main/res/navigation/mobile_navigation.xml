@@ -32,6 +32,9 @@
         <action
             android:id="@+id/action_navigation_list_to_addProjectFragment"
             app:destination="@id/addProjectFragment" />
+        <action
+            android:id="@+id/action_navigation_list_to_projectTaskFragment"
+            app:destination="@id/projectTaskFragment" />
     </fragment>
 
     <fragment
@@ -103,5 +106,20 @@
         <action
             android:id="@+id/action_addProjectFragment_to_navigation_list"
             app:destination="@id/navigation_list" />
+    </fragment>
+    <fragment
+        android:id="@+id/projectTaskFragment"
+        android:name="com.akram.prioritymatrix.ui.lists.ProjectTaskFragment"
+        android:label="Project Tasks"
+        tools:layout="@layout/fragment_project_task">
+        <action
+            android:id="@+id/action_projectTaskFragment_to_addProjectFragment"
+            app:destination="@id/addProjectFragment" />
+        <argument
+            android:name="Project"
+            app:argType="com.akram.prioritymatrix.database.Project" />
+        <action
+            android:id="@+id/action_projectTaskFragment_to_navigation_detail_task"
+            app:destination="@id/navigation_detail_task" />
     </fragment>
 </navigation>

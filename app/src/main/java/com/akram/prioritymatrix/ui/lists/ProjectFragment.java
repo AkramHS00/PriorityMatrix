@@ -79,7 +79,7 @@ public class ProjectFragment extends Fragment {
                 @Override
                 public void onChanged(List<Project> projects) {
                     for (Project p: projects) {
-                        Log.i("AHS", p.getName().toString());
+                        //Log.i("AHS", p.getName().toString());
                     }
                     adapter.setProjects(projects);
                 }
@@ -91,8 +91,11 @@ public class ProjectFragment extends Fragment {
             public void onItemClick(Project project) {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("Project", project);
-                NavHostFragment.findNavController(ProjectFragment.this)
-                        .navigate(R.id.action_navigation_list_to_addProjectFragment, bundle);
+                //NavHostFragment.findNavController(ProjectFragment.this)
+                //        .navigate(R.id.action_navigation_list_to_addProjectFragment, bundle);
+                //
+                 NavHostFragment.findNavController(ProjectFragment.this)
+                        .navigate(R.id.action_navigation_list_to_projectTaskFragment, bundle);
             }
 
         });

@@ -106,7 +106,7 @@ public class TaskFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 NavHostFragment.findNavController(TaskFragment.this)
-                        .navigate(R.id.action_navigation_home_to_addTaskFragment);
+                        .navigate(R.id.action_navigation_home_to_detailTaskFragment);
             }
         });
 
