@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.akram.prioritymatrix.MainActivity;
+import com.akram.prioritymatrix.OnDragTouchListener;
 import com.akram.prioritymatrix.R;
 import com.akram.prioritymatrix.database.Task;
 import com.akram.prioritymatrix.database.User;
@@ -68,7 +69,7 @@ public class MatrixFragment extends Fragment {
                         TextView newTextView = new TextView(getActivity());
                         newTextView.setText(t.getTitle());
                         matrixView.addView(newTextView);
-
+                        newTextView.setOnTouchListener(new OnDragTouchListener(newTextView));
                     }
                 }
             });
