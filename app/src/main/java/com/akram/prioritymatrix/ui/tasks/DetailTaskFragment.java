@@ -74,7 +74,29 @@ public class DetailTaskFragment extends Fragment {
         currentUser = ((MainActivity) getActivity()).getCurrentUser();
 
 
+        Bundle bundle = getArguments();
+        currentTask = (Task) bundle.getSerializable("Task");
 
+        detailTaskViewModel.getUserProjects(currentUser.getUserName()).observe(getViewLifecycleOwner(), new Observer<List<Project>>() {
+            @Override
+            public void onChanged(List<Project> projects) {
+                userProjects = projects;
+                Log.i("AHS", "Set user projects");
+                for (Project p: projects) {
+                    projectStrings.add(p.getName().toString());
+                    if (currentTask != null){
+                        if (currentTask.getProjectId() == p.getId()){
+                            projectAutoComplete = getView().findViewById(R.id.projectAutoComplete);
+                            projectAutoComplete.setText(p.getName());
+                        }
+                    }
+                }
+                //Setup project dropdown list
+                adapterProject = new ArrayAdapter<String>(getActivity(), R.layout.list_categories, projectStrings);
+                projectAutoComplete.setAdapter(adapterProject);
+
+            }
+        });
 
 
         requireActivity().addMenuProvider(new MenuProvider() {
@@ -110,28 +132,6 @@ public class DetailTaskFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        Bundle bundle = getArguments();
-        currentTask = (Task) bundle.getSerializable("Task");
-
-        detailTaskViewModel.getUserProjects(currentUser.getUserName()).observe(getViewLifecycleOwner(), new Observer<List<Project>>() {
-            @Override
-            public void onChanged(List<Project> projects) {
-                userProjects = projects;
-                Log.i("AHS", "Set user projects");
-                for (Project p: projects) {
-                    projectStrings.add(p.getName().toString());
-                    if (currentTask != null){
-                        if (currentTask.getProjectId() == p.getId()){
-                            projectAutoComplete = getView().findViewById(R.id.projectAutoComplete);
-                            projectAutoComplete.setText(p.getName());
-                        }
-                    }
-                }
-
-            }
-        });
-
 
 
         editTitle = getView().findViewById(R.id.editTitle);
@@ -303,10 +303,6 @@ public class DetailTaskFragment extends Fragment {
             }
         });
 
-
-        //Setup project dropdown list
-        adapterProject = new ArrayAdapter<String>(getActivity(), R.layout.list_categories, projectStrings);
-        projectAutoComplete.setAdapter(adapterProject);
 
         projectAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

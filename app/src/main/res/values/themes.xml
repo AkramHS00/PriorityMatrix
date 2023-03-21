@@ -12,5 +12,22 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
+
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">@color/blue</item>
+
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="colorAccent">@color/blue</item>
+        <item name="colorControlNormal">@color/blue</item>
+        <item name="colorControlActivated">@color/blue</item>
+    </style>
+
+
+    <style name="TextInputLayout" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+
+        <item name="android:textSize">18sp</item>
+
     </style>
 </resources>
