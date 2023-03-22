@@ -48,7 +48,14 @@ public class MatrixFragment extends Fragment {
             Log.i("AHS", "Drag ended with view dropped at X: " + x + " Y: " + y);
 
         }
+
+        @Override
+        public void onLongPress(View view) {
+            Log.i("AHS", "View was long pressed: " + view.toString());
+        }
     };
+
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,

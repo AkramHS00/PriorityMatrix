@@ -1,6 +1,7 @@
 package com.akram.prioritymatrix;
 
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -25,6 +26,8 @@ public class OnDragTouchListener implements View.OnTouchListener{
          * @param view The view dragged
          */
         void onDragEnd(View view);
+
+        void onLongPress(View view);
     }
 
     private View mView;
@@ -46,6 +49,8 @@ public class OnDragTouchListener implements View.OnTouchListener{
 
     private OnDragActionListener mOnDragActionListener;
 
+    private GestureDetector mGestureDetector;
+
     public OnDragTouchListener(View view) {
         this(view, (View) view.getParent(), null);
     }
@@ -61,6 +66,16 @@ public class OnDragTouchListener implements View.OnTouchListener{
     public OnDragTouchListener(View view, View parent, OnDragActionListener onDragActionListener) {
         initListener(view, parent);
         setOnDragActionListener(onDragActionListener);
+
+        mGestureDetector = new GestureDetector(view.getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public void onLongPress(MotionEvent e) {
+                // Perform action on long press
+                // Example: Set the view's background color to red
+                //mView.setBackgroundColor(Color.RED);
+                mOnDragActionListener.onLongPress(mView);
+            }
+        });
     }
 
     public void setOnDragActionListener(OnDragActionListener onDragActionListener) {
@@ -100,6 +115,9 @@ public class OnDragTouchListener implements View.OnTouchListener{
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+
+        mGestureDetector.onTouchEvent(event);
+
         if (isDragging) {
             float[] bounds = new float[4];
             // LEFT
