@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.akram.prioritymatrix.MainActivity;
 import com.akram.prioritymatrix.OnDragTouchListener;
@@ -33,6 +34,21 @@ public class MatrixFragment extends Fragment {
     ConstraintLayout matrixView;
     TaskViewModel taskViewModel;
     User currentUser;
+
+    OnDragTouchListener.OnDragActionListener onDragActionListener = new OnDragTouchListener.OnDragActionListener() {
+        @Override
+        public void onDragStart(View view) {
+            Log.i("AHS", "Drag started");
+        }
+
+        @Override
+        public void onDragEnd(View view) {
+            float x = view.getX();
+            float y = view.getY();
+            Log.i("AHS", "Drag ended with view dropped at X: " + x + " Y: " + y);
+
+        }
+    };
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -69,7 +85,7 @@ public class MatrixFragment extends Fragment {
                         TextView newTextView = new TextView(getActivity());
                         newTextView.setText(t.getTitle());
                         matrixView.addView(newTextView);
-                        newTextView.setOnTouchListener(new OnDragTouchListener(newTextView));
+                        newTextView.setOnTouchListener(new OnDragTouchListener(newTextView, (View) newTextView.getParent(), onDragActionListener));
                     }
                 }
             });
@@ -89,4 +105,5 @@ public class MatrixFragment extends Fragment {
             navBar.setVisibility(View.VISIBLE);
         }
     }
+
 }
