@@ -103,6 +103,20 @@
             android:layout_toEndOf="@+id/deadlineDate"
             android:layout_marginStart="32dp"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/categoryText"
+            android:text=""
+            android:maxLines="1"
+            android:textSize="18dp"
+            android:ellipsize="end"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/deadlineText"
+            android:textAllCaps="true"
+            android:textStyle="italic"
+            android:layout_marginRight="8dp"/>
+
     </RelativeLayout>
 
 </androidx.cardview.widget.CardView>

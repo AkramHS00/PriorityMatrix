@@ -45,6 +45,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         holder.taskTitle.setText(currentTask.getTitle());
         holder.taskDescription.setText(currentTask.getDescription());
         holder.taskRating.setText(String.valueOf(currentTask.getRating()));
+        holder.categoryText.setText(currentTask.getCategory());
 
         //holder.deadlineDate.setText(String.valueOf(currentTask.getDeadlineDate()));
         holder.deadlineDate.setText(formatDate(currentTask.getDeadlineDate()));
@@ -81,6 +82,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         private TextView deadlineDate;
         private TextView deadlineTime;
         private TextView taskRating;
+        private TextView categoryText;
         private CheckBox taskCheckbox;
 
         private RelativeLayout taskRelativeLayout;
@@ -95,6 +97,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
             deadlineTime = itemView.findViewById(R.id.deadlineTime);
             taskRating = itemView.findViewById(R.id.taskRating);
             taskCheckbox = itemView.findViewById(R.id.taskCheckbox);
+            categoryText = itemView.findViewById(R.id.categoryText);
 
             taskRelativeLayout = itemView.findViewById(R.id.taskRelativeLayout);
 
