@@ -42,7 +42,18 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
 
-
     </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:max="100"
+        android:progress="50"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:progressBackgroundTint="@color/light_blue"
+        android:progressTint="@color/blue"/>
 
 </androidx.cardview.widget.CardView>

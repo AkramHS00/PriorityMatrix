@@ -1,8 +1,10 @@
 package com.akram.prioritymatrix.ui.lists;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -51,6 +53,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
 
         holder.projectName.setText(currentProject.getName());
         holder.projectTaskCounter.setText(String.valueOf(completedCount) + "/" + String.valueOf(totalCount));
+        holder.projectProgressBar.setProgress((int)((float) completedCount/ (float) totalCount * 100));
 
     }
 
@@ -85,6 +88,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
     class ProjectHolder extends RecyclerView.ViewHolder{
         private TextView projectName;
         private TextView projectTaskCounter;
+        private ProgressBar projectProgressBar;
 
         //Return the task the user clicked on
         public ProjectHolder(@NonNull View itemView) {
@@ -92,6 +96,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
 
             projectName = itemView.findViewById(R.id.projectName);
             projectTaskCounter = itemView.findViewById(R.id.taskCounter);
+            projectProgressBar = itemView.findViewById(R.id.progressBar);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
