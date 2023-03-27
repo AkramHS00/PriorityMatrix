@@ -13,6 +13,7 @@ public class ProjectRepository {
 
     private LiveData<List<Project>> allProjects;
     private LiveData<List<Project>> userProjects;
+    private LiveData<List<ProjectWithTasks>> userProjectsWithTasks;
 
     public ProjectRepository(Application application){
         PriorityDatabase database = PriorityDatabase.getInstance(application);
@@ -38,6 +39,11 @@ public class ProjectRepository {
     public LiveData<List<Project>> getUserProjects(String userName) {
         userProjects = projectDao.getUserProjects(userName);
         return userProjects;
+    }
+
+    public LiveData<List<ProjectWithTasks>> getUserProjectsWithTasks(String userName) {
+        userProjectsWithTasks = projectDao.getUserProjectsWithTasks(userName);
+        return userProjectsWithTasks;
     }
 
 

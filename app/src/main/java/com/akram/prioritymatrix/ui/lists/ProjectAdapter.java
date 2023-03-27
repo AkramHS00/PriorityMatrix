@@ -10,14 +10,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.akram.prioritymatrix.R;
 import com.akram.prioritymatrix.database.Project;
+import com.akram.prioritymatrix.database.ProjectWithTasks;
+import com.akram.prioritymatrix.database.Task;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectHolder> {
 
     private List<Project> projects = new ArrayList<>();
+    private List<ProjectWithTasks> projectWithTasks = new ArrayList<>();
     private OnItemClickListener listener;
+
+    private HashMap<Project, List<Task>> projectWithTasksHash= new HashMap<Project, List<Task>>();
 
 
     @NonNull
@@ -33,7 +39,18 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
     public void onBindViewHolder(@NonNull ProjectAdapter.ProjectHolder holder, int position) {
         Project currentProject = projects.get(position);
 
+        List<Task> tasks = projectWithTasksHash.get(currentProject);
+        int totalCount = projectWithTasksHash.get(currentProject).size();
+        int completedCount = 0;
+
+        for (Task t : tasks){
+            if(t.getComplete() == true){
+                completedCount++;
+            }
+        }
+
         holder.projectName.setText(currentProject.getName());
+        holder.projectTaskCounter.setText(String.valueOf(completedCount) + "/" + String.valueOf(totalCount));
 
     }
 
@@ -48,14 +65,33 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
         notifyDataSetChanged(); //Let adapter know to update layout with new data, not best practice.
     }
 
+    public void setProjectWithTasks(List<ProjectWithTasks> projectWithTasks){
+
+        ArrayList<Project> projects = new ArrayList<>();
+        for (ProjectWithTasks p : projectWithTasks){
+            Project project = p.getProject();
+            List<Task> tasks = p.getTasks();
+            projectWithTasksHash.put(project, tasks);
+
+            projects.add(project);
+        }
+        this.projects = projects;
+        this.projectWithTasks = projectWithTasks;
+        notifyDataSetChanged();
+
+    }
+
+
     class ProjectHolder extends RecyclerView.ViewHolder{
         private TextView projectName;
+        private TextView projectTaskCounter;
 
         //Return the task the user clicked on
         public ProjectHolder(@NonNull View itemView) {
             super(itemView);
 
             projectName = itemView.findViewById(R.id.projectName);
+            projectTaskCounter = itemView.findViewById(R.id.taskCounter);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

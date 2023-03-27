@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.akram.prioritymatrix.MainActivity;
 import com.akram.prioritymatrix.R;
 import com.akram.prioritymatrix.database.Project;
+import com.akram.prioritymatrix.database.ProjectWithTasks;
 import com.akram.prioritymatrix.database.Task;
 import com.akram.prioritymatrix.database.User;
 import com.akram.prioritymatrix.databinding.FragmentListBinding;
@@ -26,6 +27,7 @@ import com.akram.prioritymatrix.ui.tasks.TaskAdapter;
 import com.akram.prioritymatrix.ui.tasks.TaskFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectFragment extends Fragment {
@@ -75,7 +77,7 @@ public class ProjectFragment extends Fragment {
 
         if( currentUser != null){
 
-            projectViewModel.getUserProjects(currentUser.getUserName().toString()).observe(getActivity(), new Observer<List<Project>>() {
+            /*projectViewModel.getUserProjects(currentUser.getUserName().toString()).observe(getActivity(), new Observer<List<Project>>() {
                 @Override
                 public void onChanged(List<Project> projects) {
                     for (Project p: projects) {
@@ -83,7 +85,21 @@ public class ProjectFragment extends Fragment {
                     }
                     adapter.setProjects(projects);
                 }
+            });*/
+
+            projectViewModel.getUserProjectsWithTasks(currentUser.getUserName()).observe(getActivity(), new Observer<List<ProjectWithTasks>>() {
+                @Override
+                public void onChanged(List<ProjectWithTasks> projectWithTasks) {
+                    List<Project> projects = new ArrayList<>();
+                    for (ProjectWithTasks p : projectWithTasks){
+                        Project project = p.getProject();
+                        projects.add(project);
+                    }
+                    //adapter.setProjects(projects);
+                    adapter.setProjectWithTasks(projectWithTasks);
+                }
             });
+
         }
 
         adapter.setOnItemClickListener(new ProjectAdapter.OnItemClickListener() {

@@ -28,7 +28,18 @@
             android:layout_alignParentStart="true"
             android:ellipsize="end"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"/>
+            android:layout_marginRight="8dp"
+            android:layout_toStartOf="@+id/taskCounter"
+            />
+
+        <TextView
+            android:id="@+id/taskCounter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="0/0"
+            android:layout_marginRight="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
 
 
