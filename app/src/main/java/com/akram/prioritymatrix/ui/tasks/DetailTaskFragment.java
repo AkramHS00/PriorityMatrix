@@ -273,7 +273,7 @@ public class DetailTaskFragment extends Fragment {
                     Task newTask = new Task(currentUser.getName().toString(), editTitle.getText().toString(), editDescription.getText().toString(),
                             Integer.valueOf(editRating.getText().toString()), switchDeadline.isChecked(), deadlineDate,
                             deadlineTime, switchReminder.isChecked(), reminderDate, reminderTime, false, categoryAutoComplete.getText().toString(),
-                            projectId);
+                            projectId, -1, -1);
 
                     if (currentTask != null){
                         newTask.setId(currentTask.getId());

@@ -30,13 +30,17 @@ public class Task implements Serializable {
 
     private int projectId;
 
+    private float posX;
+    private float posY;
+
     //private SubTask[] subtask;
     //private List list;
 
 
     public Task(String ownerName, String title, String description, int rating, boolean addDeadline,
                 String deadlineDate, String deadlineTime, boolean addReminder,
-                String reminderDate, String reminderTime, boolean complete, String category, int projectId) {
+                String reminderDate, String reminderTime, boolean complete, String category, int projectId,
+                float posX, float posY) {
         this.ownerName = ownerName;
         this.title = title;
         this.description = description;
@@ -50,6 +54,8 @@ public class Task implements Serializable {
         this.complete = complete;
         this.category = category;
         this.projectId = projectId;
+        this.posX = posX;
+        this.posY = posY;
     }
 
     public int getId() {
@@ -110,5 +116,25 @@ public class Task implements Serializable {
 
     public int getProjectId() {
         return projectId;
+    }
+
+    public float getPosX() {
+        return posX;
+    }
+
+    public float getPosY() {
+        return posY;
+    }
+
+    public void setPosX(float posX) {
+        this.posX = posX;
+    }
+
+    public void setPosY(float posY) {
+        this.posY = posY;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

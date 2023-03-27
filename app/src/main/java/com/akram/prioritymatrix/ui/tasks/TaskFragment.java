@@ -133,7 +133,7 @@ public class TaskFragment extends Fragment {
                 @Override
                 public void onChanged(List<Task> tasks) {
                     for (Task t: tasks) {
-                        Log.i("AHS", t.getTitle().toString());
+                        //Log.i("AHS", t.getTitle().toString());
                     }
                     adapter.setTasks(tasks);
                 }

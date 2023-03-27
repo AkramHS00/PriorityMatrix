@@ -94,7 +94,11 @@
         android:id="@+id/navigation_matrix"
         android:name="com.akram.prioritymatrix.ui.matrix.MatrixFragment"
         android:label="fragment_matrix"
-        tools:layout="@layout/fragment_matrix" />
+        tools:layout="@layout/fragment_matrix" >
+        <action
+            android:id="@+id/action_navigation_matrix_to_navigation_home"
+            app:destination="@id/navigation_home" />
+    </fragment>
     <fragment
         android:id="@+id/addProjectFragment"
         android:name="com.akram.prioritymatrix.ui.lists.AddProjectFragment"

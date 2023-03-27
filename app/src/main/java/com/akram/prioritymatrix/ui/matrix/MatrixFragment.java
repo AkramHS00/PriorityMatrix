@@ -1,6 +1,7 @@
 package com.akram.prioritymatrix.ui.matrix;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.MenuProvider;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -11,13 +12,18 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,9 +34,14 @@ import com.akram.prioritymatrix.OnDragTouchListener;
 import com.akram.prioritymatrix.R;
 import com.akram.prioritymatrix.database.Task;
 import com.akram.prioritymatrix.database.User;
+import com.akram.prioritymatrix.ui.tasks.TaskFragment;
 import com.akram.prioritymatrix.ui.tasks.TaskViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MatrixFragment extends Fragment {
@@ -49,6 +60,9 @@ public class MatrixFragment extends Fragment {
     float screenCenterX;
     float screenCenterY;
 
+    HashMap<TextView, Task> textViewTasks = new HashMap<TextView, Task>();
+    ArrayList<Task> tasksToUpdate = new ArrayList<Task>();
+
     OnDragTouchListener.OnDragActionListener onDragActionListener = new OnDragTouchListener.OnDragActionListener() {
         @Override
         public void onDragStart(View view) {
@@ -66,25 +80,37 @@ public class MatrixFragment extends Fragment {
             float centerX = view.getX() + view.getWidth() / 2;
             float centerY = view.getY() + view.getHeight() / 2;
 
+            Task draggedTask = textViewTasks.get(view);
+            draggedTask.setPosX(x);
+            draggedTask.setPosY(y);
+
             int droppedQuadrant = getQuadrant(centerX, centerY);
 
             switch (droppedQuadrant){
                 case 1:
                     Log.i("AHS", "Do");
+                    draggedTask.setCategory("Do");
                     break;
                 case 2:
                     Log.i("AHS", "Schedule");
+                    draggedTask.setCategory("Schedule");
                     break;
                 case 3:
                     Log.i("AHS", "Delegate");
+                    draggedTask.setCategory("Delegate");
                     break;
                 case 4:
                     Log.i("AHS", "Delete");
+                    draggedTask.setCategory("Delete");
                     break;
 
             }
 
             Log.i("AHS", String.valueOf(droppedQuadrant));
+            tasksToUpdate.add(draggedTask);
+
+
+
         }
 
         @Override
@@ -98,7 +124,7 @@ public class MatrixFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
+        setHasOptionsMenu(true);
 
         BottomNavigationView navBar = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
         if(navBar.getVisibility() == View.VISIBLE){
@@ -107,8 +133,6 @@ public class MatrixFragment extends Fragment {
 
         taskViewModel =
                 new ViewModelProvider(this).get(TaskViewModel.class);
-
-
 
         return inflater.inflate(R.layout.fragment_matrix, container, false);
     }
@@ -131,22 +155,26 @@ public class MatrixFragment extends Fragment {
             taskViewModel.getOrderedUserTasks(currentUser.getUserName().toString()).observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(List<Task> tasks) {
+                    //Clear hashmap of all entries when tasks are updated
+                    textViewTasks.clear();
                     for (Task t: tasks) {
                         //Log.i("AHS", "Matrix " + t.getTitle().toString());
 
-                        /*String text = t.getTitle();
-                        String[] lines = new String[(text.length() + 9) / 10];
-                        for (int i = 0; i < lines.length; i++) {
-                            int start = i * 10;
-                            int end = Math.min(start + 10, text.length());
-                            lines[i] = text.substring(start, end);
-                        }
-                        if (text.length() > 30) {
-                            lines[2] = lines[2].substring(0, Math.min(lines[2].length(), 3)) + "...";
-                        }
-                        String newText = TextUtils.join("\n", lines);*/
+                        //Use view tree observer to get matrix width and height once it has been inflated
+                        ViewTreeObserver matrixViewTreeObserver = matrixView.getViewTreeObserver();
+                        matrixViewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
 
+                                screenWidth = matrixView.getWidth();
+                                screenHeight = matrixView.getHeight();
+                                screenCenterX = screenWidth / 2;
+                                screenCenterY = screenHeight / 2;
 
+                                matrixViewTreeObserver.removeOnGlobalLayoutListener(this);
+
+                            }
+                        });
 
                         TextView newTextView = new TextView(getActivity());
                         newTextView.setText(t.getTitle());
@@ -163,11 +191,33 @@ public class MatrixFragment extends Fragment {
                         filterArray[0] = new InputFilter.LengthFilter(10);
                         newTextView.setFilters(filterArray);
 
-
                         matrixView.addView(newTextView);
+
                         newTextView.setOnTouchListener(new OnDragTouchListener(newTextView, (View) newTextView.getParent(), onDragActionListener));
 
+                        //Position task once the layout has been inflated
+                        ViewTreeObserver textViewTreeObserver = newTextView.getViewTreeObserver();
+                        textViewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                int width = newTextView.getWidth();
+                                int height = newTextView.getHeight();
 
+                                if (t.getPosY() == -1 || t.getPosX() == -1){
+                                    newTextView.setX(screenCenterX - width/2);
+                                    newTextView.setY(screenCenterY - height/2);
+                                } else {
+                                    newTextView.setX(t.getPosX());
+                                    newTextView.setY(t.getPosY());
+                                }
+
+
+                                //Unload listener when done
+                                newTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            }
+                        });
+                        //Add textView to the hashmap with corresponding task
+                        textViewTasks.put(newTextView, t);
 
                     }
                 }
@@ -193,11 +243,6 @@ public class MatrixFragment extends Fragment {
 
         int quadrant;
 
-        screenWidth = matrixView.getWidth();
-        screenHeight = matrixView.getHeight();
-        screenCenterX = screenWidth / 2;
-        screenCenterY = screenHeight / 2;
-
         if (X < screenCenterX && Y < screenCenterY) {
             quadrant = 1; // top-left
         } else if (X >= screenCenterX && Y < screenCenterY) {
@@ -211,4 +256,21 @@ public class MatrixFragment extends Fragment {
         return quadrant;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case android.R.id.home:
+                Log.i("AHS", "Back arrow pressed");
+                for (Task t: tasksToUpdate) {
+                    taskViewModel.updateTask(t);
+                }
+                NavHostFragment.findNavController(MatrixFragment.this)
+                        .navigate(R.id.action_navigation_matrix_to_navigation_home);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }
