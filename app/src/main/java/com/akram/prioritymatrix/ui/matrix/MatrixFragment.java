@@ -152,7 +152,7 @@ public class MatrixFragment extends Fragment {
 
         if( currentUser != null){
 
-            taskViewModel.getOrderedUserTasks(currentUser.getUserName().toString()).observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
+            taskViewModel.getOutstandingUserTasks(currentUser.getUserName().toString()).observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(List<Task> tasks) {
                     //Clear hashmap of all entries when tasks are updated

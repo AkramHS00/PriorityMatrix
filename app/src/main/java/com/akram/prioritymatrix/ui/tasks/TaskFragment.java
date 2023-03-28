@@ -28,6 +28,7 @@ import com.akram.prioritymatrix.database.Task;
 import com.akram.prioritymatrix.database.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TaskFragment extends Fragment {
@@ -36,6 +37,8 @@ public class TaskFragment extends Fragment {
 
     TaskViewModel taskViewModel;
     private User currentUser;
+
+    private List<Task> userTasks = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -110,7 +113,7 @@ public class TaskFragment extends Fragment {
             }
         });
 
-
+        //Temporary button to navigate to the matrix screen
         FloatingActionButton tempFab = getView().findViewById(R.id.tempMatrixFab);
         tempFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +122,26 @@ public class TaskFragment extends Fragment {
                         .navigate(R.id.action_navigation_home_to_navigation_matrix);
             }
         });
+
+        //Temporary button to set all tasks to incomplete again
+        FloatingActionButton tempArchiveFab = getView().findViewById(R.id.tempArchiveFab);
+        tempArchiveFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(currentUser!=null){
+                    for (Task t : userTasks){
+                        if (t.getComplete() == true){
+                            t.setComplete(false);
+                            taskViewModel.updateTask(t);
+                        }
+                    }
+
+                }
+
+            }
+        });
+
+
 
         RecyclerView recyclerView = getView().findViewById(R.id.task_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
@@ -129,13 +152,18 @@ public class TaskFragment extends Fragment {
 
         if( currentUser != null){
 
-            taskViewModel.getOutstandingUserTasks(currentUser.getUserName().toString()).observe(getActivity(), new Observer<List<Task>>() {
+            taskViewModel.getOrderedUserTasks(currentUser.getUserName().toString()).observe(getActivity(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(List<Task> tasks) {
+                    userTasks = tasks;
+                    List<Task> outstandingTasks = new ArrayList<>();
                     for (Task t: tasks) {
-                        //Log.i("AHS", t.getTitle().toString());
+                        if (t.getComplete() == false){
+                            outstandingTasks.add(t);
+                        }
                     }
-                    adapter.setTasks(tasks);
+                    Log.i("AHS", "Big task updated!");
+                    adapter.setTasks(outstandingTasks);
                 }
             });
         }
