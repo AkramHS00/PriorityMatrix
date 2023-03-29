@@ -14,6 +14,8 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -25,6 +27,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+
+        // Enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
     }
     buildFeatures {
         viewBinding true
@@ -50,4 +55,10 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
     implementation 'com.google.code.gson:gson:2.10.1'
+
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    // The view calendar library
+    implementation 'com.kizitonwose.calendar:view:2.2.0'
+    // The compose calendar library
+    implementation 'com.kizitonwose.calendar:compose:2.2.0'
 }

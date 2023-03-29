@@ -2,6 +2,7 @@ package com.akram.prioritymatrix.ui.matrix;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +42,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.w3c.dom.Text;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,6 +62,11 @@ public class MatrixFragment extends Fragment {
     Button matrixDelegate;
     Button matrixDelete;
 
+    MenuItem timeScaleBiWeekly;
+    MenuItem timeScaleMonthly;
+    MenuItem timeScaleAll;
+    MenuItem timeScaleDisplay;
+
     float screenWidth;
     float screenHeight;
     float screenCenterX;
@@ -62,6 +74,14 @@ public class MatrixFragment extends Fragment {
 
     HashMap<TextView, Task> textViewTasks = new HashMap<TextView, Task>();
     ArrayList<Task> tasksToUpdate = new ArrayList<Task>();
+
+    int date;
+    LocalDate currentDate;
+    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("ddMMyyyy");
+
+    String timeFilter = "2 Weeks";
+    List<Task> allTasks = new ArrayList<>();
+    //List<Task> filteredTasks = new ArrayList<>();
 
     OnDragTouchListener.OnDragActionListener onDragActionListener = new OnDragTouchListener.OnDragActionListener() {
         @Override
@@ -134,6 +154,77 @@ public class MatrixFragment extends Fragment {
         taskViewModel =
                 new ViewModelProvider(this).get(TaskViewModel.class);
 
+
+        requireActivity().addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menu.clear();
+                menuInflater.inflate(R.menu.matrix_menu, menu);
+                timeScaleDisplay = menu.findItem(R.id.timeScaleDisplay);
+
+                timeScaleDisplay.setTitle("2 Weeks");
+                timeFilter = "2 Weeks";
+
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                List<Task> filteredTasks = new ArrayList<>();
+                switch (menuItem.getItemId()){
+
+                    case R.id.timeScaleBiWeekly:
+                        timeScaleDisplay.setTitle("2 Weeks");
+                        timeFilter = "2 Weeks";
+
+                        filteredTasks.clear();
+                        for (Task t: allTasks){
+                            String taskDate = t.getDeadlineDate();
+                            LocalDate taskDateLocal = LocalDate.parse(taskDate,dateFormat);
+                            long daysApart = ChronoUnit.DAYS.between(currentDate, taskDateLocal );
+                            if (daysApart <= 14){
+                                filteredTasks.add(t);
+                            }
+                        }
+                        plotTasks(filteredTasks);
+                        break;
+
+                    case R.id.timeScaleMonthly:
+                        timeScaleDisplay.setTitle("1 Month");
+                        timeFilter = "1 Month";
+                        filteredTasks.clear();
+                        for (Task f : filteredTasks){
+                            Log.i("AHH", "Before clear: " + f.getTitle());
+                        }
+                        for (Task t: allTasks){
+                            String taskDate = t.getDeadlineDate();
+                            LocalDate taskDateLocal = LocalDate.parse(taskDate,dateFormat);
+                            long daysApart = ChronoUnit.DAYS.between(currentDate, taskDateLocal );
+                            //Period timePeriod = Period.between(currentDate, taskDateLocal);
+                            //Log.i("AHS", "timePeriod for task: " + t.getTitle() + " : " + String.valueOf(timePeriod));
+                            //if timePeriod.getMonths() == 0
+                            if (daysApart <= 31){
+                                filteredTasks.add(t);
+                            }
+                        }
+                        for (Task f : filteredTasks){
+                            Log.i("AHH", "Before Plot: " + f.getTitle());
+                        }
+                        plotTasks(filteredTasks);
+                        break;
+
+                    case R.id.timeScaleAll:
+                        timeScaleDisplay.setTitle("All");
+                        timeFilter = "All";
+
+                        filteredTasks = allTasks;
+                        plotTasks(filteredTasks);
+                        break;
+
+                }
+                return false;
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+
         return inflater.inflate(R.layout.fragment_matrix, container, false);
     }
 
@@ -149,77 +240,80 @@ public class MatrixFragment extends Fragment {
         matrixDelegate = getView().findViewById(R.id.matrixDelegate);
         matrixDelete = getView().findViewById(R.id.matrixDelete);
 
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int year = calendar.get(Calendar.YEAR);
+        String dayFormat = checkDigit(day);
+        String monthFormat = checkDigit(month);
+        String yearFormat = String.valueOf(year);
+        String dateString = dayFormat + "" + monthFormat + "" + yearFormat;
+        date = Integer.valueOf(dateString);
+        Log.i("AHS", "Date: " + String.valueOf(date));
+
+        currentDate = LocalDate.now();
+
+        //Use view tree observer to get matrix width and height once it has been inflated
+        ViewTreeObserver matrixViewTreeObserver = matrixView.getViewTreeObserver();
+        matrixViewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+
+                screenWidth = matrixView.getWidth();
+                screenHeight = matrixView.getHeight();
+                screenCenterX = screenWidth / 2;
+                screenCenterY = screenHeight / 2;
+
+                matrixViewTreeObserver.removeOnGlobalLayoutListener(this);
+
+            }
+        });
 
         if( currentUser != null){
 
             taskViewModel.getOutstandingUserTasks(currentUser.getUserName().toString()).observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(List<Task> tasks) {
-                    //Clear hashmap of all entries when tasks are updated
-                    textViewTasks.clear();
-                    for (Task t: tasks) {
-                        //Log.i("AHS", "Matrix " + t.getTitle().toString());
 
-                        //Use view tree observer to get matrix width and height once it has been inflated
-                        ViewTreeObserver matrixViewTreeObserver = matrixView.getViewTreeObserver();
-                        matrixViewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                            @Override
-                            public void onGlobalLayout() {
 
-                                screenWidth = matrixView.getWidth();
-                                screenHeight = matrixView.getHeight();
-                                screenCenterX = screenWidth / 2;
-                                screenCenterY = screenHeight / 2;
-
-                                matrixViewTreeObserver.removeOnGlobalLayoutListener(this);
-
-                            }
-                        });
-
-                        TextView newTextView = new TextView(getActivity());
-                        newTextView.setText(t.getTitle());
-                        newTextView.setMaxLines(2);
-                        newTextView.setEllipsize(TextUtils.TruncateAt.END);
-                        newTextView.setHorizontallyScrolling(false);
-                        newTextView.setMaxWidth(300);
-                        newTextView.setMinWidth(50);
-                        newTextView.setBackground(getResources().getDrawable(R.drawable.edit_text_background));
-                        newTextView.setPadding(16,16,16,16);
-                        newTextView.setTextColor(Color.BLACK);
-
-                        InputFilter[] filterArray = new InputFilter[1];
-                        filterArray[0] = new InputFilter.LengthFilter(10);
-                        newTextView.setFilters(filterArray);
-
-                        matrixView.addView(newTextView);
-
-                        newTextView.setOnTouchListener(new OnDragTouchListener(newTextView, (View) newTextView.getParent(), onDragActionListener));
-
-                        //Position task once the layout has been inflated
-                        ViewTreeObserver textViewTreeObserver = newTextView.getViewTreeObserver();
-                        textViewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                            @Override
-                            public void onGlobalLayout() {
-                                int width = newTextView.getWidth();
-                                int height = newTextView.getHeight();
-
-                                if (t.getPosY() == -1 || t.getPosX() == -1){
-                                    newTextView.setX(screenCenterX - width/2);
-                                    newTextView.setY(screenCenterY - height/2);
-                                } else {
-                                    newTextView.setX(t.getPosX());
-                                    newTextView.setY(t.getPosY());
+                    allTasks = tasks;
+                    List<Task> filteredTasks = new ArrayList<>();
+                    switch (timeFilter){
+                        case "2 Weeks":
+                            filteredTasks.clear();
+                            for (Task t: tasks){
+                                String taskDate = t.getDeadlineDate();
+                                LocalDate taskDateLocal = LocalDate.parse(taskDate,dateFormat);
+                                long daysApart = ChronoUnit.DAYS.between(currentDate, taskDateLocal );
+                                Log.i("AHS", "Days apart for task: " + t.getTitle() + " : " + String.valueOf(daysApart));
+                                if (daysApart <= 14){
+                                    filteredTasks.add(t);
                                 }
-
-
-                                //Unload listener when done
-                                newTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                             }
-                        });
-                        //Add textView to the hashmap with corresponding task
-                        textViewTasks.put(newTextView, t);
+                            plotTasks(filteredTasks);
+                            break;
+                        case "1 Month":
+                            filteredTasks.clear();
+                            for (Task t: tasks){
+                                String taskDate = t.getDeadlineDate();
+                                LocalDate taskDateLocal = LocalDate.parse(taskDate,dateFormat);
+                                long daysApart = ChronoUnit.DAYS.between(taskDateLocal, currentDate );
+                                if (daysApart <= 31){
+                                    filteredTasks.add(t);
+                                }
+                            }
+                            plotTasks(filteredTasks);
+                            break;
+                        case "All":
+                            filteredTasks = tasks;
+                            plotTasks(filteredTasks);
+                            break;
+                        default:
+                            Log.i("AHS", "Default was run");
+                            break;
 
                     }
+
                 }
             });
 
@@ -272,5 +366,66 @@ public class MatrixFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public String checkDigit(int number) { //https://stackoverflow.com/questions/38191945/android-timepicker-dialog-returns-no-preceding-zeros/38196212
+        return number <= 9 ? "0" + number : String.valueOf(number);
+    }
+
+    public void plotTasks(List<Task> tasks){
+        //Delete all textviews before plotting new ones
+        for(TextView t: textViewTasks.keySet()){
+            matrixView.removeView(t);
+        }
+        //Clear hashmap of all entries when tasks are updated
+        textViewTasks.clear();
+
+        for (Task t: tasks) {
+            //Log.i("AHS", "Matrix " + t.getTitle().toString());
+
+            TextView newTextView = new TextView(getActivity());
+            newTextView.setText(t.getTitle());
+            newTextView.setMaxLines(2);
+            newTextView.setEllipsize(TextUtils.TruncateAt.END);
+            newTextView.setHorizontallyScrolling(false);
+            newTextView.setMaxWidth(300);
+            newTextView.setMinWidth(50);
+            newTextView.setBackground(getResources().getDrawable(R.drawable.edit_text_background));
+            newTextView.setPadding(16,16,16,16);
+            newTextView.setTextColor(Color.BLACK);
+
+            InputFilter[] filterArray = new InputFilter[1];
+            filterArray[0] = new InputFilter.LengthFilter(10);
+            newTextView.setFilters(filterArray);
+
+            matrixView.addView(newTextView);
+
+            newTextView.setOnTouchListener(new OnDragTouchListener(newTextView, (View) newTextView.getParent(), onDragActionListener));
+
+            //Position task once the layout has been inflated
+            ViewTreeObserver textViewTreeObserver = newTextView.getViewTreeObserver();
+            textViewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    int width = newTextView.getWidth();
+                    int height = newTextView.getHeight();
+
+                    if (t.getPosY() == -1 || t.getPosX() == -1){
+                        newTextView.setX(screenCenterX - width/2);
+                        newTextView.setY(screenCenterY - height/2);
+                    } else {
+                        newTextView.setX(t.getPosX());
+                        newTextView.setY(t.getPosY());
+                    }
+
+
+                    //Unload listener when done
+                    newTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            });
+            //Add textView to the hashmap with corresponding task
+            textViewTasks.put(newTextView, t);
+
+        }
     }
 }

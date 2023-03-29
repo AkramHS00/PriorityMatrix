@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/timeScaleDisplay"
+        android:title="TempScale"
+        app:showAsAction="always"/>
+    <item
+        android:icon="@drawable/ic_down_arrow"
+        app:showAsAction="ifRoom|withText"
+        android:title="TimeScale">
+        <menu>
+            <item
+                android:id="@+id/timeScaleBiWeekly"
+                android:title="2 weeks" />
+            <item
+                android:id="@+id/timeScaleMonthly"
+                android:title="1 Month" />
+            <item
+                android:id="@+id/timeScaleAll"
+                android:title="All" />
+
+        </menu>
+    </item>
+
+</menu>
