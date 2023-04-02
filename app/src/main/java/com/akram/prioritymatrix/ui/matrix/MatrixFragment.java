@@ -148,7 +148,7 @@ public class MatrixFragment extends Fragment {
 
         BottomNavigationView navBar = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
         if(navBar.getVisibility() == View.VISIBLE){
-            navBar.setVisibility(View.GONE);
+            //navBar.setVisibility(View.GONE);
         }
 
         taskViewModel =
@@ -326,6 +326,10 @@ public class MatrixFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        for (Task t: tasksToUpdate) {
+            taskViewModel.updateTask(t);
+        }
 
         BottomNavigationView navBar = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
         if(navBar.getVisibility() == View.GONE){

@@ -12,6 +12,13 @@
         android:title="Lists" />
 
     <item
+        android:id="@+id/navigation_matrix"
+        android:icon="@drawable/matrix_icon"
+        android:title="Matrix"
+
+        />
+
+    <item
         android:id="@+id/navigation_calendar"
         android:icon="@drawable/ic_calendar"
         android:title="Calendar" />
@@ -20,5 +27,6 @@
         android:id="@+id/navigation_report"
         android:icon="@drawable/ic_report"
         android:title="Report" />
+
 
 </menu>
