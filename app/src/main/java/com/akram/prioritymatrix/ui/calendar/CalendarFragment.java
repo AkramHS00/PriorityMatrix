@@ -81,7 +81,7 @@ public class CalendarFragment extends Fragment {
     private  DateTimeFormatter sameYearFormatter = DateTimeFormatter.ofPattern("MMMM");
     private DateTimeFormatter differentYearFormatter = DateTimeFormatter.ofPattern("MMM yyyy");
     private DateTimeFormatter selectedDateFormatter = DateTimeFormatter.ofPattern("d MMM yyyy");
-    private DateTimeFormatter taskDateFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+    private DateTimeFormatter taskDateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     private CalendarTaskAdapter adapter;
 

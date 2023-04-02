@@ -205,25 +205,32 @@ public class TaskFragment extends Fragment {
             @Override
             public int compare(Task t1, Task t2) {
 
-                //Check which quadrant they belong to and compare
-                int t1Category = matrixCategoryOrder.indexOf(t1.getCategory());
-                int t2Category = matrixCategoryOrder.indexOf(t2.getCategory());
+                int deadlineImportance = Integer.compare(Integer.valueOf(t1.getDeadlineDate()), Integer.valueOf(t2.getDeadlineDate()));
+                Log.i("AHS", "Deadline importance of t1: " + t1.getDeadlineDate() + " t2: " + t2.getDeadlineDate() + " = " + deadlineImportance);
 
-                //If this returns 0 they are in the same category and we therefore need to prioritise by its importance
-                int categoryDifference = Integer.compare(t1Category, t2Category);
+                if (deadlineImportance == 0){
+                    //Check which quadrant they belong to and compare
+                    int t1Category = matrixCategoryOrder.indexOf(t1.getCategory());
+                    int t2Category = matrixCategoryOrder.indexOf(t2.getCategory());
 
-                if (categoryDifference == 0){
-                    if (Float.compare(t1.getPosX(), t2.getPosX()) != 0){
-                        //If they are the same category, the task with greater importance is prioritised
-                        // * by -1 as X values increases as we move to the right of the screen
-                        return Float.compare(t1.getPosX() * -1, t2.getPosX() * -1);
-                    } else {
-                        //If category and Importance is the same, tasks are prioritised by urgency
-                        return Float.compare(t1.getPosY(), t2.getPosY());
+                    //If this returns 0 they are in the same category and we therefore need to prioritise by its importance
+                    int categoryImportance = Integer.compare(t1Category, t2Category);
+
+                    if (categoryImportance == 0){
+                        if (Float.compare(t1.getPosY(), t2.getPosY()) != 0){
+                            //If they are the same category, the task with greater importance is prioritised
+                            return Float.compare(t1.getPosY(), t2.getPosY());
+                        } else {
+                            //If category and Importance is the same, tasks are prioritised by urgency
+                            // * by -1 as X values increases as we move to the right of the screen
+                            return Float.compare(t1.getPosX() * -1, t2.getPosX() * -1);
+                        }
+
                     }
-
+                    return categoryImportance; //This will return if the categories are different
                 }
-                return categoryDifference; //This will return if the categories are different
+
+                return deadlineImportance;
             }
         });
 

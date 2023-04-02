@@ -77,7 +77,7 @@ public class MatrixFragment extends Fragment {
 
     int date;
     LocalDate currentDate;
-    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("ddMMyyyy");
+    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     String timeFilter = "2 Weeks";
     List<Task> allTasks = new ArrayList<>();

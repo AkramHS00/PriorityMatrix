@@ -20,6 +20,9 @@ import com.akram.prioritymatrix.R;
 import com.akram.prioritymatrix.database.Task;
 import com.google.android.material.checkbox.MaterialCheckBox;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,12 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
 
     private List<Task> tasks = new ArrayList<>();
     private OnItemClickListener listener;
+
+    DateTimeFormatter saveDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+    DateTimeFormatter displayDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    DateTimeFormatter saveTimeFormat = DateTimeFormatter.ofPattern("HHmm");
+    DateTimeFormatter displayTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 
 
     @NonNull
@@ -47,10 +56,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         holder.taskRating.setText(String.valueOf(currentTask.getRating()));
         holder.categoryText.setText(currentTask.getCategory());
 
+        holder.deadlineDate.setText(displayDateFormat.format(LocalDate.parse(currentTask.getDeadlineDate(), saveDateFormat)));
+        holder.deadlineTime.setText(displayTimeFormat.format(LocalTime.parse(currentTask.getDeadlineTime(), saveTimeFormat)));
+
+
         //holder.deadlineDate.setText(String.valueOf(currentTask.getDeadlineDate()));
-        holder.deadlineDate.setText(formatDate(currentTask.getDeadlineDate()));
+        //holder.deadlineDate.setText(formatDate(currentTask.getDeadlineDate()));
         //holder.deadlineTime.setText(String.valueOf(currentTask.getDeadlineTime()));
-        holder.deadlineTime.setText(formatTime(currentTask.getDeadlineTime()));
+        //holder.deadlineTime.setText(formatTime(currentTask.getDeadlineTime()));
 
         if (currentTask.getCategory().equals("Do") ){
             holder.taskRelativeLayout.setBackgroundColor(ContextCompat.getColor(holder.taskTitle.getContext(), R.color.light_green));
@@ -140,16 +153,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
 
     public void setOnItemClickListener(OnItemClickListener listener){
         this.listener = listener;
-    }
-
-    private String formatDate(String date){
-        String formattedDate = date.substring(0,2) + "/" + date.substring(2,4) + "/" + date.substring(4,8);
-        return formattedDate;
-    }
-
-    private String formatTime(String time){
-        String formattedTime = time.substring(0,2) + ":" + time.substring(2,4) ;
-        return formattedTime;
     }
 
 

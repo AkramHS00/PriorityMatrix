@@ -39,7 +39,12 @@ import com.akram.prioritymatrix.database.Project;
 import com.akram.prioritymatrix.database.Task;
 import com.akram.prioritymatrix.database.User;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DetailTaskFragment extends Fragment {
@@ -52,6 +57,17 @@ public class DetailTaskFragment extends Fragment {
     private Switch switchDeadline, switchReminder;
     private TextView textDeadlineDate, textDeadlineTime, textReminderDate, textReminderTime;
     private Button saveBtn;
+
+    private LocalDate deadlineDate;
+    private LocalDate reminderDate;
+    private LocalTime deadlineTime;
+    private LocalTime reminderTime;
+
+    DateTimeFormatter saveDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+    DateTimeFormatter displayDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    DateTimeFormatter saveTimeFormat = DateTimeFormatter.ofPattern("HHmm");
+    DateTimeFormatter displayTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 
     String[] categories = {"Do", "Schedule", "Delegate", "Delete"};
     List<String> projectStrings = new ArrayList<String>();
@@ -151,6 +167,13 @@ public class DetailTaskFragment extends Fragment {
 
         saveBtn = getView().findViewById(R.id.saveBtn);
 
+        deadlineDate = LocalDate.now();
+        deadlineTime = LocalTime.now();
+        reminderDate = LocalDate.now();
+        reminderTime = LocalTime.now();
+
+
+
         if (currentTask != null){
             editTitle.setText(currentTask.getTitle());
             editDescription.setText(currentTask.getDescription());
@@ -159,10 +182,11 @@ public class DetailTaskFragment extends Fragment {
             switchDeadline.setChecked(currentTask.isAddDeadline());
             switchReminder.setChecked(currentTask.isAddReminder());
 
-            textDeadlineDate.setText(formatDate(currentTask.getDeadlineDate()));
-            textDeadlineTime.setText(formatTime(currentTask.getDeadlineTime()));
-            textReminderDate.setText(formatDate(currentTask.getReminderDate()));
-            textReminderTime.setText(formatTime(currentTask.getReminderTime()));
+            //Convert from database saved format into the display format for the user
+            deadlineDate = LocalDate.parse(currentTask.getDeadlineDate(), saveDateFormat);
+            reminderDate = LocalDate.parse(currentTask.getReminderDate(), saveDateFormat);
+            deadlineTime = LocalTime.parse(currentTask.getDeadlineTime(), saveTimeFormat);
+            reminderTime = LocalTime.parse(currentTask.getReminderTime(), saveTimeFormat);
 
             categoryAutoComplete.setText(currentTask.getCategory());
 
@@ -170,6 +194,11 @@ public class DetailTaskFragment extends Fragment {
             Log.i("AHS", "Current task is = null so creating blank task screen.");
             ((MainActivity) getActivity()).setActionBarTitle("New Task");
         }
+
+        textDeadlineDate.setText(displayDateFormat.format(deadlineDate));
+        textDeadlineTime.setText(displayTimeFormat.format(deadlineTime));
+        textReminderDate.setText(displayDateFormat.format(reminderDate));
+        textReminderTime.setText(displayTimeFormat.format(reminderTime));
 
         if (!switchDeadline.isChecked()){
             textDeadlineDate.setVisibility(View.GONE);
@@ -249,15 +278,6 @@ public class DetailTaskFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                String deadlineDate = textDeadlineDate.getText().toString().replaceAll("/", "");
-                String deadlineTime = textDeadlineTime.getText().toString().replaceAll(":", "");
-
-                String reminderDate = textReminderDate.getText().toString().replaceAll("/", "");
-                String reminderTime = textReminderTime.getText().toString().replaceAll(":", "");
-
-
-
-
                 if (editTitle.getText().toString().trim().isEmpty()  ||
                         editDescription.getText().toString().trim().isEmpty()  ||
                         editRating.getText().toString().trim().isEmpty()){
@@ -271,8 +291,9 @@ public class DetailTaskFragment extends Fragment {
                     }
 
                     Task newTask = new Task(currentUser.getName().toString(), editTitle.getText().toString(), editDescription.getText().toString(),
-                            Integer.valueOf(editRating.getText().toString()), switchDeadline.isChecked(), deadlineDate,
-                            deadlineTime, switchReminder.isChecked(), reminderDate, reminderTime, false, categoryAutoComplete.getText().toString(),
+                            Integer.valueOf(editRating.getText().toString()), switchDeadline.isChecked(), saveDateFormat.format(deadlineDate),
+                            saveTimeFormat.format(deadlineTime), switchReminder.isChecked(), saveDateFormat.format(reminderDate), saveTimeFormat.format(reminderTime),
+                            false, categoryAutoComplete.getText().toString(),
                             projectId, -1, -1);
 
                     if (currentTask != null){
@@ -316,16 +337,32 @@ public class DetailTaskFragment extends Fragment {
     }
 
     private void openDateDialog(TextView text){
+        //Check whether its the deadline or reminder and then set the default opening values to their values
+        LocalDate defaultDate;
+        if (text == textDeadlineDate){
+            defaultDate = deadlineDate;
+        } else {
+            defaultDate = reminderDate;
+        }
+        int defaultYear = defaultDate.getYear();
+        int defaultMonth = defaultDate.getMonthValue() -1;
+        int defaultDay = defaultDate.getDayOfMonth();
+
 
         DatePickerDialog dateDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 
                 int correctMonth = month + 1;
-                text.setText(checkDigit(day) + "/" + checkDigit(correctMonth) + "/" + checkDigit(year));
-
+                if (text == textDeadlineDate){
+                    deadlineDate = LocalDate.of(year, month + 1, day);
+                    text.setText(displayDateFormat.format(deadlineDate));
+                } else {
+                    reminderDate = LocalDate.of(year, month + 1, day);
+                    text.setText(displayDateFormat.format(reminderDate));
+                }
             }
-        }, 2023, 0, 0);
+        }, defaultYear, defaultMonth, defaultDay);
 
         dateDialog.show();
 
@@ -333,27 +370,30 @@ public class DetailTaskFragment extends Fragment {
 
     private void openTimeDialog(TextView text){
 
+        //Check whether its the deadline or reminder and then set the default opening values to their values
+        LocalTime defaultTime;
+        if (text == textDeadlineTime){
+            defaultTime = deadlineTime;
+        } else {
+            defaultTime = reminderTime;
+        }
+        int defaultHour = defaultTime.getHour();
+        int defaultMinute = defaultTime.getMinute();
+
         TimePickerDialog timeDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                text.setText(checkDigit(hour) + ":" + checkDigit(minute));
+                if (text == textDeadlineTime){
+                    deadlineTime = LocalTime.of(hour,minute, 0);
+                    text.setText(displayTimeFormat.format(deadlineTime));
+                } else {
+                    reminderTime = LocalTime.of(hour,minute, 0);
+                    text.setText(displayTimeFormat.format(reminderTime));
+                }
+                //text.setText(checkDigit(hour) + ":" + checkDigit(minute));
             }
-        }, 10, 10, true);
+        }, defaultHour, defaultMinute, true);
 
         timeDialog.show();
-    }
-
-    public String checkDigit(int number) { //https://stackoverflow.com/questions/38191945/android-timepicker-dialog-returns-no-preceding-zeros/38196212
-        return number <= 9 ? "0" + number : String.valueOf(number);
-    }
-
-    private String formatDate(String date){
-        String formattedDate = date.substring(0,2) + "/" + date.substring(2,4) + "/" + date.substring(4,8);
-        return formattedDate;
-    }
-
-    private String formatTime(String time){
-        String formattedTime = time.substring(0,2) + ":" + time.substring(2,4) ;
-        return formattedTime;
     }
 }
