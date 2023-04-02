@@ -29,6 +29,9 @@ import com.akram.prioritymatrix.database.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class TaskFragment extends Fragment {
@@ -47,7 +50,6 @@ public class TaskFragment extends Fragment {
                 new ViewModelProvider(this).get(TaskViewModel.class);
 
 
-
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -58,7 +60,7 @@ public class TaskFragment extends Fragment {
                 MenuItem menuWelcomeIcon = menu.findItem(R.id.welcomeUser);
 
                 currentUser = ((MainActivity) getActivity()).getCurrentUser();
-                if (currentUser == null){
+                if (currentUser == null) {
                     menuLogoutIcon.setVisible(false);
                     menuLoginIcon.setVisible(true);
                     menuWelcomeIcon.setVisible(false);
@@ -101,7 +103,7 @@ public class TaskFragment extends Fragment {
 
         FloatingActionButton addFab = getView().findViewById(R.id.addFab);
 
-        if (currentUser == null){
+        if (currentUser == null) {
             addFab.setVisibility(View.INVISIBLE);
         }
 
@@ -128,9 +130,9 @@ public class TaskFragment extends Fragment {
         tempArchiveFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(currentUser!=null){
-                    for (Task t : userTasks){
-                        if (t.getComplete() == true){
+                if (currentUser != null) {
+                    for (Task t : userTasks) {
+                        if (t.getComplete() == true) {
                             t.setComplete(false);
                             taskViewModel.updateTask(t);
                         }
@@ -142,7 +144,6 @@ public class TaskFragment extends Fragment {
         });
 
 
-
         RecyclerView recyclerView = getView().findViewById(R.id.task_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         recyclerView.setHasFixedSize(true);
@@ -150,20 +151,23 @@ public class TaskFragment extends Fragment {
         final TaskAdapter adapter = new TaskAdapter();
         recyclerView.setAdapter(adapter);
 
-        if( currentUser != null){
+        if (currentUser != null) {
 
             taskViewModel.getOrderedUserTasks(currentUser.getUserName().toString()).observe(getActivity(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(List<Task> tasks) {
                     userTasks = tasks;
                     List<Task> outstandingTasks = new ArrayList<>();
-                    for (Task t: tasks) {
-                        if (t.getComplete() == false){
+                    for (Task t : tasks) {
+                        if (t.getComplete() == false) {
                             outstandingTasks.add(t);
                         }
                     }
                     Log.i("AHS", "Big task updated!");
-                    adapter.setTasks(outstandingTasks);
+                    //adapter.setTasks(outstandingTasks);
+
+                    List<Task> prioritisedTasks = prioritiseTasks(outstandingTasks);
+                    adapter.setTasks(prioritisedTasks);
                 }
             });
         }
@@ -187,12 +191,44 @@ public class TaskFragment extends Fragment {
         });
 
 
-
-
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
     }
+
+    private List<Task> prioritiseTasks(List<Task> tasks) {
+        List<String> matrixCategoryOrder = Arrays.asList("Do", "Schedule", "Delegate", "Delete"); //This is the order we will prioritise our tasks by (same as elsewhere in app)
+        List<Task> prioritisedTasks = tasks;
+        Collections.sort(prioritisedTasks, new Comparator<Task>() {
+            @Override
+            public int compare(Task t1, Task t2) {
+
+                //Check which quadrant they belong to and compare
+                int t1Category = matrixCategoryOrder.indexOf(t1.getCategory());
+                int t2Category = matrixCategoryOrder.indexOf(t2.getCategory());
+
+                //If this returns 0 they are in the same category and we therefore need to prioritise by its importance
+                int categoryDifference = Integer.compare(t1Category, t2Category);
+
+                if (categoryDifference == 0){
+                    if (Float.compare(t1.getPosX(), t2.getPosX()) != 0){
+                        //If they are the same category, the task with greater importance is prioritised
+                        // * by -1 as X values increases as we move to the right of the screen
+                        return Float.compare(t1.getPosX() * -1, t2.getPosX() * -1);
+                    } else {
+                        //If category and Importance is the same, tasks are prioritised by urgency
+                        return Float.compare(t1.getPosY(), t2.getPosY());
+                    }
+
+                }
+                return categoryDifference; //This will return if the categories are different
+            }
+        });
+
+        return prioritisedTasks;
+    }
+
+
 }
