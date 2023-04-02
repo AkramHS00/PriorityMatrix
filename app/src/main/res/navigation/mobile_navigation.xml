@@ -41,7 +41,11 @@
         android:id="@+id/navigation_calendar"
         android:name="com.akram.prioritymatrix.ui.calendar.CalendarFragment"
         android:label="Calendar"
-        tools:layout="@layout/fragment_calendar" />
+        tools:layout="@layout/fragment_calendar" >
+        <action
+            android:id="@+id/action_navigation_calendar_to_navigation_detail_task"
+            app:destination="@id/navigation_detail_task" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_report"

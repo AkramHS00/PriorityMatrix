@@ -17,8 +17,24 @@
         android:id="@+id/calendar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:cv_dayViewResource="@layout/calendar_day_layout"/>
+        app:cv_dayViewResource="@layout/calendar_day_layout"
+        app:cv_monthHeaderResource="@layout/calendar_day_titles_container"/>
 
+    <TextView
+        android:id="@+id/dateSelectedText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:textAllCaps="true"
+        android:textSize="16sp"
+        android:text="1 Jan 2023"
+        android:textColor="@color/black"
+        android:textStyle="bold"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/calendar_recycler_view"
+        tools:listitem="@layout/calendar_task_item"/>
 
 </LinearLayout>

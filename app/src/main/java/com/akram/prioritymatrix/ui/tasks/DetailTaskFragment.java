@@ -285,8 +285,10 @@ public class DetailTaskFragment extends Fragment {
                     }
 
 
-                    NavHostFragment.findNavController(DetailTaskFragment.this)
-                            .navigate(R.id.action_detailTaskFragment_to_navigation_home);
+                    //NavHostFragment.findNavController(DetailTaskFragment.this)
+                    //        .navigate(R.id.action_detailTaskFragment_to_navigation_home);
+
+                    NavHostFragment.findNavController(DetailTaskFragment.this).popBackStack();
                 }
 
             }

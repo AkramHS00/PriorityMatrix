@@ -1,19 +1,33 @@
 package com.akram.prioritymatrix.ui.calendar;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class CalendarViewModel extends ViewModel {
+import com.akram.prioritymatrix.database.Task;
+import com.akram.prioritymatrix.database.TaskRepository;
 
-    private final MutableLiveData<String> mText;
+import java.util.List;
 
-    public CalendarViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is calendar fragment");
+public class CalendarViewModel extends AndroidViewModel {
+
+    private TaskRepository repository;
+    private LiveData<List<Task>> userTasks;
+
+    public CalendarViewModel(@NonNull Application application) {
+        super(application);
+
+        repository = new TaskRepository(application);
+
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<List<Task>> getUserTasks(String userName) {
+        userTasks = repository.getUserTasks(userName);
+        return userTasks;
     }
+
 }
