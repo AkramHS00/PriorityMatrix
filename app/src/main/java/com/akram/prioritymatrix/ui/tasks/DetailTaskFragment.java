@@ -38,6 +38,7 @@ import com.akram.prioritymatrix.R;
 import com.akram.prioritymatrix.database.Project;
 import com.akram.prioritymatrix.database.Task;
 import com.akram.prioritymatrix.database.User;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -86,6 +87,11 @@ public class DetailTaskFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         detailTaskViewModel = new ViewModelProvider(this).get(DetailTaskViewModel.class);
+
+        BottomNavigationView navBar = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
+        if(navBar.getVisibility() == View.VISIBLE){
+            navBar.setVisibility(View.GONE);
+        }
 
         currentUser = ((MainActivity) getActivity()).getCurrentUser();
 

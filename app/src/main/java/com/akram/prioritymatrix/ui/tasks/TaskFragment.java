@@ -26,6 +26,7 @@ import com.akram.prioritymatrix.MainActivity;
 import com.akram.prioritymatrix.R;
 import com.akram.prioritymatrix.database.Task;
 import com.akram.prioritymatrix.database.User;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -100,6 +101,11 @@ public class TaskFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         currentUser = ((MainActivity) getActivity()).getCurrentUser();
+
+        BottomNavigationView navBar = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
+        if (navBar != null){
+            navBar.setVisibility(View.VISIBLE);
+        }
 
         FloatingActionButton addFab = getView().findViewById(R.id.addFab);
 

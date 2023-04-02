@@ -29,6 +29,7 @@ import com.akram.prioritymatrix.databinding.FragmentCalendarBinding;
 import com.akram.prioritymatrix.ui.tasks.TaskAdapter;
 import com.akram.prioritymatrix.ui.tasks.TaskFragment;
 import com.akram.prioritymatrix.ui.tasks.TaskViewModel;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.kizitonwose.calendar.compose.CalendarMonthsKt;
 import com.kizitonwose.calendar.core.CalendarDay;
@@ -100,6 +101,11 @@ public class CalendarFragment extends Fragment {
 
         calendarViewModel =
                 new ViewModelProvider(this).get(CalendarViewModel.class);
+
+        BottomNavigationView navBar = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
+        if (navBar != null){
+            navBar.setVisibility(View.VISIBLE);
+        }
 
         currentUser = ((MainActivity) getActivity()).getCurrentUser();
 

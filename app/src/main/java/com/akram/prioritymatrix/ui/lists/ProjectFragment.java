@@ -25,6 +25,7 @@ import com.akram.prioritymatrix.database.User;
 import com.akram.prioritymatrix.databinding.FragmentListBinding;
 import com.akram.prioritymatrix.ui.tasks.TaskAdapter;
 import com.akram.prioritymatrix.ui.tasks.TaskFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -55,6 +56,11 @@ public class ProjectFragment extends Fragment {
 
         currentUser = ((MainActivity) getActivity()).getCurrentUser();
         FloatingActionButton addProjectFab = getView().findViewById(R.id.addProjectFab);
+
+        BottomNavigationView navBar = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
+        if (navBar != null){
+            navBar.setVisibility(View.VISIBLE);
+        }
 
         if (currentUser == null){
             addProjectFab.setVisibility(View.INVISIBLE);
