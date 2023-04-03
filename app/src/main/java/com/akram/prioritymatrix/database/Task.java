@@ -15,7 +15,6 @@ public class Task implements Serializable {
 
     private String title;
     private String description;
-    private int rating;
 
     private boolean addDeadline;
     private String deadlineDate;
@@ -37,14 +36,13 @@ public class Task implements Serializable {
     //private List list;
 
 
-    public Task(String ownerName, String title, String description, int rating, boolean addDeadline,
+    public Task(String ownerName, String title, String description, boolean addDeadline,
                 String deadlineDate, String deadlineTime, boolean addReminder,
                 String reminderDate, String reminderTime, boolean complete, String category, int projectId,
                 float posX, float posY) {
         this.ownerName = ownerName;
         this.title = title;
         this.description = description;
-        this.rating = rating;
         this.addDeadline = addDeadline;
         this.deadlineDate = deadlineDate;
         this.deadlineTime = deadlineTime;
@@ -72,10 +70,6 @@ public class Task implements Serializable {
 
     public String getDescription() {
         return description;
-    }
-
-    public int getRating() {
-        return rating;
     }
 
     public boolean isAddDeadline() {

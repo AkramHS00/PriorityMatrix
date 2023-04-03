@@ -159,7 +159,7 @@ public class TaskFragment extends Fragment {
 
         if (currentUser != null) {
 
-            taskViewModel.getOrderedUserTasks(currentUser.getUserName().toString()).observe(getActivity(), new Observer<List<Task>>() {
+            taskViewModel.getUserTasks(currentUser.getUserName().toString()).observe(getActivity(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(List<Task> tasks) {
                     userTasks = tasks;

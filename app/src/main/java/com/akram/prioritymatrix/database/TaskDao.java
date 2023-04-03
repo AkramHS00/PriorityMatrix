@@ -27,12 +27,9 @@ public interface TaskDao {
     @Query("SELECT * FROM task_table WHERE ownerName = :userName")
     LiveData<List<Task>> getUserTasks(String userName);
 
-    @Query("SELECT * FROM task_table WHERE ownerName = :userName ORDER BY rating DESC")
-    LiveData<List<Task>> getOrderedUserTasks(String userName);
-
-    @Query("SELECT * FROM task_table WHERE ownerName = :userName AND complete = 0 ORDER BY rating DESC")
+    @Query("SELECT * FROM task_table WHERE ownerName = :userName AND complete = 0")
     LiveData<List<Task>> getOutstandingUserTasks(String userName);
 
-    @Query("SELECT * FROM task_table WHERE projectId = :projectId ORDER BY rating DESC")
+    @Query("SELECT * FROM task_table WHERE projectId = :projectId")
     LiveData<List<Task>> getProjectTasks(int projectId);
 }

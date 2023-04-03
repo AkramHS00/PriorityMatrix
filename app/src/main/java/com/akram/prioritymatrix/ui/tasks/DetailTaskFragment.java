@@ -54,7 +54,7 @@ public class DetailTaskFragment extends Fragment {
     private User currentUser;
     private DetailTaskViewModel detailTaskViewModel;
 
-    private EditText editTitle, editDescription, editRating;
+    private EditText editTitle, editDescription;
     private Switch switchDeadline, switchReminder;
     private TextView textDeadlineDate, textDeadlineTime, textReminderDate, textReminderTime;
     private Button saveBtn;
@@ -158,7 +158,6 @@ public class DetailTaskFragment extends Fragment {
 
         editTitle = getView().findViewById(R.id.editTitle);
         editDescription = getView().findViewById(R.id.editDescription);
-        editRating = getView().findViewById(R.id.editRating);
 
         switchDeadline = getView().findViewById(R.id.switchDeadline);
         switchReminder = getView().findViewById(R.id.switchReminder);
@@ -183,7 +182,6 @@ public class DetailTaskFragment extends Fragment {
         if (currentTask != null){
             editTitle.setText(currentTask.getTitle());
             editDescription.setText(currentTask.getDescription());
-            editRating.setText(String.valueOf(currentTask.getRating()));
 
             switchDeadline.setChecked(currentTask.isAddDeadline());
             switchReminder.setChecked(currentTask.isAddReminder());
@@ -285,8 +283,7 @@ public class DetailTaskFragment extends Fragment {
             public void onClick(View view) {
 
                 if (editTitle.getText().toString().trim().isEmpty()  ||
-                        editDescription.getText().toString().trim().isEmpty()  ||
-                        editRating.getText().toString().trim().isEmpty()){
+                        editDescription.getText().toString().trim().isEmpty()){
                     Toast.makeText(getActivity(), "Please fill in required fields", Toast.LENGTH_SHORT).show();
                 } else {
 
@@ -296,8 +293,8 @@ public class DetailTaskFragment extends Fragment {
                         }
                     }
 
-                    Task newTask = new Task(currentUser.getName().toString(), editTitle.getText().toString(), editDescription.getText().toString(),
-                            Integer.valueOf(editRating.getText().toString()), switchDeadline.isChecked(), saveDateFormat.format(deadlineDate),
+                    Task newTask = new Task(currentUser.getName().toString(), editTitle.getText().toString(), editDescription.getText().toString(), switchDeadline.isChecked(),
+                            saveDateFormat.format(deadlineDate),
                             saveTimeFormat.format(deadlineTime), switchReminder.isChecked(), saveDateFormat.format(reminderDate), saveTimeFormat.format(reminderTime),
                             false, categoryAutoComplete.getText().toString(),
                             projectId, -1, -1);

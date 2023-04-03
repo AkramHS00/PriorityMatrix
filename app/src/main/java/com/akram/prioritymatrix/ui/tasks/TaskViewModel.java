@@ -38,10 +38,7 @@ public class TaskViewModel extends AndroidViewModel {
         userTasks = repository.getUserTasks(userName);
         return userTasks;
     }
-    public LiveData<List<Task>> getOrderedUserTasks(String userName) {
-        userTasks = repository.getOrderedUserTasks(userName);
-        return userTasks;
-    }
+
     public LiveData<List<Task>> getOutstandingUserTasks(String userName) {
         userTasks = repository.getOutstandingUserTasks(userName);
         return userTasks;

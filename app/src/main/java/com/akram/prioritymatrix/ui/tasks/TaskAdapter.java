@@ -53,7 +53,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
 
         holder.taskTitle.setText(currentTask.getTitle());
         holder.taskDescription.setText(currentTask.getDescription());
-        holder.taskRating.setText(String.valueOf(currentTask.getRating()));
         holder.categoryText.setText(currentTask.getCategory());
 
         holder.deadlineDate.setText(displayDateFormat.format(LocalDate.parse(currentTask.getDeadlineDate(), saveDateFormat)));

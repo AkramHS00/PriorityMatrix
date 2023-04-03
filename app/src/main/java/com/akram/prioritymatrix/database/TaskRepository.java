@@ -43,11 +43,6 @@ public class TaskRepository {
         return userTasks;
     }
 
-    public LiveData<List<Task>> getOrderedUserTasks(String userName) {
-        orderedUserTasks = taskDao.getOrderedUserTasks(userName);
-        return orderedUserTasks;
-    }
-
     public LiveData<List<Task>> getOutstandingUserTasks(String userName) {
         outstandingUserTasks = taskDao.getOutstandingUserTasks(userName);
         return outstandingUserTasks;
