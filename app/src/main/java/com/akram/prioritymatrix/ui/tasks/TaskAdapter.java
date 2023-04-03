@@ -58,12 +58,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         holder.deadlineDate.setText(displayDateFormat.format(LocalDate.parse(currentTask.getDeadlineDate(), saveDateFormat)));
         holder.deadlineTime.setText(displayTimeFormat.format(LocalTime.parse(currentTask.getDeadlineTime(), saveTimeFormat)));
 
-
-        //holder.deadlineDate.setText(String.valueOf(currentTask.getDeadlineDate()));
-        //holder.deadlineDate.setText(formatDate(currentTask.getDeadlineDate()));
-        //holder.deadlineTime.setText(String.valueOf(currentTask.getDeadlineTime()));
-        //holder.deadlineTime.setText(formatTime(currentTask.getDeadlineTime()));
-
         if (currentTask.getCategory().equals("Do") ){
             holder.taskRelativeLayout.setBackgroundColor(ContextCompat.getColor(holder.taskTitle.getContext(), R.color.light_green));
         } else if (currentTask.getCategory().equals("Schedule")) {
@@ -93,7 +87,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         private TextView taskDescription;
         private TextView deadlineDate;
         private TextView deadlineTime;
-        private TextView taskRating;
         private TextView categoryText;
         private CheckBox taskCheckbox;
 
@@ -107,7 +100,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
             taskDescription = itemView.findViewById(R.id.taskDescription);
             deadlineDate = itemView.findViewById(R.id.deadlineDate);
             deadlineTime = itemView.findViewById(R.id.deadlineTime);
-            taskRating = itemView.findViewById(R.id.taskRating);
             taskCheckbox = itemView.findViewById(R.id.taskCheckbox);
             categoryText = itemView.findViewById(R.id.categoryText);
 
