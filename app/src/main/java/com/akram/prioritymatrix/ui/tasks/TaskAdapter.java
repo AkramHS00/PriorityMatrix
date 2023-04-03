@@ -37,6 +37,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
     DateTimeFormatter saveTimeFormat = DateTimeFormatter.ofPattern("HHmm");
     DateTimeFormatter displayTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 
+    DateTimeFormatter headerDateFormat = DateTimeFormatter.ofPattern("d 'of' MMMM yyyy");
+
 
     @NonNull
     @Override
@@ -68,6 +70,12 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
             holder.taskRelativeLayout.setBackgroundColor(ContextCompat.getColor(holder.taskTitle.getContext(), R.color.light_red));
         }
 
+        if (!checkNewDate(position)){
+            holder.taskDateHeader.setVisibility(View.GONE);
+        } else {
+            holder.taskDateHeader.setText(headerDateFormat.format(LocalDate.parse(currentTask.getDeadlineDate(), saveDateFormat)));
+        }
+
 
     }
 
@@ -90,6 +98,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         private TextView categoryText;
         private CheckBox taskCheckbox;
 
+        private TextView taskDateHeader;
+
         private RelativeLayout taskRelativeLayout;
 
         //Return the task the user clicked on
@@ -102,6 +112,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
             deadlineTime = itemView.findViewById(R.id.deadlineTime);
             taskCheckbox = itemView.findViewById(R.id.taskCheckbox);
             categoryText = itemView.findViewById(R.id.categoryText);
+
+            taskDateHeader = itemView.findViewById(R.id.taskDateHeader);
 
             taskRelativeLayout = itemView.findViewById(R.id.taskRelativeLayout);
 
@@ -144,6 +156,20 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
 
     public void setOnItemClickListener(OnItemClickListener listener){
         this.listener = listener;
+    }
+
+    private boolean checkNewDate(int taskPos){
+        if (taskPos == 0){  //If this is the first task in the recycler view then we want to display its date
+            return true;
+        }
+
+        Task currentTask = tasks.get(taskPos);
+        Task lastTask = tasks.get(taskPos-1);
+        if (currentTask.getDeadlineDate().equals(lastTask.getDeadlineDate())){
+            return false;
+        } else {
+            return true;
+        }
     }
 
 
