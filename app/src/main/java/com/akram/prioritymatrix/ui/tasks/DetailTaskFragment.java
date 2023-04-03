@@ -301,6 +301,8 @@ public class DetailTaskFragment extends Fragment {
 
                     if (currentTask != null){
                         newTask.setId(currentTask.getId());
+                        newTask.setPosX((currentTask.getPosX()));
+                        newTask.setPosY((currentTask.getPosY()));
                         detailTaskViewModel.updateTask(newTask);
                         Toast.makeText(getActivity(), "Task updated successfully.", Toast.LENGTH_SHORT).show();
                     } else {
