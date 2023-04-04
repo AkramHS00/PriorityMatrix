@@ -1,8 +1,11 @@
 package com.akram.prioritymatrix;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -65,6 +68,26 @@ public class MainActivity extends AppCompatActivity {
         //Set top bar to black
         getWindow().setStatusBarColor(Color.BLACK);
 
+
+        //Code should only be executed on devices running Android Oreo (API 26) or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+            String channelId = "task_reminder";
+            CharSequence channelName = "Task Reminder";
+            String channelDescription = "Channel for sending reminders for tasks";
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            NotificationChannel reminderChannel = notificationManager.getNotificationChannel(channelId);
+            //Check if channel exists before creating, do not want duplicate channels
+            if (reminderChannel == null){
+                reminderChannel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+                reminderChannel.setDescription(channelDescription);
+
+                notificationManager.createNotificationChannel(reminderChannel);
+            }
+
+
+        }
 
 
     }

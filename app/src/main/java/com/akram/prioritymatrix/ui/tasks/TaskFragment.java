@@ -169,7 +169,7 @@ public class TaskFragment extends Fragment {
                             outstandingTasks.add(t);
                         }
                     }
-                    Log.i("AHS", "Big task updated!");
+                    //Log.i("AHS", "Big task updated!");
                     //adapter.setTasks(outstandingTasks);
 
                     List<Task> prioritisedTasks = prioritiseTasks(outstandingTasks);
@@ -212,7 +212,7 @@ public class TaskFragment extends Fragment {
             public int compare(Task t1, Task t2) {
 
                 int deadlineImportance = Integer.compare(Integer.valueOf(t1.getDeadlineDate()), Integer.valueOf(t2.getDeadlineDate()));
-                Log.i("AHS", "Deadline importance of t1: " + t1.getDeadlineDate() + " t2: " + t2.getDeadlineDate() + " = " + deadlineImportance);
+                //Log.i("AHS", "Deadline importance of t1: " + t1.getDeadlineDate() + " t2: " + t2.getDeadlineDate() + " = " + deadlineImportance);
 
                 if (deadlineImportance == 0){
                     //Check which quadrant they belong to and compare

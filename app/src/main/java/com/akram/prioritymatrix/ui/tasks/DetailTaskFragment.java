@@ -5,8 +5,13 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -43,8 +48,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -299,16 +307,62 @@ public class DetailTaskFragment extends Fragment {
                             false, categoryAutoComplete.getText().toString(),
                             projectId, -1, -1);
 
+                    int taskId;
+
                     if (currentTask != null){
                         newTask.setId(currentTask.getId());
                         newTask.setPosX((currentTask.getPosX()));
                         newTask.setPosY((currentTask.getPosY()));
                         detailTaskViewModel.updateTask(newTask);
                         Toast.makeText(getActivity(), "Task updated successfully.", Toast.LENGTH_SHORT).show();
+
+                        taskId = currentTask.getId();
                     } else {
                         detailTaskViewModel.insertTask(newTask);
                         Toast.makeText(getActivity(), "New task added successfully.", Toast.LENGTH_SHORT).show();
+
+                        taskId = newTask.getId();
                     }
+
+                    if(switchReminder.isChecked()){
+
+                        LocalDateTime reminderDateTime = reminderTime.atDate(reminderDate);
+
+                        //Check to ensure the reminder is not set in the past
+                        if(!reminderDateTime.isBefore(LocalDateTime.now())){
+
+                            Log.i("AHS", "Reminder date time is: " + reminderDateTime);
+                            ZonedDateTime zonedReminderDateTime = reminderDateTime.atZone(ZoneId.systemDefault());
+                            Log.i("AHS", "Zoned time is: " + zonedReminderDateTime);
+                            long millisUntilReminder = zonedReminderDateTime.toInstant().toEpochMilli();
+
+                            Log.i("AHS", "Timer set in " + millisUntilReminder + "millis");
+
+
+                            Intent intent = new Intent(getContext(), NotificationBroadcast.class);
+                            intent.putExtra("taskTitle", newTask.getTitle());
+                            intent.putExtra("intentId", System.currentTimeMillis());
+
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), taskId, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+                            AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+                            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,millisUntilReminder, pendingIntent);
+                            } else {
+                                alarmManager.setExact(AlarmManager.RTC_WAKEUP,millisUntilReminder, pendingIntent);
+                            }*/
+
+                            alarmManager.setExact(AlarmManager.RTC_WAKEUP,millisUntilReminder , pendingIntent);
+
+                        } else {
+                            Log.i("AHS", "Reminder date and time is in the past, no notification set");
+                        }
+
+
+
+                    }
+
+
 
 
                     //NavHostFragment.findNavController(DetailTaskFragment.this)
