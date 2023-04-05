@@ -30,6 +30,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +52,9 @@ public class TaskFragment extends Fragment {
     private List<Task> outstandingTasks = new ArrayList<>();
     private List<Task> completedTasks = new ArrayList<>();
     private List<Task> overdueTasks = new ArrayList<>();
+
+    DateTimeFormatter saveDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+    DateTimeFormatter saveTimeFormat = DateTimeFormatter.ofPattern("HHmm");
 
 
     private TabLayout tabLayout;
@@ -172,24 +179,35 @@ public class TaskFragment extends Fragment {
             taskViewModel.getUserTasks(currentUser.getUserName().toString()).observe(getActivity(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(List<Task> tasks) {
-                    //Get all tasks
-                    userTasks = tasks;
+
+                    //Clear all task arrays
+                    userTasks.clear();
                     completedTasks.clear();
                     outstandingTasks.clear();
                     overdueTasks.clear();
 
+                    //Get all tasks
+                    userTasks = tasks;
+
+                    //Prioritise tasks into order
                     prioritisedTasks = prioritiseTasks(userTasks);
 
+                    //Split prioritised tasks into their respective lists
                     for (Task t: prioritisedTasks){
                         if (t.getComplete()){
                             completedTasks.add(t);
                         } else {
-                            outstandingTasks.add(t);
+                            if (!t.isOverDue()){
+                                outstandingTasks.add(t);
+                            } else {
+                                overdueTasks.add(t);
+                            }
+
                         }
                     }
 
+                    //Set the adapter to display the list of tasks respective to the currently selected tab
                     int tabSelected = tabLayout.getSelectedTabPosition();
-
                     switch (tabSelected){
                         case 0:
                             adapter.setTasks(outstandingTasks);
@@ -202,28 +220,11 @@ public class TaskFragment extends Fragment {
                             break;
                     }
 
-
-
-
-                    //List<Task> outstandingTasks = new ArrayList<>();
-                    /*for (Task t : tasks) {
-                        if (t.getComplete() == false) {
-                            outstandingTasks.add(t);
-                        }
-                    }*/
-                    //Log.i("AHS", "Big task updated!");
-                    //adapter.setTasks(outstandingTasks);
-
-
-
-                    //List<Task> prioritisedTasks = prioritiseTasks(outstandingTasks);
-                    //adapter.setTasks(prioritisedTasks);
-
-
-
                 }
             });
         }
+
+        checkForOverdueTasks(userTasks);
 
         adapter.setOnItemClickListener(new TaskAdapter.OnItemClickListener() {
             @Override
@@ -260,6 +261,11 @@ public class TaskFragment extends Fragment {
                         break;
                     case 2:
                         Log.i("AHS", "Overdue");
+                        //Possibly revers the list to show latest overdues first
+                        if (overdueTasks.size() >= 2 && Integer.parseInt(overdueTasks.get(0).getDeadlineDate()) < Integer.parseInt(overdueTasks.get(overdueTasks.size()-1).getDeadlineDate())){
+                            Collections.reverse(overdueTasks);
+                        }
+                        adapter.setTasks(overdueTasks);
                         break;
 
                 }
@@ -321,6 +327,21 @@ public class TaskFragment extends Fragment {
         });
 
         return prioritisedTasks;
+    }
+
+
+    private void checkForOverdueTasks(List<Task> tasks){
+        for (Task t: tasks){
+            LocalDate deadlineDate = LocalDate.parse(t.getDeadlineDate(), saveDateFormat);
+            LocalTime deadlineTime = LocalTime.parse(t.getDeadlineTime(), saveTimeFormat);
+            LocalDateTime deadlineDateTime = deadlineDate.atTime(deadlineTime);
+
+            if (deadlineDateTime.isBefore(LocalDateTime.now())){
+                t.setOverDue(true);
+                taskViewModel.updateTask(t);
+            }
+
+        }
     }
 
 

@@ -308,23 +308,29 @@ public class DetailTaskFragment extends Fragment {
 
             //Initialise the checkboxes and create an arraylist of selected checkboxes from the string saved in the task
             reminderSelectedString = currentTask.getReminders();
-            reminderSelectedArray = new ArrayList<>( Arrays.asList(reminderSelectedString.split(",")));
-            whenDueCheck.setChecked(reminderSelectedArray.contains(String.valueOf(whenDueCheck.getText())));
-            tenMinsCheck.setChecked(reminderSelectedArray.contains(String.valueOf(tenMinsCheck.getText())));
-            halfHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(halfHourCheck.getText())));
-            oneHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(oneHourCheck.getText())));
-            twoHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(twoHourCheck.getText())));
-            fourHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(fourHourCheck.getText())));
-            oneDayCheck.setChecked(reminderSelectedArray.contains(String.valueOf(oneDayCheck.getText())));
+            if (reminderSelectedString != null){
+                reminderSelectedArray = new ArrayList<>( Arrays.asList(reminderSelectedString.split(",")));
+                whenDueCheck.setChecked(reminderSelectedArray.contains(String.valueOf(whenDueCheck.getText())));
+                tenMinsCheck.setChecked(reminderSelectedArray.contains(String.valueOf(tenMinsCheck.getText())));
+                halfHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(halfHourCheck.getText())));
+                oneHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(oneHourCheck.getText())));
+                twoHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(twoHourCheck.getText())));
+                fourHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(fourHourCheck.getText())));
+                oneDayCheck.setChecked(reminderSelectedArray.contains(String.valueOf(oneDayCheck.getText())));
+            }
+
 
             //Check if the first value in the array is not "" to check if we have any selected checkboxes
-            if(reminderSelectedArray.get(0) != ""){
+            if(reminderSelectedArray != null && !reminderSelectedArray.isEmpty() && reminderSelectedArray.get(0) != ""){
                 //Log.i("AHS", "reminderSelectedString = " + reminderSelectedString);
                 //Log.i("AHS", "ReminderSelectedArray = " + reminderSelectedArray.get(0));
 
                 String reminderText = String.join("\n", reminderSelectedArray);
                 textReminderView.setText(reminderText);
                 boxChecked = true;
+            } else {
+                textReminderView.setText("Reminder");
+                Log.i("AHS", "Set text view reminder to reminder");
             }
 
         } else {
@@ -433,7 +439,7 @@ public class DetailTaskFragment extends Fragment {
                             saveDateFormat.format(deadlineDate),
                             saveTimeFormat.format(deadlineTime), switchReminder.isChecked(), saveDateFormat.format(reminderDate), saveTimeFormat.format(reminderTime),
                             false, categoryAutoComplete.getText().toString(),
-                            projectId, -1, -1, reminderSelectedString);
+                            projectId, -1, -1, reminderSelectedString, false);
 
                     int taskId;
 
