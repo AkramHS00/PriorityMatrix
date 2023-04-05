@@ -1,15 +1,19 @@
 package com.akram.prioritymatrix.ui.tasks;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,9 +34,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -52,6 +58,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -64,8 +71,11 @@ public class DetailTaskFragment extends Fragment {
 
     private EditText editTitle, editDescription;
     private Switch switchDeadline, switchReminder;
-    private TextView textDeadlineDate, textDeadlineTime, textReminderDate, textReminderTime;
+    private TextView textDeadlineDate, textDeadlineTime, textReminderDate, textReminderTime, textReminderView;
     private Button saveBtn;
+
+    private ConstraintLayout reminderButton;
+    private LinearLayout linearLayoutCheckboxes;
 
     private LocalDate deadlineDate;
     private LocalDate reminderDate;
@@ -90,6 +100,20 @@ public class DetailTaskFragment extends Fragment {
     ArrayAdapter<String> adapterCategories;
     ArrayAdapter<String> adapterProject;
 
+
+    private AlertDialog reminderDialog;
+    private CheckBox whenDueCheck;
+    private CheckBox tenMinsCheck;
+    private CheckBox halfHourCheck;
+    private CheckBox oneHourCheck;
+    private CheckBox twoHourCheck;
+    private CheckBox fourHourCheck;
+    private CheckBox oneDayCheck;
+    private ArrayList<CheckBox> reminderCheckboxes = new ArrayList<>();
+    private ArrayList<String> reminderSelectedArray = new ArrayList<>();
+    private String reminderSelectedString;
+    private boolean boxChecked = false;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -107,11 +131,12 @@ public class DetailTaskFragment extends Fragment {
         Bundle bundle = getArguments();
         currentTask = (Task) bundle.getSerializable("Task");
 
+
         detailTaskViewModel.getUserProjects(currentUser.getUserName()).observe(getViewLifecycleOwner(), new Observer<List<Project>>() {
             @Override
             public void onChanged(List<Project> projects) {
                 userProjects = projects;
-                Log.i("AHS", "Set user projects");
+                //Log.i("AHS", "Set user projects");
                 for (Project p: projects) {
                     projectStrings.add(p.getName().toString());
                     if (currentTask != null){
@@ -159,6 +184,7 @@ public class DetailTaskFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_detail_task, container, false);
     }
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -174,6 +200,7 @@ public class DetailTaskFragment extends Fragment {
         textDeadlineTime = getView().findViewById(R.id.textDeadlineTime);
         textReminderDate = getView().findViewById(R.id.textReminderDate);
         textReminderTime = getView().findViewById(R.id.textReminderTime);
+        textReminderView = getView().findViewById(R.id.textReminderView);
 
         categoryAutoComplete = getView().findViewById(R.id.categoryAutoComplete);
         projectAutoComplete = getView().findViewById(R.id.projectAutoComplete);
@@ -184,6 +211,83 @@ public class DetailTaskFragment extends Fragment {
         deadlineTime = LocalTime.now();
         reminderDate = LocalDate.now();
         reminderTime = LocalTime.now();
+
+
+
+        //Get reminder dialog view references
+        View reminderDialogView = getLayoutInflater().inflate(R.layout.reminder_dialog, null);
+        linearLayoutCheckboxes = reminderDialogView.findViewById(R.id.linearLayoutCheckboxes);
+        whenDueCheck = reminderDialogView.findViewById(R.id.whenDueCheck);
+        tenMinsCheck = reminderDialogView.findViewById(R.id.tenMinsCheck);
+        halfHourCheck = reminderDialogView.findViewById(R.id.halfHourCheck);
+        oneHourCheck = reminderDialogView.findViewById(R.id.oneHourCheck);
+        twoHourCheck = reminderDialogView.findViewById(R.id.twoHourCheck);
+        fourHourCheck = reminderDialogView.findViewById(R.id.fourHourCheck);
+        oneDayCheck = reminderDialogView.findViewById(R.id.oneDayCheck);
+
+        for ( int i = 0; i < linearLayoutCheckboxes.getChildCount(); i++){
+            View child = linearLayoutCheckboxes.getChildAt(i);
+
+            if (child instanceof CheckBox){
+                reminderCheckboxes.add((CheckBox) child);
+            }
+        }
+
+
+        //Build reminder dialog
+        AlertDialog.Builder reminderBuilder = new AlertDialog.Builder(getContext());
+        reminderBuilder.setTitle("Select Reminder Times:");
+        reminderBuilder.setView(reminderDialogView);
+
+        reminderBuilder.setPositiveButton("Set", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                boxChecked = false;
+                //Log.i("AHS", "Dialog set button has been clicked");
+                textReminderView.setText("Reminder");
+                reminderSelectedArray.clear();
+
+                //Append selections to the textview
+                for (CheckBox c : reminderCheckboxes){
+                    if (c.isChecked()){
+                        if (!boxChecked){
+                            textReminderView.setText(c.getText());
+                        } else {
+                            textReminderView.append("\n" + c.getText());
+                        }
+                        //Log.i("AHS", c.getText() + " is checked");
+                        boxChecked = true;
+                        reminderSelectedArray.add(String.valueOf(c.getText()));
+                    }
+                }
+
+                reminderSelectedString = String.join(",", reminderSelectedArray);
+
+                //If no box is checked, reset the textview to just display reminder
+                if (!boxChecked) {
+                    textReminderView.setText("Reminder");
+                }
+                reminderDialog.dismiss();
+            }
+        });
+
+        reminderBuilder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //Log.i("AHS", "Dialog close button has been clicked");
+                reminderDialog.dismiss();
+            }
+        });
+
+        reminderDialog = reminderBuilder.create();
+
+        reminderButton = getView().findViewById(R.id.reminderButton);
+        reminderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                reminderDialog.show();
+            }
+        });
 
 
 
@@ -202,8 +306,29 @@ public class DetailTaskFragment extends Fragment {
 
             categoryAutoComplete.setText(currentTask.getCategory());
 
+            //Initialise the checkboxes and create an arraylist of selected checkboxes from the string saved in the task
+            reminderSelectedString = currentTask.getReminders();
+            reminderSelectedArray = new ArrayList<>( Arrays.asList(reminderSelectedString.split(",")));
+            whenDueCheck.setChecked(reminderSelectedArray.contains(String.valueOf(whenDueCheck.getText())));
+            tenMinsCheck.setChecked(reminderSelectedArray.contains(String.valueOf(tenMinsCheck.getText())));
+            halfHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(halfHourCheck.getText())));
+            oneHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(oneHourCheck.getText())));
+            twoHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(twoHourCheck.getText())));
+            fourHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(fourHourCheck.getText())));
+            oneDayCheck.setChecked(reminderSelectedArray.contains(String.valueOf(oneDayCheck.getText())));
+
+            //Check if the first value in the array is not "" to check if we have any selected checkboxes
+            if(reminderSelectedArray.get(0) != ""){
+                //Log.i("AHS", "reminderSelectedString = " + reminderSelectedString);
+                //Log.i("AHS", "ReminderSelectedArray = " + reminderSelectedArray.get(0));
+
+                String reminderText = String.join("\n", reminderSelectedArray);
+                textReminderView.setText(reminderText);
+                boxChecked = true;
+            }
+
         } else {
-            Log.i("AHS", "Current task is = null so creating blank task screen.");
+            //Log.i("AHS", "Current task is = null so creating blank task screen.");
             ((MainActivity) getActivity()).setActionBarTitle("New Task");
         }
 
@@ -215,6 +340,7 @@ public class DetailTaskFragment extends Fragment {
         if (!switchDeadline.isChecked()){
             textDeadlineDate.setVisibility(View.GONE);
             textDeadlineTime.setVisibility(View.GONE);
+            reminderButton.setVisibility(View.GONE);
         }
         if (!switchReminder.isChecked()){
             textReminderDate.setVisibility(View.GONE);
@@ -228,9 +354,11 @@ public class DetailTaskFragment extends Fragment {
                 if (isChecked){
                     textDeadlineDate.setVisibility(View.VISIBLE);
                     textDeadlineTime.setVisibility(View.VISIBLE);
+                    reminderButton.setVisibility(View.VISIBLE);
                 } else {
                     textDeadlineDate.setVisibility(View.GONE);
                     textDeadlineTime.setVisibility(View.GONE);
+                    reminderButton.setVisibility(View.GONE);
                 }
             }
         });
@@ -305,7 +433,7 @@ public class DetailTaskFragment extends Fragment {
                             saveDateFormat.format(deadlineDate),
                             saveTimeFormat.format(deadlineTime), switchReminder.isChecked(), saveDateFormat.format(reminderDate), saveTimeFormat.format(reminderTime),
                             false, categoryAutoComplete.getText().toString(),
-                            projectId, -1, -1);
+                            projectId, -1, -1, reminderSelectedString);
 
                     int taskId;
 
@@ -318,13 +446,13 @@ public class DetailTaskFragment extends Fragment {
 
                         taskId = currentTask.getId();
                     } else {
-                        detailTaskViewModel.insertTask(newTask);
+                        long id = detailTaskViewModel.insertTask(newTask);
                         Toast.makeText(getActivity(), "New task added successfully.", Toast.LENGTH_SHORT).show();
 
-                        taskId = newTask.getId();
+                        taskId =(int) id;
                     }
 
-                    if(switchReminder.isChecked()){
+                    /*if(switchReminder.isChecked()){
 
                         LocalDateTime reminderDateTime = reminderTime.atDate(reminderDate);
 
@@ -346,11 +474,11 @@ public class DetailTaskFragment extends Fragment {
                             PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), taskId, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
                             AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-                            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            *//*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,millisUntilReminder, pendingIntent);
                             } else {
                                 alarmManager.setExact(AlarmManager.RTC_WAKEUP,millisUntilReminder, pendingIntent);
-                            }*/
+                            }*//*
 
                             alarmManager.setExact(AlarmManager.RTC_WAKEUP,millisUntilReminder , pendingIntent);
 
@@ -359,7 +487,80 @@ public class DetailTaskFragment extends Fragment {
                         }
 
 
+                    }*/
 
+                    if (boxChecked){
+                        LocalDateTime deadlineDateTime = deadlineTime.atDate(deadlineDate);
+                        ZonedDateTime zonedDeadlineDateTime = deadlineDateTime.atZone(ZoneId.systemDefault());
+
+                        //Create id for pending intent with a starting prefix XXX000 which can be searched for later
+                        String pendingItentIdString = String.valueOf(taskId) + String.valueOf(000) + String.valueOf(System.currentTimeMillis()) ;
+                        long pendingIntentId = Long.parseLong(pendingItentIdString);
+                        //Log.i("AHS", "pendingIntentId = " + String.valueOf(pendingIntentId));
+
+                        cancelOldAlarms(taskId);
+
+                        //This offset is used to make sure the taskIds are different
+                        int offset = 1;
+                        for (CheckBox c : reminderCheckboxes){
+                            if (c.isChecked()){
+                                long millisUntilReminder = zonedDeadlineDateTime.toInstant().toEpochMilli() - 86400000;
+                                //Log.i("AHS", "C IS CHECKED: " + c.getText());
+
+                                switch (String.valueOf(c.getText())){
+                                    case "When Due":
+                                        millisUntilReminder = zonedDeadlineDateTime.toInstant().toEpochMilli();
+                                        //Log.i("AHS", "When due is checked");
+                                        break;
+                                    case "10 Minutes Before":
+                                        millisUntilReminder = zonedDeadlineDateTime.toInstant().toEpochMilli() - 60000;  //600000
+                                        //Log.i("AHS", "10 Minutes Before is checked");
+                                        break;
+                                    case "Half An Hour Before":
+                                        millisUntilReminder = zonedDeadlineDateTime.toInstant().toEpochMilli() - 1800000;
+                                        //Log.i("AHS", "Half An Hour Before is checked");
+                                        break;
+                                    case "One Hour Before":
+                                        millisUntilReminder = zonedDeadlineDateTime.toInstant().toEpochMilli() - 3600000;
+                                        //Log.i("AHS", "One Hour Before is checked");
+                                        break;
+                                    case "2 Hours Before":
+                                        millisUntilReminder = zonedDeadlineDateTime.toInstant().toEpochMilli() - 7200000;
+                                        //Log.i("AHS", "2 Hours Before is checked");
+                                        break;
+                                    case "4 Hours Before":
+                                        millisUntilReminder = zonedDeadlineDateTime.toInstant().toEpochMilli() - 14400000;
+                                        //Log.i("AHS", "4 Hours Before is checked");
+                                        break;
+                                    case "The Day Before":
+                                        millisUntilReminder = zonedDeadlineDateTime.toInstant().toEpochMilli() - 86400000;
+                                        //Log.i("AHS", "The Day Before is checked");
+                                        break;
+
+                                }
+
+
+                                Intent intent = new Intent(getContext(), NotificationBroadcast.class);
+                                intent.putExtra("taskTitle", newTask.getTitle());
+                                intent.putExtra("intentId", System.currentTimeMillis() + offset);
+                                //Log.i("AHS", "Alarm with intent id: " + String.valueOf(System.currentTimeMillis()+offset));
+
+                                String requestCodeString = String.valueOf(offset) + String.valueOf(taskId);
+                                Log.i("AHS", "Task id =" + String.valueOf(taskId));
+                                Log.i("AHS", "000 =" + String.valueOf(000));
+                                Log.i("AHS", "offset =" + String.valueOf(offset));
+                                Log.i("AHS", "Request code string =" + requestCodeString);
+                                int requestCode = Integer.parseInt(requestCodeString);
+                                offset++;
+
+
+                                PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                                Log.i("AHS", "PENDING INTENT CREATED WITH REQUEST CODE: " + String.valueOf(requestCode));
+                                AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+                                alarmManager.setExact(AlarmManager.RTC_WAKEUP,millisUntilReminder , pendingIntent);
+                                Toast.makeText(getActivity(), "Notification set, millis = " + millisUntilReminder, Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
 
 
@@ -454,5 +655,26 @@ public class DetailTaskFragment extends Fragment {
         }, defaultHour, defaultMinute, true);
 
         timeDialog.show();
+    }
+
+    private void cancelOldAlarms(int id){
+
+        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), NotificationBroadcast.class);
+
+        for (int i = 1; i<11; i++){
+            String requestCodeString = String.valueOf(i) + String.valueOf(id);
+            int requestCode = Integer.parseInt(requestCodeString);
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), requestCode, intent, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE);
+            if (pendingIntent != null) {
+                alarmManager.cancel(pendingIntent);
+                pendingIntent.cancel();
+                Log.i("AHS","AKRAM SHAH Pending intent cancelled for: " + String.valueOf(requestCode));
+            } else {
+                Log.i("AHS","AKRAM SHAH Pending intent is null for: " + String.valueOf(requestCode));
+            }
+        }
+
     }
 }

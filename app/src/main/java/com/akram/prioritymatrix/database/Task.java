@@ -4,6 +4,8 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(tableName =  "task_table")
 public class Task implements Serializable {
@@ -32,6 +34,8 @@ public class Task implements Serializable {
     private float posX;
     private float posY;
 
+    private String reminders;
+
     //private SubTask[] subtask;
     //private List list;
 
@@ -39,7 +43,7 @@ public class Task implements Serializable {
     public Task(String ownerName, String title, String description, boolean addDeadline,
                 String deadlineDate, String deadlineTime, boolean addReminder,
                 String reminderDate, String reminderTime, boolean complete, String category, int projectId,
-                float posX, float posY) {
+                float posX, float posY, String reminders) {
         this.ownerName = ownerName;
         this.title = title;
         this.description = description;
@@ -54,6 +58,7 @@ public class Task implements Serializable {
         this.projectId = projectId;
         this.posX = posX;
         this.posY = posY;
+        this.reminders = reminders;
     }
 
     public int getId() {
@@ -130,5 +135,9 @@ public class Task implements Serializable {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getReminders() {
+        return reminders;
     }
 }

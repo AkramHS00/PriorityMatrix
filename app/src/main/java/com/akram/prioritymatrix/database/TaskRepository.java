@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class TaskRepository {
 
@@ -22,8 +23,13 @@ public class TaskRepository {
         allTasks = taskDao.getAllTasks();
     }
 
-    public void insertTask(Task task){
-        new InsertTaskAsyncTask(taskDao).execute(task);
+    public long insertTask(Task task){
+        try {
+            return new InsertTaskAsyncTask(taskDao).execute(task).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     public void updateTask(Task task){
@@ -53,16 +59,21 @@ public class TaskRepository {
         return projectTasks;
     }
 
-    private static class InsertTaskAsyncTask extends AsyncTask<Task, Void, Void> {
+    private static class InsertTaskAsyncTask extends AsyncTask<Task, Void, Long> {
         private TaskDao taskDao;
 
         private InsertTaskAsyncTask(TaskDao taskDao){
             this.taskDao = taskDao;
         }
         @Override
-        protected Void doInBackground(Task... tasks) {
-            taskDao.insertTask(tasks[0]);
-            return null;
+        protected Long doInBackground(Task... tasks) {
+            long id = taskDao.insertTask(tasks[0]);
+            return id;
+        }
+
+        @Override
+        protected void onPostExecute(Long id) {
+            super.onPostExecute(id);
         }
     }
 

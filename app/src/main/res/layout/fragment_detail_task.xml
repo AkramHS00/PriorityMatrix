@@ -131,7 +131,7 @@
         <Switch
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Deadline"
+            android:text="Due Date"
             android:id="@+id/switchDeadline"
             app:layout_constraintTop_toBottomOf="@+id/project"
             android:textSize="20dp"
@@ -173,13 +173,75 @@
             android:layout_marginTop="16dp"
             android:layout_marginRight="32dp"/>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/textDeadlineTime"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="32dp"
+            android:id="@+id/reminderButton">
+
+            <ImageView
+                android:id="@+id/reminderIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/reminder_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toRightOf="@id/reminderIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="Reminder"
+                android:layout_marginLeft="16dp"
+                android:textSize="20dp"
+                android:id="@+id/textReminderView"/>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/reminderButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="32dp"
+        android:id="@+id/repeatButton">
+
+            <ImageView
+                android:id="@+id/repeatIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/repeat_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toRightOf="@id/repeatIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="Repeat"
+                android:layout_marginLeft="16dp"
+                android:textSize="20dp"/>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <Switch
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Reminder"
             android:id="@+id/switchReminder"
-            app:layout_constraintTop_toBottomOf="@+id/textDeadlineDate"
+            app:layout_constraintTop_toBottomOf="@+id/repeatButton"
             android:textSize="20dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="24dp"

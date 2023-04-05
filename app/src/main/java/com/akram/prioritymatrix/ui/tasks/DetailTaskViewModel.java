@@ -35,7 +35,9 @@ public class DetailTaskViewModel extends AndroidViewModel {
         repository.deleteTask(task);
     }
 
-    public void insertTask(Task task){ repository.insertTask(task);}
+    public long insertTask(Task task){
+        return repository.insertTask(task);
+    }
 
     public LiveData<List<Project>> getUserProjects(String userName) {
         userProjects = projectRepository.getUserProjects(userName);
