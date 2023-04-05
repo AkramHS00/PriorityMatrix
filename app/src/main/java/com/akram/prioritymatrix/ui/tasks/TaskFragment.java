@@ -28,6 +28,7 @@ import com.akram.prioritymatrix.database.Task;
 import com.akram.prioritymatrix.database.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +44,13 @@ public class TaskFragment extends Fragment {
     private User currentUser;
 
     private List<Task> userTasks = new ArrayList<>();
+    private List<Task> prioritisedTasks = new ArrayList<>();
+    private List<Task> outstandingTasks = new ArrayList<>();
+    private List<Task> completedTasks = new ArrayList<>();
+    private List<Task> overdueTasks = new ArrayList<>();
+
+
+    private TabLayout tabLayout;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -101,6 +109,8 @@ public class TaskFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         currentUser = ((MainActivity) getActivity()).getCurrentUser();
+
+        tabLayout = getView().findViewById(R.id.tabLayout);
 
         BottomNavigationView navBar = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
         if (navBar != null){
@@ -162,18 +172,55 @@ public class TaskFragment extends Fragment {
             taskViewModel.getUserTasks(currentUser.getUserName().toString()).observe(getActivity(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(List<Task> tasks) {
+                    //Get all tasks
                     userTasks = tasks;
-                    List<Task> outstandingTasks = new ArrayList<>();
-                    for (Task t : tasks) {
-                        if (t.getComplete() == false) {
+                    completedTasks.clear();
+                    outstandingTasks.clear();
+                    overdueTasks.clear();
+
+                    prioritisedTasks = prioritiseTasks(userTasks);
+
+                    for (Task t: prioritisedTasks){
+                        if (t.getComplete()){
+                            completedTasks.add(t);
+                        } else {
                             outstandingTasks.add(t);
                         }
                     }
+
+                    int tabSelected = tabLayout.getSelectedTabPosition();
+
+                    switch (tabSelected){
+                        case 0:
+                            adapter.setTasks(outstandingTasks);
+                            break;
+                        case 1:
+                            adapter.setTasks(completedTasks);
+                            break;
+                        case 2:
+                            adapter.setTasks(overdueTasks);
+                            break;
+                    }
+
+
+
+
+                    //List<Task> outstandingTasks = new ArrayList<>();
+                    /*for (Task t : tasks) {
+                        if (t.getComplete() == false) {
+                            outstandingTasks.add(t);
+                        }
+                    }*/
                     //Log.i("AHS", "Big task updated!");
                     //adapter.setTasks(outstandingTasks);
 
-                    List<Task> prioritisedTasks = prioritiseTasks(outstandingTasks);
-                    adapter.setTasks(prioritisedTasks);
+
+
+                    //List<Task> prioritisedTasks = prioritiseTasks(outstandingTasks);
+                    //adapter.setTasks(prioritisedTasks);
+
+
+
                 }
             });
         }
@@ -195,6 +242,40 @@ public class TaskFragment extends Fragment {
                 Toast.makeText(getActivity(), "Task archived.", Toast.LENGTH_SHORT).show();
             }
         });
+
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int tabSelected = tab.getPosition();
+
+                switch (tabSelected){
+                    case 0:
+                        Log.i("AHS", "Outstanding");
+                        adapter.setTasks(outstandingTasks);
+                        break;
+                    case 1:
+                        Log.i("AHS", "Completed");
+                        adapter.setTasks(completedTasks);
+                        break;
+                    case 2:
+                        Log.i("AHS", "Overdue");
+                        break;
+
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
 
 
     }
@@ -227,8 +308,7 @@ public class TaskFragment extends Fragment {
                             //If they are the same category, the task with greater importance is prioritised
                             return Float.compare(t1.getPosY(), t2.getPosY());
                         } else {
-                            //If category and Importance is the same, tasks are prioritised by urgency
-                            // * by -1 as X values increases as we move to the right of the screen
+                            //If category and importance is the same, tasks are prioritised by urgency
                             return Float.compare(t1.getPosX(), t2.getPosX());
                         }
 

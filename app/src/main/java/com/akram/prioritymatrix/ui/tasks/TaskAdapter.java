@@ -73,6 +73,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         if (!checkNewDate(position)){
             holder.taskDateHeader.setVisibility(View.GONE);
         } else {
+            holder.taskDateHeader.setVisibility(View.VISIBLE);
             holder.taskDateHeader.setText(headerDateFormat.format(LocalDate.parse(currentTask.getDeadlineDate(), saveDateFormat)));
         }
 
@@ -166,6 +167,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         Task currentTask = tasks.get(taskPos);
         Task lastTask = tasks.get(taskPos-1);
         if (currentTask.getDeadlineDate().equals(lastTask.getDeadlineDate())){
+            Log.i("AHS", "Hiding " + currentTask.getTitle() + " date headline.");
             return false;
         } else {
             return true;
