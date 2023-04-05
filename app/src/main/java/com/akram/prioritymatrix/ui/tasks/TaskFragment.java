@@ -229,7 +229,7 @@ public class TaskFragment extends Fragment {
                         } else {
                             //If category and Importance is the same, tasks are prioritised by urgency
                             // * by -1 as X values increases as we move to the right of the screen
-                            return Float.compare(t1.getPosX() * -1, t2.getPosX() * -1);
+                            return Float.compare(t1.getPosX(), t2.getPosX());
                         }
 
                     }
