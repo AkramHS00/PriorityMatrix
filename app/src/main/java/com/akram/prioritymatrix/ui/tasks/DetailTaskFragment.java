@@ -71,10 +71,11 @@ public class DetailTaskFragment extends Fragment {
 
     private EditText editTitle, editDescription;
     private Switch switchDeadline, switchReminder;
-    private TextView textDeadlineDate, textDeadlineTime, textReminderDate, textReminderTime, textReminderView;
+    private TextView textDeadlineDate, textDeadlineTime, textReminderDate, textReminderTime, textReminderView, textRepeatView;
     private Button saveBtn;
 
     private ConstraintLayout reminderButton;
+    private ConstraintLayout repeatButton;
     private LinearLayout linearLayoutCheckboxes;
 
     private LocalDate deadlineDate;
@@ -100,19 +101,22 @@ public class DetailTaskFragment extends Fragment {
     ArrayAdapter<String> adapterCategories;
     ArrayAdapter<String> adapterProject;
 
-
+    //Variables for the reminder functionality
     private AlertDialog reminderDialog;
-    private CheckBox whenDueCheck;
-    private CheckBox tenMinsCheck;
-    private CheckBox halfHourCheck;
-    private CheckBox oneHourCheck;
-    private CheckBox twoHourCheck;
-    private CheckBox fourHourCheck;
-    private CheckBox oneDayCheck;
+    private CheckBox whenDueCheck, tenMinsCheck, halfHourCheck, oneHourCheck, twoHourCheck, fourHourCheck, oneDayCheck;
     private ArrayList<CheckBox> reminderCheckboxes = new ArrayList<>();
     private ArrayList<String> reminderSelectedArray = new ArrayList<>();
     private String reminderSelectedString;
     private boolean boxChecked = false;
+
+    //Variables for the repeat functionality
+    private AlertDialog repeatDialog;
+    private CheckBox everyDay, everyMonday, everyTuesday, everyWednesday, everyThursday, everyFriday, everySaturday, everySunday;
+    private LinearLayout linearLayoutRepeatCheckboxes;
+    private ArrayList<CheckBox> repeatCheckboxes = new ArrayList<>();
+    private ArrayList<String> repeatSelectedArray = new ArrayList<>();
+    private String repeatSelectedString;
+    private boolean repeatBoxChecked = false;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -201,6 +205,7 @@ public class DetailTaskFragment extends Fragment {
         textReminderDate = getView().findViewById(R.id.textReminderDate);
         textReminderTime = getView().findViewById(R.id.textReminderTime);
         textReminderView = getView().findViewById(R.id.textReminderView);
+        textRepeatView = getView().findViewById(R.id.textRepeatView);
 
         categoryAutoComplete = getView().findViewById(R.id.categoryAutoComplete);
         projectAutoComplete = getView().findViewById(R.id.projectAutoComplete);
@@ -290,6 +295,82 @@ public class DetailTaskFragment extends Fragment {
         });
 
 
+        //Get repeat dialog view references
+        View repeatDialogView = getLayoutInflater().inflate(R.layout.repeat_dialog, null);
+        linearLayoutCheckboxes = repeatDialogView.findViewById(R.id.linearLayoutRepeatCheckboxes);
+        everyDay = repeatDialogView.findViewById(R.id.everyDay);
+        everyMonday = repeatDialogView.findViewById(R.id.everyMonday);
+        everyTuesday = repeatDialogView.findViewById(R.id.everyTuesday);
+        everyWednesday = repeatDialogView.findViewById(R.id.everyWednesday);
+        everyThursday = repeatDialogView.findViewById(R.id.everyThursday);
+        everyFriday = repeatDialogView.findViewById(R.id.everyFriday);
+        everySaturday = repeatDialogView.findViewById(R.id.everySaturday);
+        everySunday = repeatDialogView.findViewById(R.id.everySunday);
+
+        for ( int i = 0; i < linearLayoutCheckboxes.getChildCount(); i++){
+            View child = linearLayoutCheckboxes.getChildAt(i);
+
+            if (child instanceof CheckBox){
+                repeatCheckboxes.add((CheckBox) child);
+            }
+        }
+
+        //Build repeat dialog
+        AlertDialog.Builder repeatBuilder = new AlertDialog.Builder(getContext());
+        repeatBuilder.setTitle("When would you like to repeat the task:");
+        repeatBuilder.setView(repeatDialogView);
+
+        repeatBuilder.setPositiveButton("Set", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //Initialise variables
+                repeatBoxChecked = false;
+                textRepeatView.setText("Repeat");
+                repeatSelectedArray.clear();
+
+                //Append selections to the textview
+                for (CheckBox c : repeatCheckboxes){
+                    if (c.isChecked()){
+                        if (!repeatBoxChecked){
+                            textRepeatView.setText(c.getText());
+                        } else {
+                            textRepeatView.append("\n" + c.getText());
+                        }
+                        //Log.i("AHS", c.getText() + " is checked");
+                        repeatBoxChecked = true;
+                        repeatSelectedArray.add(String.valueOf(c.getText()));
+                    }
+                }
+
+                repeatSelectedString = String.join(",", repeatSelectedArray);
+
+                //If no box is checked, reset the textview to just display reminder
+                if (!repeatBoxChecked) {
+                    textRepeatView.setText("Repeat");
+                }
+
+                repeatDialog.dismiss();
+            }
+        });
+
+        repeatBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                repeatDialog.dismiss();
+            }
+        });
+
+        repeatDialog = repeatBuilder.create();
+
+        repeatButton = getView().findViewById(R.id.repeatButton);
+        repeatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                repeatDialog.show();
+            }
+        });
+
+
 
         if (currentTask != null){
             editTitle.setText(currentTask.getTitle());
@@ -308,7 +389,7 @@ public class DetailTaskFragment extends Fragment {
 
             //Initialise the checkboxes and create an arraylist of selected checkboxes from the string saved in the task
             reminderSelectedString = currentTask.getReminders();
-            if (reminderSelectedString != null){
+            /*if (reminderSelectedString != null){
                 reminderSelectedArray = new ArrayList<>( Arrays.asList(reminderSelectedString.split(",")));
                 whenDueCheck.setChecked(reminderSelectedArray.contains(String.valueOf(whenDueCheck.getText())));
                 tenMinsCheck.setChecked(reminderSelectedArray.contains(String.valueOf(tenMinsCheck.getText())));
@@ -317,14 +398,18 @@ public class DetailTaskFragment extends Fragment {
                 twoHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(twoHourCheck.getText())));
                 fourHourCheck.setChecked(reminderSelectedArray.contains(String.valueOf(fourHourCheck.getText())));
                 oneDayCheck.setChecked(reminderSelectedArray.contains(String.valueOf(oneDayCheck.getText())));
+            }*/
+
+            if (reminderSelectedString != null){
+                reminderSelectedArray = new ArrayList<>( Arrays.asList(reminderSelectedString.split(",")));
+                for (CheckBox c: reminderCheckboxes){
+                    c.setChecked(reminderSelectedArray.contains(String.valueOf(c.getText())));
+                }
             }
 
 
             //Check if the first value in the array is not "" to check if we have any selected checkboxes
             if(reminderSelectedArray != null && !reminderSelectedArray.isEmpty() && reminderSelectedArray.get(0) != ""){
-                //Log.i("AHS", "reminderSelectedString = " + reminderSelectedString);
-                //Log.i("AHS", "ReminderSelectedArray = " + reminderSelectedArray.get(0));
-
                 String reminderText = String.join("\n", reminderSelectedArray);
                 textReminderView.setText(reminderText);
                 boxChecked = true;
@@ -332,6 +417,27 @@ public class DetailTaskFragment extends Fragment {
                 textReminderView.setText("Reminder");
                 Log.i("AHS", "Set text view reminder to reminder");
             }
+
+
+            //Initialise checkboxes for repeating of task
+            repeatSelectedString = currentTask.getRepeats();
+            if (repeatSelectedString != null){
+                repeatSelectedArray = new ArrayList<>(Arrays.asList(repeatSelectedString.split(",")));
+                for (CheckBox c: repeatCheckboxes){
+                    c.setChecked(repeatSelectedArray.contains(String.valueOf(c.getText())));
+                }
+            }
+
+            //Check if the first value in the array is not "" to check if we have any selected checkboxes
+            if(repeatSelectedArray != null && !repeatSelectedArray.isEmpty() && repeatSelectedArray.get(0) != ""){
+                String repeatText = String.join("\n", repeatSelectedArray);
+                textRepeatView.setText(repeatText);
+                repeatBoxChecked = true;
+            } else {
+                textRepeatView.setText("Repeat");
+            }
+
+
 
         } else {
             //Log.i("AHS", "Current task is = null so creating blank task screen.");
@@ -439,7 +545,7 @@ public class DetailTaskFragment extends Fragment {
                             saveDateFormat.format(deadlineDate),
                             saveTimeFormat.format(deadlineTime), switchReminder.isChecked(), saveDateFormat.format(reminderDate), saveTimeFormat.format(reminderTime),
                             false, categoryAutoComplete.getText().toString(),
-                            projectId, -1, -1, reminderSelectedString, false);
+                            projectId, -1, -1, reminderSelectedString, repeatSelectedString, false);
 
                     int taskId;
 

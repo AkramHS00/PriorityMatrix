@@ -230,7 +230,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:text="Repeat"
                 android:layout_marginLeft="16dp"
-                android:textSize="20dp"/>
+                android:textSize="20dp"
+                android:id="@+id/textRepeatView"/>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -35,6 +35,7 @@ public class Task implements Serializable {
     private float posY;
 
     private String reminders;
+    private String repeats;
 
     private boolean overDue;
 
@@ -45,7 +46,7 @@ public class Task implements Serializable {
     public Task(String ownerName, String title, String description, boolean addDeadline,
                 String deadlineDate, String deadlineTime, boolean addReminder,
                 String reminderDate, String reminderTime, boolean complete, String category, int projectId,
-                float posX, float posY, String reminders, boolean overDue) {
+                float posX, float posY, String reminders, String repeats, boolean overDue) {
         this.ownerName = ownerName;
         this.title = title;
         this.description = description;
@@ -62,6 +63,7 @@ public class Task implements Serializable {
         this.posY = posY;
         this.reminders = reminders;
         this.overDue = overDue;
+        this.repeats = repeats;
     }
 
     public int getId() {
@@ -150,5 +152,9 @@ public class Task implements Serializable {
 
     public void setOverDue(boolean overDue) {
         this.overDue = overDue;
+    }
+
+    public String getRepeats() {
+        return repeats;
     }
 }

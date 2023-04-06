@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:orientation="vertical"
+        android:id="@+id/linearLayoutRepeatCheckboxes">
+
+        <CheckBox
+            android:id="@+id/everyDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Daily"
+            android:textSize="18dp" />
+
+        <CheckBox
+            android:id="@+id/everyMonday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Every Monday"
+            android:textSize="18dp" />
+
+        <CheckBox
+            android:id="@+id/everyTuesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Every Tuesday"
+            android:textSize="18dp" />
+
+        <CheckBox
+            android:id="@+id/everyWednesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Every Wednesday"
+            android:textSize="18dp" />
+
+        <CheckBox
+            android:id="@+id/everyThursday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Every Thursday"
+            android:textSize="18dp" />
+
+        <CheckBox
+            android:id="@+id/everyFriday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Every Friday"
+            android:textSize="18dp" />
+
+        <CheckBox
+            android:id="@+id/everySaturday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Every Saturday"
+            android:textSize="18dp" />
+
+        <CheckBox
+            android:id="@+id/everySunday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Every Sunday"
+            android:textSize="18dp" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
