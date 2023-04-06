@@ -545,7 +545,7 @@ public class DetailTaskFragment extends Fragment {
                             saveDateFormat.format(deadlineDate),
                             saveTimeFormat.format(deadlineTime), switchReminder.isChecked(), saveDateFormat.format(reminderDate), saveTimeFormat.format(reminderTime),
                             false, categoryAutoComplete.getText().toString(),
-                            projectId, -1, -1, reminderSelectedString, repeatSelectedString, false);
+                            projectId, -1, -1, reminderSelectedString, repeatSelectedString, false, "");
 
                     int taskId;
 

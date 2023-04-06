@@ -30,14 +30,18 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 public class TaskFragment extends Fragment {
@@ -225,6 +229,8 @@ public class TaskFragment extends Fragment {
         }
 
         checkForOverdueTasks(userTasks);
+        //updateRepeatingTasks(userTasks);
+        createRepeatingTasks(userTasks);
 
         adapter.setOnItemClickListener(new TaskAdapter.OnItemClickListener() {
             @Override
@@ -238,6 +244,8 @@ public class TaskFragment extends Fragment {
             @Override
             public void completeTask(Task task) {
                 Log.i("AHS", "Task completed! " + task.getTitle());
+                LocalDate todaysDate = LocalDate.now();
+                task.setCompletionDate(saveDateFormat.format(todaysDate));
                 task.setComplete(true);
                 taskViewModel.updateTask(task);
                 Toast.makeText(getActivity(), "Task archived.", Toast.LENGTH_SHORT).show();
@@ -344,5 +352,243 @@ public class TaskFragment extends Fragment {
         }
     }
 
+    private void updateRepeatingTasks(List<Task> tasks){
+        for (Task t: tasks){
+            LocalDate taskDate = LocalDate.parse(t.getDeadlineDate(), saveDateFormat);
+            if ((t.getComplete() || t.isOverDue()) && t.getRepeats() != null && !t.getRepeats().equals("") && !t.getDeadlineDate().equals(saveDateFormat.format(LocalDate.now()))){
+                Log.i("AHS", "Task " + t.getTitle() + " is overdue and complete and is a repeater:      " + t.getRepeats());
 
+                String repeatString = t.getRepeats();
+                List<String> repeatArray = Arrays.asList(repeatString.split(","));
+
+                LocalDate todaysDate = LocalDate.now();
+                LocalDate nearestDate = null;
+                boolean dateSet = false;
+
+                LocalDate lastCompleted;
+                if (t.getCompletionDate().isEmpty() || t.getCompletionDate().equals("")){
+                    lastCompleted = LocalDate.of(2000,6,26);
+                } else {
+                    lastCompleted = LocalDate.parse(t.getCompletionDate(), saveDateFormat);
+                }
+
+                LocalDate oldDeadline = LocalDate.parse(t.getDeadlineDate(), saveDateFormat);
+
+
+                for (String s: repeatArray){
+                    switch (s){
+                        case "Daily":
+                            Log.i("AHS", "Daily");
+                            if (!dateSet){
+                                dateSet = true;
+                                nearestDate = LocalDate.now();
+                            } else {
+                                if (LocalDate.now().isBefore(nearestDate)){
+                                    nearestDate = LocalDate.now();
+                                }
+                            }
+
+                        case "Every Monday":
+                            Log.i("AHS", "Every Monday");
+
+                            if (!dateSet){
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).equals(oldDeadline)){
+                                    dateSet = true;
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+                                }
+                            } else {
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).isBefore(nearestDate)
+                                && todaysDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).isAfter(todaysDate)
+                                && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).equals(oldDeadline)){
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+                                }
+                            }
+
+                        case "Every Tuesday":
+                            Log.i("AHS", "Every Tuesday");
+
+                            if (!dateSet){
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.TUESDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.TUESDAY)).equals(oldDeadline)){
+                                    dateSet = true;
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.TUESDAY));
+                                }
+                            } else {
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.TUESDAY)).isBefore(nearestDate)
+                                        && todaysDate.with(TemporalAdjusters.next(DayOfWeek.TUESDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.TUESDAY)).equals(oldDeadline)){
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.TUESDAY));
+                                }
+                            }
+
+                        case "Every Wednesday":
+                            Log.i("AHS", "Every Wednesday");
+
+                            if (!dateSet){
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY)).equals(oldDeadline)){
+                                    dateSet = true;
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY));
+                                }
+                            } else {
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY)).isBefore(nearestDate)
+                                        && todaysDate.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY)).equals(oldDeadline)){
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY));
+                                }
+                            }
+
+                        case "Every Thursday":
+                            Log.i("AHS", "Every Thursday");
+
+                            if (!dateSet){
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.THURSDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.THURSDAY)).equals(oldDeadline)){
+                                    dateSet = true;
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.THURSDAY));
+                                }
+                            } else {
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.THURSDAY)).isBefore(nearestDate)
+                                        && todaysDate.with(TemporalAdjusters.next(DayOfWeek.THURSDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.THURSDAY)).equals(oldDeadline)){
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.THURSDAY));
+                                }
+                            }
+
+                        case "Every Friday":
+                            Log.i("AHS", "Every Friday");
+
+                            if (!dateSet){
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.FRIDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.FRIDAY)).equals(oldDeadline)){
+                                    dateSet = true;
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
+                                }
+                            } else {
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.FRIDAY)).isBefore(nearestDate)
+                                        && todaysDate.with(TemporalAdjusters.next(DayOfWeek.FRIDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.FRIDAY)).equals(oldDeadline)){
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
+                                }
+                            }
+
+                        case "Every Saturday":
+                            Log.i("AHS", "Every Saturday");
+
+                            if (!dateSet){
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.SATURDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.SATURDAY)).equals(oldDeadline)){
+                                    dateSet = true;
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
+                                }
+                            } else {
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.SATURDAY)).isBefore(nearestDate)
+                                        && todaysDate.with(TemporalAdjusters.next(DayOfWeek.SATURDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.SATURDAY)).equals(oldDeadline)){
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
+                                }
+                            }
+
+                        case "Every Sunday":
+                            Log.i("AHS", "Every Sunday");
+
+                            if (!dateSet){
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).equals(oldDeadline)){
+                                    dateSet = true;
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
+                                }
+
+                            } else {
+                                if (todaysDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).isBefore(nearestDate)
+                                        && todaysDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).isAfter(todaysDate)
+                                        && !todaysDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).equals(oldDeadline)){
+                                    nearestDate = todaysDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
+                                }
+                            }
+
+                    }
+
+
+                    String formatNewDate = saveDateFormat.format(nearestDate);
+                    t.setDeadlineDate(formatNewDate);
+                    t.setComplete(false);
+                    t.setOverDue(false);
+                    taskViewModel.updateTask(t);
+
+
+                }
+
+            }
+        }
+    }
+
+    //This function is used to keep track of repeating tasks and create or update tasks once completed/overdue
+    //to bring them back to the user on another day
+    private void createRepeatingTasks(List<Task> tasks){
+
+        for (Task t: tasks){
+
+            //Check if the task is complete or overdue and repeating and not completed today
+            if ((t.getComplete() || t.isOverDue()) && t.getRepeats() != null && !t.getRepeats().equals("") &&
+                    !t.getDeadlineDate().equals(saveDateFormat.format(LocalDate.now()))){
+
+                //Get previous due date of task
+                LocalDate taskDeadline = LocalDate.parse(t.getDeadlineDate(), saveDateFormat);
+                Log.i("AHS", "Task Deadline: " + taskDeadline);
+
+                //Create a hashmap of each repeat option and their values
+                HashMap<String, TemporalAdjuster> repeatValues = new HashMap<>();
+                LocalDate todaysDate = LocalDate.now();
+
+                //Change from todays date to taskDeadlineDate
+                repeatValues.put("Every Monday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.MONDAY)));
+                repeatValues.put("Every Tuesday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.TUESDAY)));
+                repeatValues.put("Every Wednesday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY)));
+                repeatValues.put("Every Thursday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.THURSDAY)));
+                repeatValues.put("Every Friday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.FRIDAY)));
+                repeatValues.put("Every Saturday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.SATURDAY)));
+                repeatValues.put("Every Sunday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)));
+
+
+                //Create an arraylist of all the repeats selected for the task
+                String repeatString = t.getRepeats();
+                List<String> repeatArray = Arrays.asList(repeatString.split(","));
+
+                //Save the key values for possible dates here
+                List<LocalDate> repeatDates = new ArrayList<>();
+
+                //Loop through and get dates for each possible repeat date
+                for (String s: repeatArray){
+                    Log.i("AHS", "Repeat Array: " + s);
+                    if (repeatValues.containsKey(s)){
+                        repeatDates.add((LocalDate) repeatValues.get(s));
+                    }
+                }
+
+                //Get the nearest repeat date that is after the last completed date
+                LocalDate targetDate = null;
+                for (LocalDate l: repeatDates){
+                    Log.i("AHS", "RepeatDates: " + l);
+                    if (targetDate == null && l.isAfter(taskDeadline)){
+                        Log.i("AHS", "Target date is null so setting target date to: " + l);
+                        targetDate = l;
+                    } else if (targetDate != null && l.isBefore(targetDate) && l.isAfter(taskDeadline)){
+                        Log.i("AHS", "Target date is not null so setting target date to: " + l);
+                        targetDate = l;
+                    } else {
+                        Log.i("AHS", "Same date and target date is null");
+                    }
+                }
+
+                //Get task ready and update
+                t.setDeadlineDate(saveDateFormat.format(targetDate));
+                t.setComplete(false);
+                t.setOverDue(false);
+                taskViewModel.updateTask(t);
+
+            }
+        }
+    }
 }
