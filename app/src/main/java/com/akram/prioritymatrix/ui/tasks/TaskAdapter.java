@@ -73,8 +73,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         if (!checkNewDate(position)){
             holder.taskDateHeader.setVisibility(View.GONE);
         } else {
+            int headerNumber = getNumberOfTasksAtDate(currentTask.getDeadlineDate());
             holder.taskDateHeader.setVisibility(View.VISIBLE);
-            holder.taskDateHeader.setText(headerDateFormat.format(LocalDate.parse(currentTask.getDeadlineDate(), saveDateFormat)));
+            holder.taskDateHeader.setText(headerDateFormat.format(LocalDate.parse(currentTask.getDeadlineDate(), saveDateFormat))
+                    + " (" + headerNumber + ")");
+        }
+
+        if(currentTask.getComplete() == true){
+            holder.taskCheckbox.setChecked(true);
         }
 
 
@@ -137,9 +143,11 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
                         Log.i("AHS", "Task: " + taskTitle.getText() + " was checked.");
                         int position = getAdapterPosition();
                         listener.completeTask(tasks.get(position));
-                        taskCheckbox.setChecked(false);
+                        //taskCheckbox.setChecked(false);
                     } else {
                         Log.i("AHS", "Task: " + taskTitle.getText() + " was unchecked.");
+                        int position = getAdapterPosition();
+                        listener.incompleteTask(tasks.get(position));
                     }
 
                 }
@@ -151,6 +159,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
     public interface OnItemClickListener {
         void onItemClick(Task task);
         void completeTask(Task task);
+        void incompleteTask(Task task);
     }
 
 
@@ -159,6 +168,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         this.listener = listener;
     }
 
+    //Function to check if this task is the first to be displayed of its date
     private boolean checkNewDate(int taskPos){
         if (taskPos == 0){  //If this is the first task in the recycler view then we want to display its date
             return true;
@@ -172,6 +182,21 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         } else {
             return true;
         }
+    }
+
+    //Function to return a number of tasks due on a certain date to display in the date headers
+    private int getNumberOfTasksAtDate(String date){
+
+        int taskNumber = 0;
+
+        //Loop through all the tasks and get how many are due on this date for the header
+        for (Task t: tasks){
+            if (t.getDeadlineDate().equals(date)){
+                taskNumber++;
+            }
+        }
+
+        return taskNumber;
     }
 
 

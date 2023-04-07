@@ -32,6 +32,8 @@ import com.akram.prioritymatrix.ui.tasks.TaskAdapter;
 import com.akram.prioritymatrix.ui.tasks.TaskFragment;
 import com.akram.prioritymatrix.ui.tasks.TaskViewModel;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ProjectTaskFragment extends Fragment {
@@ -39,6 +41,8 @@ public class ProjectTaskFragment extends Fragment {
     User currentUser;
     ProjectTaskViewModel projectTaskViewModel;
     Project currentProject;
+
+    DateTimeFormatter saveDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -135,10 +139,28 @@ public class ProjectTaskFragment extends Fragment {
 
             @Override
             public void completeTask(Task task) {
-                Log.i("AHS", "Task completed! " + task.getTitle());
-                task.setComplete(true);
-                projectTaskViewModel.updateTask(task);
-                Toast.makeText(getActivity(), "Task archived.", Toast.LENGTH_SHORT).show();
+                if(!task.getComplete()){
+                    Log.i("AHS", "Task completed! " + task.getTitle());
+                    LocalDate todaysDate = LocalDate.now();
+                    task.setCompletionDate(saveDateFormat.format(todaysDate));
+                    task.setComplete(true);
+                    projectTaskViewModel.updateTask(task);
+                    Toast.makeText(getActivity(), "Task archived.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void incompleteTask(Task task) {
+                if(task.getComplete()){
+                    Log.i("AHS", "Task incompleted! " + task.getTitle());
+                    LocalDate todaysDate = LocalDate.now();
+                    task.setDeadlineDate(saveDateFormat.format(todaysDate));
+                    task.setOverDue(false);
+                    task.setCompletionDate("");
+                    task.setComplete(false);
+                    projectTaskViewModel.updateTask(task);
+                    Toast.makeText(getActivity(), "Task archived.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

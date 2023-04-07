@@ -243,12 +243,28 @@ public class TaskFragment extends Fragment {
 
             @Override
             public void completeTask(Task task) {
-                Log.i("AHS", "Task completed! " + task.getTitle());
-                LocalDate todaysDate = LocalDate.now();
-                task.setCompletionDate(saveDateFormat.format(todaysDate));
-                task.setComplete(true);
-                taskViewModel.updateTask(task);
-                Toast.makeText(getActivity(), "Task archived.", Toast.LENGTH_SHORT).show();
+                if(!task.getComplete()){
+                    Log.i("AHS", "Task completed! " + task.getTitle());
+                    LocalDate todaysDate = LocalDate.now();
+                    task.setCompletionDate(saveDateFormat.format(todaysDate));
+                    task.setComplete(true);
+                    taskViewModel.updateTask(task);
+                    Toast.makeText(getActivity(), "Task completed.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void incompleteTask(Task task) {
+                if(task.getComplete()){
+                    Log.i("AHS", "Task incompleted! " + task.getTitle());
+                    LocalDate todaysDate = LocalDate.now();
+                    task.setDeadlineDate(saveDateFormat.format(todaysDate));
+                    task.setOverDue(false);
+                    task.setCompletionDate("");
+                    task.setComplete(false);
+                    taskViewModel.updateTask(task);
+                    Toast.makeText(getActivity(), "Task archived.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
