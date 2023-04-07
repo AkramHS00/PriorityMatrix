@@ -51,37 +51,5 @@
         android:scaleType="center"
         app:maxImageSize="32dp"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/tempMatrixFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/addFab"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="8dp"
-        app:borderWidth="0dp"
-        android:elevation="8dp"
-        android:backgroundTint="@color/purple_200"
-        android:scaleType="center"
-        app:maxImageSize="32dp"
-        android:scaleX="0.75"
-        android:scaleY="0.75"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/tempArchiveFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/tempMatrixFab"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="8dp"
-        app:borderWidth="0dp"
-        android:elevation="8dp"
-        android:backgroundTint="@color/purple_200"
-        android:scaleType="center"
-        app:maxImageSize="32dp"
-        android:scaleX="0.75"
-        android:scaleY="0.75"/>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -142,35 +142,6 @@ public class TaskFragment extends Fragment {
             }
         });
 
-        //Temporary button to navigate to the matrix screen
-        FloatingActionButton tempFab = getView().findViewById(R.id.tempMatrixFab);
-        tempFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavHostFragment.findNavController(TaskFragment.this)
-                        .navigate(R.id.action_navigation_home_to_navigation_matrix);
-            }
-        });
-
-        //Temporary button to set all tasks to incomplete again
-        FloatingActionButton tempArchiveFab = getView().findViewById(R.id.tempArchiveFab);
-        tempArchiveFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (currentUser != null) {
-                    for (Task t : userTasks) {
-                        if (t.getComplete() == true) {
-                            t.setComplete(false);
-                            taskViewModel.updateTask(t);
-                        }
-                    }
-
-                }
-
-            }
-        });
-
-
         RecyclerView recyclerView = getView().findViewById(R.id.task_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         recyclerView.setHasFixedSize(true);
