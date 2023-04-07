@@ -102,6 +102,9 @@
         <action
             android:id="@+id/action_navigation_matrix_to_navigation_home"
             app:destination="@id/navigation_home" />
+        <action
+            android:id="@+id/action_navigation_matrix_to_navigation_detail_task"
+            app:destination="@id/navigation_detail_task" />
     </fragment>
     <fragment
         android:id="@+id/addProjectFragment"

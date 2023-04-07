@@ -83,12 +83,21 @@ public class MatrixFragment extends Fragment {
     List<Task> allTasks = new ArrayList<>();
     //List<Task> filteredTasks = new ArrayList<>();
 
+
+    float viewStartX;
+    float viewStartY;
+    float viewEndX;
+    float viewEndY;
+
     OnDragTouchListener.OnDragActionListener onDragActionListener = new OnDragTouchListener.OnDragActionListener() {
         @Override
         public void onDragStart(View view) {
 
             Log.i("AHS", "Drag started");
             view.bringToFront();
+
+            viewStartX = view.getX();
+            viewStartY = view.getY();
         }
 
         @Override
@@ -136,6 +145,22 @@ public class MatrixFragment extends Fragment {
         @Override
         public void onLongPress(View view) {
             Log.i("AHS", "View was long pressed: " + view.toString());
+
+            float sensitivity = 5f;
+
+            viewEndX = view.getX();
+            viewEndY = view.getY();
+
+            //Check to make sure the view hasnt moved, decreases sensitivity of onLongPress
+            //Can increase sensitivity by increasing sensitivity value
+            if (Math.abs(viewEndX-viewStartX) < sensitivity && Math.abs(viewEndY-viewStartY) < sensitivity){
+                Task draggedTask = textViewTasks.get(view);
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Task", draggedTask);
+                NavHostFragment.findNavController(MatrixFragment.this)
+                        .navigate(R.id.action_navigation_matrix_to_navigation_detail_task, bundle);
+            }
         }
     };
 
