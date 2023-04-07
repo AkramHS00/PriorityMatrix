@@ -260,6 +260,11 @@ public class CalendarFragment extends Fragment {
                 setSelectedDateTasks(calendarMonth.getYearMonth().atDay(1));
                 //calendarView.notifyDateChanged(calendarMonth.getYearMonth().atDay(1));
 
+                if (calendarMonth.getYearMonth().toString().equals(currentMonth.toString()) ){
+                    selectDate(LocalDate.now());
+                    setSelectedDateTasks(LocalDate.now());
+                }
+
                 return null;
             }
         });
