@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,7 +45,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
     @Override
     public TaskHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.task_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.task_item_new, parent, false);
 
         return new TaskHolder(itemView);
     }
@@ -57,17 +58,17 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         holder.taskDescription.setText(currentTask.getDescription());
         holder.categoryText.setText(currentTask.getCategory());
 
-        holder.deadlineDate.setText(displayDateFormat.format(LocalDate.parse(currentTask.getDeadlineDate(), saveDateFormat)));
+        //holder.deadlineDate.setText(displayDateFormat.format(LocalDate.parse(currentTask.getDeadlineDate(), saveDateFormat)));
         holder.deadlineTime.setText(displayTimeFormat.format(LocalTime.parse(currentTask.getDeadlineTime(), saveTimeFormat)));
 
         if (currentTask.getCategory().equals("Do") ){
-            holder.taskRelativeLayout.setBackgroundColor(ContextCompat.getColor(holder.taskTitle.getContext(), R.color.light_green));
+            holder.taskConstraintLayout.setBackgroundColor(ContextCompat.getColor(holder.taskTitle.getContext(), R.color.light_green));
         } else if (currentTask.getCategory().equals("Schedule")) {
-            holder.taskRelativeLayout.setBackgroundColor(ContextCompat.getColor(holder.taskTitle.getContext(), R.color.light_yellow));
+            holder.taskConstraintLayout.setBackgroundColor(ContextCompat.getColor(holder.taskTitle.getContext(), R.color.light_yellow));
         } else if (currentTask.getCategory().equals("Delegate")) {
-            holder.taskRelativeLayout.setBackgroundColor(ContextCompat.getColor(holder.taskTitle.getContext(), R.color.light_blue));
+            holder.taskConstraintLayout.setBackgroundColor(ContextCompat.getColor(holder.taskTitle.getContext(), R.color.light_blue));
         } else {
-            holder.taskRelativeLayout.setBackgroundColor(ContextCompat.getColor(holder.taskTitle.getContext(), R.color.light_red));
+            holder.taskConstraintLayout.setBackgroundColor(ContextCompat.getColor(holder.taskTitle.getContext(), R.color.light_red));
         }
 
         if (!checkNewDate(position)){
@@ -102,14 +103,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
     class TaskHolder extends RecyclerView.ViewHolder{
         private TextView taskTitle;
         private TextView taskDescription;
-        private TextView deadlineDate;
+        //private TextView deadlineDate;
         private TextView deadlineTime;
         private TextView categoryText;
         private CheckBox taskCheckbox;
 
         private TextView taskDateHeader;
 
-        private RelativeLayout taskRelativeLayout;
+        private ConstraintLayout taskConstraintLayout;
 
         //Return the task the user clicked on
         public TaskHolder(@NonNull View itemView) {
@@ -117,14 +118,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
 
             taskTitle = itemView.findViewById(R.id.taskTitle);
             taskDescription = itemView.findViewById(R.id.taskDescription);
-            deadlineDate = itemView.findViewById(R.id.deadlineDate);
+            //deadlineDate = itemView.findViewById(R.id.deadlineDate);
             deadlineTime = itemView.findViewById(R.id.deadlineTime);
             taskCheckbox = itemView.findViewById(R.id.taskCheckbox);
             categoryText = itemView.findViewById(R.id.categoryText);
 
             taskDateHeader = itemView.findViewById(R.id.taskDateHeader);
 
-            taskRelativeLayout = itemView.findViewById(R.id.taskRelativeLayout);
+            taskConstraintLayout = itemView.findViewById(R.id.taskConstraintLayout);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
