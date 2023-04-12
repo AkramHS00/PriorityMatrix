@@ -81,6 +81,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
 
         if(currentTask.getComplete() == true){
             holder.taskCheckbox.setChecked(true);
+        } else {
+            holder.taskCheckbox.setChecked(false);
         }
 
 
@@ -127,7 +129,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int position = getAdapterPosition();
+                    int position = getBindingAdapterPosition();
                     if (listener != null && position != RecyclerView.NO_POSITION){
                         listener.onItemClick(tasks.get(position));
                     }
@@ -144,6 +146,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
                         int position = getBindingAdapterPosition();
                         listener.completeTask(tasks.get(position));
                         //taskCheckbox.setChecked(false);
+
                     } else {
                         Log.i("AHS", "Task: " + taskTitle.getText() + " was unchecked.");
                         int position = getBindingAdapterPosition();
