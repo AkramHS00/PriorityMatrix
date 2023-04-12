@@ -53,7 +53,7 @@ import java.util.List;
 
 public class MatrixFragment extends Fragment {
 
-    ConstraintLayout matrixView;
+    ConstraintLayout matrixView, matrixOverlay;
     TaskViewModel taskViewModel;
     User currentUser;
 
@@ -93,6 +93,8 @@ public class MatrixFragment extends Fragment {
         @Override
         public void onDragStart(View view) {
 
+            matrixOverlay.setVisibility(View.VISIBLE);
+
             Log.i("AHS", "Drag started");
             view.bringToFront();
 
@@ -102,6 +104,9 @@ public class MatrixFragment extends Fragment {
 
         @Override
         public void onDragEnd(View view) {
+
+            matrixOverlay.setVisibility(View.GONE);
+
             float x = view.getX();
             float y = view.getY();
             Log.i("AHS", "Drag ended with view dropped at X: " + x + " Y: " + y);
@@ -264,6 +269,9 @@ public class MatrixFragment extends Fragment {
         matrixSchedule = getView().findViewById(R.id.matrixSchedule);
         matrixDelegate = getView().findViewById(R.id.matrixDelegate);
         matrixDelete = getView().findViewById(R.id.matrixDelete);
+
+        matrixOverlay = getView().findViewById(R.id.matrixOverlay);
+        matrixOverlay.setVisibility(View.GONE);
 
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_MONTH);
