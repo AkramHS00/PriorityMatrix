@@ -30,6 +30,10 @@ public class TaskViewModel extends AndroidViewModel {
 
     public void updateTask(Task task){ repository.updateTask(task);}
 
+    public long insertTask(Task task){
+        return repository.insertTask(task);
+    }
+
     public LiveData<List<Task>> getAllListings() {
         return allTasks;
     }

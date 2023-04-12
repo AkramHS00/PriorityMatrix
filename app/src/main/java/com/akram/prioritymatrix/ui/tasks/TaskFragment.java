@@ -221,6 +221,7 @@ public class TaskFragment extends Fragment {
                     task.setComplete(true);
                     taskViewModel.updateTask(task);
                     Toast.makeText(getActivity(), "Task completed.", Toast.LENGTH_SHORT).show();
+                    //createRepeatingTasks(userTasks);
                 }
             }
 
@@ -518,12 +519,12 @@ public class TaskFragment extends Fragment {
         for (Task t: tasks){
 
             //Check if the task is complete or overdue and repeating and not completed today
-            if ((t.getComplete() || t.isOverDue()) && t.getRepeats() != null && !t.getRepeats().equals("") &&
-                    !t.getDeadlineDate().equals(saveDateFormat.format(LocalDate.now()))){
+            if ((t.getComplete() || t.isOverDue()) && t.getRepeats() != null && !t.getRepeats().equals("") && t.isOriginal()){
+
 
                 //Get previous due date of task
                 LocalDate taskDeadline = LocalDate.parse(t.getDeadlineDate(), saveDateFormat);
-                Log.i("AHS", "Task Deadline: " + taskDeadline);
+                //Log.i("AHS", "Task Deadline: " + taskDeadline);
 
                 //Create a hashmap of each repeat option and their values
                 HashMap<String, TemporalAdjuster> repeatValues = new HashMap<>();
@@ -548,7 +549,7 @@ public class TaskFragment extends Fragment {
 
                 //Loop through and get dates for each possible repeat date
                 for (String s: repeatArray){
-                    Log.i("AHS", "Repeat Array: " + s);
+                    //Log.i("AHS", "Repeat Array: " + s);
                     if (repeatValues.containsKey(s)){
                         repeatDates.add((LocalDate) repeatValues.get(s));
                     }
@@ -557,15 +558,15 @@ public class TaskFragment extends Fragment {
                 //Get the nearest repeat date that is after the last completed date
                 LocalDate targetDate = null;
                 for (LocalDate l: repeatDates){
-                    Log.i("AHS", "RepeatDates: " + l);
+                    //Log.i("AHS", "RepeatDates: " + l);
                     if (targetDate == null && l.isAfter(taskDeadline)){
-                        Log.i("AHS", "Target date is null so setting target date to: " + l);
+                        //Log.i("AHS", "Target date is null so setting target date to: " + l);
                         targetDate = l;
                     } else if (targetDate != null && l.isBefore(targetDate) && l.isAfter(taskDeadline)){
-                        Log.i("AHS", "Target date is not null so setting target date to: " + l);
+                        //Log.i("AHS", "Target date is not null so setting target date to: " + l);
                         targetDate = l;
                     } else {
-                        Log.i("AHS", "Same date and target date is null");
+                        //Log.i("AHS", "Same date and target date is null");
                     }
                 }
 
@@ -574,6 +575,21 @@ public class TaskFragment extends Fragment {
                 t.setComplete(false);
                 t.setOverDue(false);
                 taskViewModel.updateTask(t);
+
+
+                //t.setOriginal(false);
+                //t.setTitle("Test1");
+                //taskViewModel.updateTask(t);
+
+                //Task newTask = new Task(currentUser.getName().toString(), t.getTitle(),
+                //        t.getDescription(), t.isAddDeadline(),
+                //        saveDateFormat.format(targetDate),
+                //        t.getDeadlineTime(), t.isAddReminder(),
+                //        t.getReminderDate(), t.getReminderTime(),
+                //        false, t.getCategory(),
+                //        t.getProjectId(), -1, -1, t.getReminders(), t.getRepeats(), false, "", true);
+
+                //taskViewModel.insertTask(newTask);
 
             }
         }

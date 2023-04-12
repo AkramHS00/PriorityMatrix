@@ -82,6 +82,7 @@ public class DetailTaskFragment extends Fragment {
     private LocalDate reminderDate;
     private LocalTime deadlineTime;
     private LocalTime reminderTime;
+    private LocalTime endTime;
 
     DateTimeFormatter saveDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter displayDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -216,6 +217,7 @@ public class DetailTaskFragment extends Fragment {
         deadlineTime = LocalTime.now();
         reminderDate = LocalDate.now();
         reminderTime = LocalTime.now();
+        endTime = LocalTime.of(23,59);
 
 
 
@@ -442,12 +444,17 @@ public class DetailTaskFragment extends Fragment {
         } else {
             //Log.i("AHS", "Current task is = null so creating blank task screen.");
             ((MainActivity) getActivity()).setActionBarTitle("New Task");
+
+            deadlineTime = endTime;
+            reminderTime = endTime;
         }
 
         textDeadlineDate.setText(displayDateFormat.format(deadlineDate));
         textDeadlineTime.setText(displayTimeFormat.format(deadlineTime));
         textReminderDate.setText(displayDateFormat.format(reminderDate));
         textReminderTime.setText(displayTimeFormat.format(reminderTime));
+
+
 
         if (!switchDeadline.isChecked()){
             textDeadlineDate.setVisibility(View.GONE);
@@ -545,7 +552,7 @@ public class DetailTaskFragment extends Fragment {
                             saveDateFormat.format(deadlineDate),
                             saveTimeFormat.format(deadlineTime), switchReminder.isChecked(), saveDateFormat.format(reminderDate), saveTimeFormat.format(reminderTime),
                             false, categoryAutoComplete.getText().toString(),
-                            projectId, -1, -1, reminderSelectedString, repeatSelectedString, false, "");
+                            projectId, -1, -1, reminderSelectedString, repeatSelectedString, false, "", true);
 
                     int taskId;
 
@@ -764,7 +771,7 @@ public class DetailTaskFragment extends Fragment {
                 }
                 //text.setText(checkDigit(hour) + ":" + checkDigit(minute));
             }
-        }, defaultHour, defaultMinute, true);
+        }, defaultHour + 1, defaultMinute, true);
 
         timeDialog.show();
     }

@@ -41,6 +41,8 @@ public class Task implements Serializable {
 
     private String completionDate;
 
+    private boolean original;
+
     //private SubTask[] subtask;
     //private List list;
 
@@ -48,7 +50,7 @@ public class Task implements Serializable {
     public Task(String ownerName, String title, String description, boolean addDeadline,
                 String deadlineDate, String deadlineTime, boolean addReminder,
                 String reminderDate, String reminderTime, boolean complete, String category, int projectId,
-                float posX, float posY, String reminders, String repeats, boolean overDue, String completionDate) {
+                float posX, float posY, String reminders, String repeats, boolean overDue, String completionDate, boolean original) {
         this.ownerName = ownerName;
         this.title = title;
         this.description = description;
@@ -67,6 +69,7 @@ public class Task implements Serializable {
         this.overDue = overDue;
         this.repeats = repeats;
         this.completionDate = completionDate;
+        this.original = true;
     }
 
     public int getId() {
@@ -79,6 +82,10 @@ public class Task implements Serializable {
 
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -175,5 +182,13 @@ public class Task implements Serializable {
 
     public void setCompletionDate(String completionDate) {
         this.completionDate = completionDate;
+    }
+
+    public boolean isOriginal() {
+        return original;
+    }
+
+    public void setOriginal(boolean original) {
+        this.original = original;
     }
 }
