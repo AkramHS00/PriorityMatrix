@@ -141,12 +141,12 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
 
                     if (isChecked){
                         Log.i("AHS", "Task: " + taskTitle.getText() + " was checked.");
-                        int position = getAdapterPosition();
+                        int position = getBindingAdapterPosition();
                         listener.completeTask(tasks.get(position));
                         //taskCheckbox.setChecked(false);
                     } else {
                         Log.i("AHS", "Task: " + taskTitle.getText() + " was unchecked.");
-                        int position = getAdapterPosition();
+                        int position = getBindingAdapterPosition();
                         listener.incompleteTask(tasks.get(position));
                     }
 
