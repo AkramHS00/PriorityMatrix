@@ -69,7 +69,7 @@ public class Task implements Serializable {
         this.overDue = overDue;
         this.repeats = repeats;
         this.completionDate = completionDate;
-        this.original = true;
+        this.original = original;
     }
 
     public int getId() {

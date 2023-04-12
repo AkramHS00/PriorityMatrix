@@ -195,6 +195,8 @@ public class TaskFragment extends Fragment {
                             break;
                     }
 
+                    createRepeatingTasks(tasks);
+
                 }
             });
         }
@@ -240,7 +242,7 @@ public class TaskFragment extends Fragment {
             }
         });
 
-
+        tabLayout.selectTab(tabLayout.getTabAt(2));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -521,6 +523,7 @@ public class TaskFragment extends Fragment {
             //Check if the task is complete or overdue and repeating and not completed today
             if ((t.getComplete() || t.isOverDue()) && t.getRepeats() != null && !t.getRepeats().equals("") && t.isOriginal()){
 
+                Log.i("AHS", "Updating task repeater!");
 
                 //Get previous due date of task
                 LocalDate taskDeadline = LocalDate.parse(t.getDeadlineDate(), saveDateFormat);
@@ -571,25 +574,22 @@ public class TaskFragment extends Fragment {
                 }
 
                 //Get task ready and update
-                t.setDeadlineDate(saveDateFormat.format(targetDate));
-                t.setComplete(false);
-                t.setOverDue(false);
+                //t.setDeadlineDate(saveDateFormat.format(targetDate));
+                //t.setComplete(false);
+                //t.setOverDue(false);
+                t.setOriginal(false);
                 taskViewModel.updateTask(t);
 
 
-                //t.setOriginal(false);
-                //t.setTitle("Test1");
-                //taskViewModel.updateTask(t);
+                Task newTask = new Task(currentUser.getName().toString(), t.getTitle(),
+                        t.getDescription(), t.isAddDeadline(),
+                        saveDateFormat.format(targetDate),
+                        t.getDeadlineTime(), t.isAddReminder(),
+                        t.getReminderDate(), t.getReminderTime(),
+                        false, t.getCategory(),
+                        t.getProjectId(), -1, -1, t.getReminders(), t.getRepeats(), false, "", true);
 
-                //Task newTask = new Task(currentUser.getName().toString(), t.getTitle(),
-                //        t.getDescription(), t.isAddDeadline(),
-                //        saveDateFormat.format(targetDate),
-                //        t.getDeadlineTime(), t.isAddReminder(),
-                //        t.getReminderDate(), t.getReminderTime(),
-                //        false, t.getCategory(),
-                //        t.getProjectId(), -1, -1, t.getReminders(), t.getRepeats(), false, "", true);
-
-                //taskViewModel.insertTask(newTask);
+                taskViewModel.insertTask(newTask);
 
             }
         }
