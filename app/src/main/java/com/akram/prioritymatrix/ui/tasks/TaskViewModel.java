@@ -20,6 +20,8 @@ public class TaskViewModel extends AndroidViewModel {
     private LiveData<List<Task>> userTasks;
     private LiveData<List<Task>> userOrderedTasks;
 
+    private int currentTab;
+
     public TaskViewModel(@NonNull Application application) {
         super(application);
 
@@ -48,7 +50,11 @@ public class TaskViewModel extends AndroidViewModel {
         return userTasks;
     }
 
+    public int getCurrentTab() {
+        return currentTab;
+    }
 
-
-
+    public void setCurrentTab(int currentTab) {
+        this.currentTab = currentTab;
+    }
 }

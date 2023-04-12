@@ -242,7 +242,8 @@ public class TaskFragment extends Fragment {
             }
         });
 
-        tabLayout.selectTab(tabLayout.getTabAt(2));
+        Log.i("AHS", "Saved tab selected = " + String.valueOf(taskViewModel.getCurrentTab()));
+        tabLayout.selectTab(tabLayout.getTabAt(taskViewModel.getCurrentTab()));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -252,18 +253,21 @@ public class TaskFragment extends Fragment {
                     case 0:
                         Log.i("AHS", "Outstanding");
                         adapter.setTasks(outstandingTasks);
+                        taskViewModel.setCurrentTab(0);
                         break;
                     case 1:
                         Log.i("AHS", "Completed");
                         adapter.setTasks(completedTasks);
+                        taskViewModel.setCurrentTab(1);
                         break;
                     case 2:
                         Log.i("AHS", "Overdue");
-                        //Possibly revers the list to show latest overdues first
+                        //Reverse the list to show latest overdues first
                         if (overdueTasks.size() >= 2 && Integer.parseInt(overdueTasks.get(0).getDeadlineDate()) < Integer.parseInt(overdueTasks.get(overdueTasks.size()-1).getDeadlineDate())){
                             Collections.reverse(overdueTasks);
                         }
                         adapter.setTasks(overdueTasks);
+                        taskViewModel.setCurrentTab(2);
                         break;
 
                 }
