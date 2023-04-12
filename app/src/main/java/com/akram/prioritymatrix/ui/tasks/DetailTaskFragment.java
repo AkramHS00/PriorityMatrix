@@ -1,6 +1,7 @@
 package com.akram.prioritymatrix.ui.tasks;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.Observer;
@@ -15,6 +16,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -119,6 +121,8 @@ public class DetailTaskFragment extends Fragment {
     private String repeatSelectedString;
     private boolean repeatBoxChecked = false;
 
+    AlertDialog deleteDialog, completeDialog;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -165,6 +169,13 @@ public class DetailTaskFragment extends Fragment {
                 menu.clear();
                 menuInflater.inflate(R.menu.detail_task_menu, menu);
                 MenuItem menuDeleteIcon = menu.findItem(R.id.deleteTask);
+                MenuItem menuCompleteIcon = menu.findItem(R.id.completeTask);
+
+
+                if (currentTask == null){
+                    menuCompleteIcon.setVisible(false);
+                    menuDeleteIcon.setVisible(false);
+                }
 
             }
 
@@ -173,11 +184,10 @@ public class DetailTaskFragment extends Fragment {
 
                 if (menuItem.getItemId() == R.id.deleteTask) {
 
-                    detailTaskViewModel.deleteTask(currentTask);
+                    deleteDialog.show();
 
-                    NavHostFragment.findNavController(DetailTaskFragment.this)
-                            .navigate(R.id.action_detailTaskFragment_to_navigation_home);
-                    Toast.makeText(getActivity(), "Task deleted.", Toast.LENGTH_SHORT).show();
+                } else if (menuItem.getItemId() == R.id.completeTask){
+                    completeDialog.show();
                 }
 
 
@@ -239,6 +249,87 @@ public class DetailTaskFragment extends Fragment {
                 reminderCheckboxes.add((CheckBox) child);
             }
         }
+
+        //Build the delete dialog
+        AlertDialog.Builder deleteBuilder = new AlertDialog.Builder(getContext());
+        deleteBuilder.setTitle("Delete Task");
+        deleteBuilder.setMessage("Are you sure you want to delete this task?");
+
+        deleteBuilder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                detailTaskViewModel.deleteTask(currentTask);
+                deleteDialog.dismiss();
+                NavHostFragment.findNavController(DetailTaskFragment.this).popBackStack();
+                Toast.makeText(getActivity(), "Task deleted.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        deleteBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                deleteDialog.dismiss();
+            }
+        });
+
+        deleteDialog = deleteBuilder.create();
+
+        deleteDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button deleteButton = deleteDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                if (deleteButton != null){
+                    deleteButton.setTextColor(Color.WHITE);
+                    deleteButton.setBackgroundColor(Color.RED);
+                } else {
+                    Log.i("AHS", "DELETE BUTTON IS NULL");
+                }
+
+            }
+        });
+
+        //Build the delete dialog
+        AlertDialog.Builder completeBuilder = new AlertDialog.Builder(getContext());
+        completeBuilder.setTitle("Complete Task");
+        completeBuilder.setMessage("Are you sure you want to complete this task?");
+
+        completeBuilder.setPositiveButton("Complete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Log.i("AHS", "Task completed! " + currentTask.getTitle());
+                completeDialog.dismiss();
+                LocalDate todaysDate = LocalDate.now();
+                currentTask.setCompletionDate(saveDateFormat.format(todaysDate));
+                currentTask.setComplete(true);
+                detailTaskViewModel.updateTask(currentTask);
+                Toast.makeText(getActivity(), "Task completed.", Toast.LENGTH_SHORT).show();
+                NavHostFragment.findNavController(DetailTaskFragment.this).popBackStack();
+
+            }
+        });
+
+        completeBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                completeDialog.dismiss();
+            }
+        });
+
+        completeDialog = completeBuilder.create();
+
+        completeDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button completeButton = completeDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                if (completeButton != null){
+                    completeButton.setTextColor(Color.WHITE);
+                    completeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.blue));
+                } else {
+                    Log.i("AHS", "COMPLETE BUTTON IS NULL");
+                }
+
+            }
+        });
 
 
         //Build reminder dialog
