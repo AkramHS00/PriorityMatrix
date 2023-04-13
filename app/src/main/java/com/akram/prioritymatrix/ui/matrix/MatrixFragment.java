@@ -1,12 +1,15 @@
 package com.akram.prioritymatrix.ui.matrix;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -25,6 +28,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -34,8 +40,10 @@ import android.widget.Toast;
 import com.akram.prioritymatrix.MainActivity;
 import com.akram.prioritymatrix.OnDragTouchListener;
 import com.akram.prioritymatrix.R;
+import com.akram.prioritymatrix.database.Project;
 import com.akram.prioritymatrix.database.Task;
 import com.akram.prioritymatrix.database.User;
+import com.akram.prioritymatrix.ui.tasks.DetailTaskFragment;
 import com.akram.prioritymatrix.ui.tasks.TaskFragment;
 import com.akram.prioritymatrix.ui.tasks.TaskViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -54,7 +62,8 @@ import java.util.List;
 public class MatrixFragment extends Fragment {
 
     ConstraintLayout matrixView, matrixOverlay;
-    TaskViewModel taskViewModel;
+    //TaskViewModel taskViewModel;
+    MatrixViewModel matrixViewModel;
     User currentUser;
 
     Button matrixDo;
@@ -66,6 +75,8 @@ public class MatrixFragment extends Fragment {
     MenuItem timeScaleMonthly;
     MenuItem timeScaleAll;
     MenuItem timeScaleDisplay;
+
+    MenuItem cancelFilter;
 
     float screenWidth;
     float screenHeight;
@@ -89,6 +100,22 @@ public class MatrixFragment extends Fragment {
     float viewEndX;
     float viewEndY;
 
+    AlertDialog filterDialog;
+
+    AutoCompleteTextView projectAutoComplete;
+    ArrayAdapter<String> adapterProject;
+    List<Project> userProjects;
+    List<String> projectStrings = new ArrayList<String>();
+    Project selectedProject;
+    String selectedProjectString;
+
+    AutoCompleteTextView timeAutoComplete;
+    ArrayAdapter<String> adapterTime;
+    List<String> times = new ArrayList<String>();
+    String selectedTimeString;
+    HashMap<String, Integer> timesHash = new HashMap<String, Integer>();
+
+
     OnDragTouchListener.OnDragActionListener onDragActionListener = new OnDragTouchListener.OnDragActionListener() {
         @Override
         public void onDragStart(View view) {
@@ -96,7 +123,9 @@ public class MatrixFragment extends Fragment {
             matrixOverlay.setVisibility(View.VISIBLE);
 
             Log.i("AHS", "Drag started");
+            matrixOverlay.bringToFront();
             view.bringToFront();
+
 
             viewStartX = view.getX();
             viewStartY = view.getY();
@@ -181,75 +210,34 @@ public class MatrixFragment extends Fragment {
             //navBar.setVisibility(View.GONE);
         }
 
-        taskViewModel =
-                new ViewModelProvider(this).get(TaskViewModel.class);
+        //taskViewModel =
+        //        new ViewModelProvider(this).get(TaskViewModel.class);
+
+        matrixViewModel = new ViewModelProvider(this).get(MatrixViewModel.class);
 
 
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
                 menu.clear();
-                menuInflater.inflate(R.menu.matrix_menu, menu);
-                timeScaleDisplay = menu.findItem(R.id.timeScaleDisplay);
+                menuInflater.inflate(R.menu.matrix_menu_new, menu);
 
-                timeScaleDisplay.setTitle("2 Weeks");
-                timeFilter = "2 Weeks";
+                cancelFilter = menu.findItem(R.id.cancelFilter);
+                cancelFilter.setVisible(false);
 
             }
 
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                List<Task> filteredTasks = new ArrayList<>();
-                switch (menuItem.getItemId()){
-
-                    case R.id.timeScaleBiWeekly:
-                        timeScaleDisplay.setTitle("2 Weeks");
-                        timeFilter = "2 Weeks";
-
-                        filteredTasks.clear();
-                        for (Task t: allTasks){
-                            String taskDate = t.getDeadlineDate();
-                            LocalDate taskDateLocal = LocalDate.parse(taskDate,dateFormat);
-                            long daysApart = ChronoUnit.DAYS.between(currentDate, taskDateLocal );
-                            if (daysApart <= 14){
-                                filteredTasks.add(t);
-                            }
-                        }
-                        plotTasks(filteredTasks);
-                        break;
-
-                    case R.id.timeScaleMonthly:
-                        timeScaleDisplay.setTitle("1 Month");
-                        timeFilter = "1 Month";
-                        filteredTasks.clear();
-                        for (Task f : filteredTasks){
-                            Log.i("AHH", "Before clear: " + f.getTitle());
-                        }
-                        for (Task t: allTasks){
-                            String taskDate = t.getDeadlineDate();
-                            LocalDate taskDateLocal = LocalDate.parse(taskDate,dateFormat);
-                            long daysApart = ChronoUnit.DAYS.between(currentDate, taskDateLocal );
-                            //Period timePeriod = Period.between(currentDate, taskDateLocal);
-                            //Log.i("AHS", "timePeriod for task: " + t.getTitle() + " : " + String.valueOf(timePeriod));
-                            //if timePeriod.getMonths() == 0
-                            if (daysApart <= 31){
-                                filteredTasks.add(t);
-                            }
-                        }
-                        for (Task f : filteredTasks){
-                            Log.i("AHH", "Before Plot: " + f.getTitle());
-                        }
-                        plotTasks(filteredTasks);
-                        break;
-
-                    case R.id.timeScaleAll:
-                        timeScaleDisplay.setTitle("All");
-                        timeFilter = "All";
-
-                        filteredTasks = allTasks;
-                        plotTasks(filteredTasks);
-                        break;
-
+                if (menuItem.getItemId() == R.id.filter){
+                    filterDialog.show();
+                } else if (menuItem.getItemId() == R.id.cancelFilter){
+                    selectedProjectString = "All";
+                    selectedTimeString = "All";
+                    projectAutoComplete.setSelection(0);
+                    timeAutoComplete.setSelection(0);
+                    plotTasks(filterTasks(allTasks));
+                    cancelFilter.setVisible(false);
                 }
                 return false;
             }
@@ -304,17 +292,45 @@ public class MatrixFragment extends Fragment {
 
         if( currentUser != null){
 
-            taskViewModel.getOutstandingUserTasks(currentUser.getUserName().toString()).observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
+            matrixViewModel.getUserProjects(currentUser.getUserName()).observe(getViewLifecycleOwner(), new Observer<List<Project>>() {
+                @Override
+                public void onChanged(List<Project> projects) {
+                    userProjects = projects;
+                    projectStrings.clear();
+                    projectStrings.add("All");
+                    for (Project p: projects) {
+                        projectStrings.add(p.getName());
+                    }
+
+
+                    //Setup project dropdown list
+                    adapterProject = new ArrayAdapter<String>(getActivity(), R.layout.list_categories, projectStrings);
+                    projectAutoComplete.setAdapter(adapterProject);
+                }
+            });
+
+
+
+            matrixViewModel.getUserTasks(currentUser.getUserName()).observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(List<Task> tasks) {
 
+                    allTasks.clear();
 
-                    allTasks = tasks;
-                    List<Task> filteredTasks = new ArrayList<>();
+                    for (Task t: tasks){
+                        if (!t.getComplete() && !t.isOverDue()){
+                            allTasks.add(t);
+                        }
+                    }
+
+                    plotTasks(filterTasks(allTasks));
+
+                    //allTasks = tasks;
+                    /*List<Task> filteredTasks = new ArrayList<>();
                     switch (timeFilter){
                         case "2 Weeks":
                             filteredTasks.clear();
-                            for (Task t: tasks){
+                            for (Task t: allTasks){
                                 String taskDate = t.getDeadlineDate();
                                 LocalDate taskDateLocal = LocalDate.parse(taskDate,dateFormat);
                                 long daysApart = ChronoUnit.DAYS.between(currentDate, taskDateLocal );
@@ -327,7 +343,7 @@ public class MatrixFragment extends Fragment {
                             break;
                         case "1 Month":
                             filteredTasks.clear();
-                            for (Task t: tasks){
+                            for (Task t: allTasks){
                                 String taskDate = t.getDeadlineDate();
                                 LocalDate taskDateLocal = LocalDate.parse(taskDate,dateFormat);
                                 long daysApart = ChronoUnit.DAYS.between(taskDateLocal, currentDate );
@@ -338,19 +354,106 @@ public class MatrixFragment extends Fragment {
                             plotTasks(filteredTasks);
                             break;
                         case "All":
-                            filteredTasks = tasks;
+                            filteredTasks = allTasks;
                             plotTasks(filteredTasks);
                             break;
                         default:
                             Log.i("AHS", "Default was run");
                             break;
 
-                    }
+                    }*/
 
                 }
             });
 
         }
+
+
+
+        //Build the filter dialog
+        AlertDialog.Builder filterBuilder = new AlertDialog.Builder(getContext());
+        View filterDialogLayout = LayoutInflater.from(getActivity()).inflate(R.layout.matrix_filter, null);
+        filterBuilder.setTitle("Filter tasks");
+        filterBuilder.setView(filterDialogLayout);
+
+        projectAutoComplete = filterDialogLayout.findViewById(R.id.matrixProjectAutoComplete);
+        projectAutoComplete.setText("All");
+        selectedProjectString = "All";
+
+        timeAutoComplete = filterDialogLayout.findViewById(R.id.matrixTimeAutoComplete);
+        timeAutoComplete.setText("All");
+        selectedTimeString = "All";
+
+        timesHash.put("Today", 0);
+        timesHash.put("This week", 7);
+        timesHash.put("This Month", 31);
+        timesHash.put("All", 0);
+
+        times.clear();
+        for (String t: timesHash.keySet()){
+            times.add(t);
+        }
+
+        //Setup time dropdown list
+        adapterTime = new ArrayAdapter<String>(getActivity(), R.layout.list_categories, times);
+        timeAutoComplete.setAdapter(adapterTime);
+
+        filterBuilder.setPositiveButton("Filter", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                filterDialog.dismiss();
+
+                if (!selectedProjectString.equals("All") || !selectedTimeString.equals("All")){
+                    cancelFilter.setVisible(true);
+                } else {
+                    cancelFilter.setVisible(false);
+                }
+
+                plotTasks(filterTasks(allTasks));
+            }
+        });
+
+        filterBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                filterDialog.dismiss();
+            }
+        });
+
+        filterDialog = filterBuilder.create();
+
+        filterDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                //Why does this code make it lose the options
+                //projectAutoComplete.setText(selectedProjectString);
+                Button completeButton = filterDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                if (completeButton != null){
+                    completeButton.setTextColor(Color.WHITE);
+                    completeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.blue));
+                } else {
+                    Log.i("AHS", "FILTER BUTTON IS NULL");
+                }
+            }
+        });
+
+        //Set up project auto complete text box click listener
+        projectAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                selectedProjectString = adapterView.getItemAtPosition(i).toString();
+
+
+            }
+        });
+
+        timeAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                selectedTimeString = adapterView.getItemAtPosition(i).toString();
+            }
+        });
 
 
 
@@ -361,7 +464,8 @@ public class MatrixFragment extends Fragment {
         super.onDestroyView();
 
         for (Task t: tasksToUpdate) {
-            taskViewModel.updateTask(t);
+            //taskViewModel.updateTask(t);
+            matrixViewModel.updateTask(t);
         }
 
         BottomNavigationView navBar = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
@@ -395,7 +499,8 @@ public class MatrixFragment extends Fragment {
             case android.R.id.home:
                 Log.i("AHS", "Back arrow pressed");
                 for (Task t: tasksToUpdate) {
-                    taskViewModel.updateTask(t);
+                    //taskViewModel.updateTask(t);
+                    matrixViewModel.updateTask(t);
                 }
                 NavHostFragment.findNavController(MatrixFragment.this)
                         .navigate(R.id.action_navigation_matrix_to_navigation_home);
@@ -464,5 +569,66 @@ public class MatrixFragment extends Fragment {
             textViewTasks.put(newTextView, t);
 
         }
+    }
+
+    private List<Task> filterTasks(List<Task> tasks){
+
+        List<Task> filteredByProject = new ArrayList<>();
+
+        //If all is selected we arent filtering project
+        if (selectedProjectString.equals("All")){
+            Log.i("AHS", "Not filtering projects");
+            filteredByProject = tasks;
+        } else {
+            //Get the project from the selected project string
+            Log.i("AHS", "filtering projects");
+            for (Project p : userProjects){
+                if (p.getName().equals(selectedProjectString)){
+                    selectedProject = p;
+                }
+            }
+            Log.i("AHS", "Project is : " + selectedProjectString);
+
+            //Add all tasks belonging to the selected project to the arraylist
+            for (Task t: tasks){
+                if (t.getProjectId() == selectedProject.getId()){
+                    filteredByProject.add(t);
+                }
+            }
+        }
+
+        //If all is selected we arent filtering time
+        List<Task> filteredByProjectAndTime = new ArrayList<>();
+        if (selectedTimeString.equals("All")){
+            Log.i("AHS", "Not filtering time");
+            filteredByProjectAndTime = filteredByProject;
+        } else {
+            //Get selected time frame value
+            Log.i("AHS", "filtering time");
+            int timeScale = 0;
+            for (String t: timesHash.keySet()){
+                if (t.equals(selectedTimeString)){
+                    timeScale = timesHash.get(t);
+
+                }
+            }
+
+            //Filter through all tasks and check if the difference between the deadline date and today is greater
+            //than the selected time value
+            for (Task t: filteredByProject){
+                String taskDate = t.getDeadlineDate();
+                LocalDate taskDateLocal = LocalDate.parse(taskDate,dateFormat);
+                long daysApart = ChronoUnit.DAYS.between(currentDate, taskDateLocal);
+                Log.i("AHS", "Title: " + t.getTitle() + " taskDate: " + taskDate + " Days apart: " +
+                        String.valueOf(daysApart) + "TimeScale: " + String.valueOf(timeScale));
+                if (daysApart <= timeScale){
+                    filteredByProjectAndTime.add(t);
+                }
+            }
+
+
+        }
+
+        return filteredByProjectAndTime;
     }
 }

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="Filter by project:"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:id="@+id/matrixProjectText"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/matrixProjectInput"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Select project"
+        app:layout_constraintTop_toBottomOf="@id/matrixProjectText"
+        android:layout_marginTop="4dp"
+        android:layout_marginHorizontal="16dp"
+        android:textSize="18dp"
+        app:boxStrokeWidth="2dp"
+        app:hintTextAppearance="@style/TextInputLayout"
+        >
+
+        <AutoCompleteTextView
+            android:id="@+id/matrixProjectAutoComplete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:textSize="18dp"
+            android:gravity="top|left"
+
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/matrixProjectInput"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="32dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="Filter by time:"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:id="@+id/matrixTimeText"
+        />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/matrixTimeInput"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Select Time Scale"
+        app:layout_constraintTop_toBottomOf="@id/matrixTimeText"
+        android:layout_marginTop="4dp"
+        android:layout_marginHorizontal="16dp"
+        android:textSize="18dp"
+        app:boxStrokeWidth="2dp"
+        app:hintTextAppearance="@style/TextInputLayout"
+        >
+
+        <AutoCompleteTextView
+            android:id="@+id/matrixTimeAutoComplete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:textSize="18dp"
+            android:gravity="top|left"
+
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
