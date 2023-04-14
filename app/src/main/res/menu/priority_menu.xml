@@ -6,7 +6,7 @@
         android:id="@+id/welcomeUser"
         android:title="Welcome, "
         android:contentDescription="Welcome"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/login"
@@ -19,5 +19,12 @@
         android:title="Logout"
         android:contentDescription="Logout"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/searchBar"
+        android:title="Search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        android:icon="@drawable/search_icon"/>
 
 </menu>

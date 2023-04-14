@@ -8,11 +8,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.appcompat.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuItemCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
@@ -78,18 +80,46 @@ public class TaskFragment extends Fragment {
                 MenuItem menuLogoutIcon = menu.findItem(R.id.logout);
                 MenuItem menuLoginIcon = menu.findItem(R.id.login);
                 MenuItem menuWelcomeIcon = menu.findItem(R.id.welcomeUser);
+                MenuItem menuSearchIcon = menu.findItem(R.id.searchBar);
 
                 currentUser = ((MainActivity) getActivity()).getCurrentUser();
                 if (currentUser == null) {
                     menuLogoutIcon.setVisible(false);
                     menuLoginIcon.setVisible(true);
                     menuWelcomeIcon.setVisible(false);
+                    menuSearchIcon.setVisible(false);
                 } else {
                     menuLogoutIcon.setVisible(true);
                     menuLoginIcon.setVisible(false);
                     menuWelcomeIcon.setVisible(true);
+                    menuSearchIcon.setVisible(true);
                     menuWelcomeIcon.setTitle("Welcome, " + currentUser.getName());
                 }
+
+                SearchView searchView = (SearchView) menuSearchIcon.getActionView();
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String s) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String s) {
+
+                        List<Task> searchTasks = new ArrayList<>();
+                        for (Task t: prioritisedTasks){
+                            if (t.getTitle().contains(s)){
+                                searchTasks.add(t);
+                            }
+                        }
+
+                        //adapter.setTasks(searchTasks);
+                        splitTasks(searchTasks);
+
+                        return true;
+                    }
+                });
+
 
             }
 
@@ -146,7 +176,7 @@ public class TaskFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         recyclerView.setHasFixedSize(true);
 
-        final TaskAdapter adapter = new TaskAdapter();
+        adapter = new TaskAdapter();
         recyclerView.setAdapter(adapter);
 
         if (currentUser != null) {
@@ -167,33 +197,8 @@ public class TaskFragment extends Fragment {
                     //Prioritise tasks into order
                     prioritisedTasks = prioritiseTasks(userTasks);
 
-                    //Split prioritised tasks into their respective lists
-                    for (Task t: prioritisedTasks){
-                        if (t.getComplete()){
-                            completedTasks.add(t);
-                        } else {
-                            if (!t.isOverDue()){
-                                outstandingTasks.add(t);
-                            } else {
-                                overdueTasks.add(t);
-                            }
-
-                        }
-                    }
-
-                    //Set the adapter to display the list of tasks respective to the currently selected tab
-                    int tabSelected = tabLayout.getSelectedTabPosition();
-                    switch (tabSelected){
-                        case 0:
-                            adapter.setTasks(outstandingTasks);
-                            break;
-                        case 1:
-                            adapter.setTasks(completedTasks);
-                            break;
-                        case 2:
-                            adapter.setTasks(overdueTasks);
-                            break;
-                    }
+                    //Call function to split tasks into tabs
+                    splitTasks(prioritisedTasks);
 
                     createRepeatingTasks(tasks);
 
@@ -596,6 +601,40 @@ public class TaskFragment extends Fragment {
                 taskViewModel.insertTask(newTask);
 
             }
+        }
+    }
+
+    private void splitTasks(List<Task> tasks){
+        completedTasks.clear();
+        outstandingTasks.clear();
+        overdueTasks.clear();
+
+        //Split prioritised tasks into their respective lists
+        for (Task t: tasks){
+            if (t.getComplete()){
+                completedTasks.add(t);
+            } else {
+                if (!t.isOverDue()){
+                    outstandingTasks.add(t);
+                } else {
+                    overdueTasks.add(t);
+                }
+
+            }
+        }
+
+        //Set the adapter to display the list of tasks respective to the currently selected tab
+        int tabSelected = tabLayout.getSelectedTabPosition();
+        switch (tabSelected){
+            case 0:
+                adapter.setTasks(outstandingTasks);
+                break;
+            case 1:
+                adapter.setTasks(completedTasks);
+                break;
+            case 2:
+                adapter.setTasks(overdueTasks);
+                break;
         }
     }
 }
