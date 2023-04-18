@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sortMatrixDueDateButton"
+        >
+
+        <TextView
+            android:id="@+id/sortMatrixAndDueDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@+id/sortMatrixAndDueDateImage"
+            app:layout_constraintBottom_toBottomOf="@+id/sortMatrixAndDueDateImage"
+            app:layout_constraintStart_toEndOf="@+id/sortMatrixAndDueDateImage"
+            android:layout_marginLeft="16dp"
+            android:text="Matrix and due date"
+            android:textColor="@color/black"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+
+        <ImageView
+            android:id="@+id/sortMatrixAndDueDateImage"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/matrix_icon"
+            android:layout_marginTop="32dp"
+            app:tint="@color/blue"
+            android:layout_marginStart="32dp"/>
+
+        <ImageView
+            android:id="@+id/sortMatrixAndDueDateImageTwo"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintTop_toTopOf="@id/sortMatrixAndDueDateImage"
+            app:layout_constraintEnd_toEndOf="@id/sortMatrixAndDueDateImage"
+            android:src="@drawable/date_icon"
+            android:layout_marginTop="-8dp"
+            android:layout_marginRight="-8dp"
+            app:tint="@color/grey"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sortMatrixButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="64dp">
+
+        <TextView
+            android:id="@+id/sortMatrix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@+id/sortMatrixImage"
+            app:layout_constraintBottom_toBottomOf="@+id/sortMatrixImage"
+            app:layout_constraintStart_toEndOf="@+id/sortMatrixImage"
+            android:layout_marginLeft="16dp"
+            android:text="Matrix"
+            android:textColor="@color/black"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+
+        <ImageView
+            android:id="@+id/sortMatrixImage"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/matrix_icon"
+            android:layout_marginRight="16dp"
+            app:tint="@color/blue"
+            android:layout_marginLeft="32dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+</LinearLayout>

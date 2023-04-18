@@ -1,5 +1,8 @@
 package com.akram.prioritymatrix.ui.tasks;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,11 +12,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.appcompat.widget.SearchView;
+
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.MenuItemCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -31,6 +38,8 @@ import com.akram.prioritymatrix.database.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+
+import org.w3c.dom.Text;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -62,8 +71,10 @@ public class TaskFragment extends Fragment {
     DateTimeFormatter saveDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter saveTimeFormat = DateTimeFormatter.ofPattern("HHmm");
 
-
     private TabLayout tabLayout;
+
+    AlertDialog sortDialog;
+    String sortMode = "MatrixDue";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -81,6 +92,7 @@ public class TaskFragment extends Fragment {
                 MenuItem menuLoginIcon = menu.findItem(R.id.login);
                 MenuItem menuWelcomeIcon = menu.findItem(R.id.welcomeUser);
                 MenuItem menuSearchIcon = menu.findItem(R.id.searchBar);
+                MenuItem menuSortIcon = menu.findItem(R.id.sortIcon);
 
                 currentUser = ((MainActivity) getActivity()).getCurrentUser();
                 if (currentUser == null) {
@@ -88,11 +100,13 @@ public class TaskFragment extends Fragment {
                     menuLoginIcon.setVisible(true);
                     menuWelcomeIcon.setVisible(false);
                     menuSearchIcon.setVisible(false);
+                    menuSortIcon.setVisible(false);
                 } else {
                     menuLogoutIcon.setVisible(true);
                     menuLoginIcon.setVisible(false);
                     menuWelcomeIcon.setVisible(true);
                     menuSearchIcon.setVisible(true);
+                    menuSortIcon.setVisible(true);
                     menuWelcomeIcon.setTitle("Welcome, " + currentUser.getName());
                 }
 
@@ -135,6 +149,8 @@ public class TaskFragment extends Fragment {
                     NavHostFragment.findNavController(TaskFragment.this)
                             .navigate(R.id.action_navigation_home_to_loginFragment);
                     Toast.makeText(getActivity(), "Login button was pressed.", Toast.LENGTH_SHORT).show();
+                } else if (menuItem.getItemId() == R.id.sortIcon){
+                    sortDialog.show();
                 }
 
 
@@ -171,6 +187,39 @@ public class TaskFragment extends Fragment {
                         .navigate(R.id.action_navigation_home_to_detailTaskFragment);
             }
         });
+
+        //Build the delete dialog
+        AlertDialog.Builder sortBuilder = new AlertDialog.Builder(getContext());
+        View sortDialogLayout = LayoutInflater.from(getActivity()).inflate(R.layout.sort_dialog, null);
+        ConstraintLayout sortMatrixButton, sortMatrixDueDateButton;
+
+        sortMatrixButton = sortDialogLayout.findViewById(R.id.sortMatrixButton);
+        sortMatrixDueDateButton = sortDialogLayout.findViewById(R.id.sortMatrixDueDateButton);
+
+        sortMatrixButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("AHS", "Pressed sort matrix button");
+                sortMode = "Matrix";
+                splitTasks(prioritiseTasks(userTasks));
+                sortDialog.dismiss();
+            }
+        });
+
+        sortMatrixDueDateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("AHS", "Pressed sort matrix and due date button");
+                sortMode = "MatrixDue";
+                splitTasks(prioritiseTasks(userTasks));
+                sortDialog.dismiss();
+            }
+        });
+
+        sortBuilder.setTitle("Sort Tasks");
+        sortBuilder.setView(sortDialogLayout);
+
+        sortDialog = sortBuilder.create();
 
         RecyclerView recyclerView = getView().findViewById(R.id.task_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
@@ -305,31 +354,34 @@ public class TaskFragment extends Fragment {
             @Override
             public int compare(Task t1, Task t2) {
 
-                int deadlineImportance = Integer.compare(Integer.valueOf(t1.getDeadlineDate()), Integer.valueOf(t2.getDeadlineDate()));
-                //Log.i("AHS", "Deadline importance of t1: " + t1.getDeadlineDate() + " t2: " + t2.getDeadlineDate() + " = " + deadlineImportance);
 
-                if (deadlineImportance == 0){
-                    //Check which quadrant they belong to and compare
-                    int t1Category = matrixCategoryOrder.indexOf(t1.getCategory());
-                    int t2Category = matrixCategoryOrder.indexOf(t2.getCategory());
-
-                    //If this returns 0 they are in the same category and we therefore need to prioritise by its importance
-                    int categoryImportance = Integer.compare(t1Category, t2Category);
-
-                    if (categoryImportance == 0){
-                        if (Float.compare(t1.getPosY(), t2.getPosY()) != 0){
-                            //If they are the same category, the task with greater importance is prioritised
-                            return Float.compare(t1.getPosY(), t2.getPosY());
-                        } else {
-                            //If category and importance is the same, tasks are prioritised by urgency
-                            return Float.compare(t1.getPosX(), t2.getPosX());
-                        }
-
+                if (sortMode.equals("MatrixDue")){
+                    int deadlineImportance = Integer.compare(Integer.valueOf(t1.getDeadlineDate()), Integer.valueOf(t2.getDeadlineDate()));
+                    if (deadlineImportance != 0){
+                        return deadlineImportance;
                     }
-                    return categoryImportance; //This will return if the categories are different
                 }
 
-                return deadlineImportance;
+                int t1Category = matrixCategoryOrder.indexOf(t1.getCategory());
+                int t2Category = matrixCategoryOrder.indexOf(t2.getCategory());
+
+                //If this returns 0 they are in the same category and we therefore need to prioritise by its importance
+                int categoryImportance = Integer.compare(t1Category, t2Category);
+
+                if (categoryImportance == 0){
+                    if (Float.compare(t1.getPosY(), t2.getPosY()) != 0){
+                        //If they are the same category, the task with greater importance is prioritised
+                        return Float.compare(t1.getPosY(), t2.getPosY());
+                    } else {
+                        //If category and importance is the same, tasks are prioritised by urgency
+                        return Float.compare(t1.getPosX(), t2.getPosX());
+                    }
+
+                }
+                return categoryImportance; //This will return if the categories are different
+
+                //Log.i("AHS", "Deadline importance of t1: " + t1.getDeadlineDate() + " t2: " + t2.getDeadlineDate() + " = " + deadlineImportance);
+
             }
         });
 

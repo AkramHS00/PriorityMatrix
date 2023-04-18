@@ -27,4 +27,12 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         android:icon="@drawable/search_icon"/>
 
+    <item
+        android:id="@+id/sortIcon"
+        android:title="Sort"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/sort_icon"/>
+
+
+
 </menu>
