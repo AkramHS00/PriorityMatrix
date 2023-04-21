@@ -1,23 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
         android:id="@+id/calendarDayText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:text="22"
-        android:layout_margin="8dp"/>
+        android:layout_margin="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
-    <View
-        android:id="@+id/taskDot"
-        android:layout_width="5dp"
-        android:layout_height="5dp"
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:background="@drawable/selected_date_cricle"/>
+        android:rowCount="2"
+        android:columnCount="2"
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/taskDoDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/selected_date_cricle"
+            android:backgroundTint="@color/green"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_margin="2dp"/>
+        <View
+            android:id="@+id/taskScheduleDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/selected_date_cricle"
+            android:backgroundTint="@color/yellow"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_margin="2dp"/>
+        <View
+            android:id="@+id/taskDelegateDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/selected_date_cricle"
+            android:backgroundTint="@color/blue"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_margin="2dp"/>
+        <View
+            android:id="@+id/taskDeleteDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/selected_date_cricle"
+            android:backgroundTint="@color/red"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_margin="2dp"/>
+
+    </LinearLayout>
+
+
 
 
 

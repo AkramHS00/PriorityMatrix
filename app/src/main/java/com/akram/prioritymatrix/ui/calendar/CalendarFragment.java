@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -169,23 +170,54 @@ public class CalendarFragment extends Fragment {
                     if (day.getDate().compareTo(LocalDate.now()) == 0){
                         container.textView.setTextColor(Color.BLUE);
                         container.textView.setBackgroundResource(R.drawable.current_date_circle);
-                        container.taskDot.setVisibility(View.INVISIBLE);
+                        //container.taskDot.setVisibility(View.INVISIBLE);
                         //Log.i("AHS", "Test date is : " + taskDateFormatter.format(day.getDate()));
 
-                    } else if (day.getDate()== selectedDate){ //If equal to selected date
+                        container.taskDoDot.setVisibility(View.GONE);
+                        container.taskScheduleDot.setVisibility(View.GONE);
+                        container.taskDelegateDot.setVisibility(View.GONE);
+                        container.taskDeleteDot.setVisibility(View.GONE);
+
+                    } else if (day.getDate().equals(selectedDate) ){ //If equal to selected date
                         container.textView.setTextColor(Color.WHITE);
                         container.textView.setBackgroundResource(R.drawable.selected_date_cricle);
-                        container.taskDot.setVisibility(View.INVISIBLE);
+                        //container.taskDot.setVisibility(View.INVISIBLE);
+
+                        container.taskDoDot.setVisibility(View.GONE);
+                        container.taskScheduleDot.setVisibility(View.GONE);
+                        container.taskDelegateDot.setVisibility(View.GONE);
+                        container.taskDeleteDot.setVisibility(View.GONE);
 
                     } else {
                         container.textView.setTextColor(Color.BLACK);
                         container.textView.setBackground(null);
-                        container.taskDot.setVisibility(View.INVISIBLE); //Check if events on this date
+                        //container.taskDot.setVisibility(View.INVISIBLE); //Check if events on this date
+
+                        container.taskDoDot.setVisibility(View.GONE);
+                        container.taskScheduleDot.setVisibility(View.GONE);
+                        container.taskDelegateDot.setVisibility(View.GONE);
+                        container.taskDeleteDot.setVisibility(View.GONE);
 
                         for (Task t: userTasks){
                             //Log.i("AHS", "calender loop : " +t.getTitle());
                             if (t.getDeadlineDate().equals(taskDateFormatter.format(day.getDate()))){
-                                container.taskDot.setVisibility(View.VISIBLE);
+                                //container.taskDot.setVisibility(View.VISIBLE);
+                                Log.i("AHS", "Task " + t.getTitle() + " is on " + t.getDeadlineDate() + " with category: " + t.getCategory());
+                                switch (t.getCategory()){
+                                    case "Do":
+                                        container.taskDoDot.setVisibility(View.VISIBLE);
+                                        break;
+                                    case "Schedule":
+                                        container.taskScheduleDot.setVisibility(View.VISIBLE);
+                                        break;
+                                    case "Delegate":
+                                        container.taskDelegateDot.setVisibility(View.VISIBLE);
+                                        break;
+                                    case "Delete":
+                                        container.taskDeleteDot.setVisibility(View.VISIBLE);
+                                        break;
+
+                                }
                             }
                         }
 
@@ -193,7 +225,12 @@ public class CalendarFragment extends Fragment {
 
                 } else {
                     container.textView.setVisibility(View.INVISIBLE);
-                    container.taskDot.setVisibility(View.INVISIBLE);
+                    //container.taskDot.setVisibility(View.INVISIBLE);
+
+                    container.taskDoDot.setVisibility(View.GONE);
+                    container.taskScheduleDot.setVisibility(View.GONE);
+                    container.taskDelegateDot.setVisibility(View.GONE);
+                    container.taskDeleteDot.setVisibility(View.GONE);
                 }
             }
         });
@@ -283,12 +320,20 @@ public class CalendarFragment extends Fragment {
         public TextView textView;
         public CalendarDay day;
         public CalendarView calendarView;
-        public View taskDot;
+        //public View taskDot;
+        public View taskDoDot;
+        public View taskScheduleDot;
+        public View taskDelegateDot;
+        public View taskDeleteDot;
 
         public DayViewContainer(View view) {
             super(view);
             textView = view.findViewById(R.id.calendarDayText);
-            taskDot = view.findViewById(R.id.taskDot);
+            //taskDot = view.findViewById(R.id.taskDot);
+            taskDoDot = view.findViewById(R.id.taskDoDot);
+            taskScheduleDot = view.findViewById(R.id.taskScheduleDot);
+            taskDelegateDot = view.findViewById(R.id.taskDelegateDot);
+            taskDeleteDot = view.findViewById(R.id.taskDeleteDot);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
