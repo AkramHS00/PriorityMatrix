@@ -723,7 +723,7 @@ public class DetailTaskFragment extends Fragment {
                                         //Log.i("AHS", "When due is checked");
                                         break;
                                     case "10 Minutes Before":
-                                        millisUntilReminder = zonedDeadlineDateTime.toInstant().toEpochMilli() - 60000;  //600000
+                                        millisUntilReminder = zonedDeadlineDateTime.toInstant().toEpochMilli() - 600000;  //600000
                                         //Log.i("AHS", "10 Minutes Before is checked");
                                         break;
                                     case "Half An Hour Before":
