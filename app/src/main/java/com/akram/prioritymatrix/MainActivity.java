@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
 
-
         //Create shared preferences
         sharedPreferences = getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
         //Get shared preferences
