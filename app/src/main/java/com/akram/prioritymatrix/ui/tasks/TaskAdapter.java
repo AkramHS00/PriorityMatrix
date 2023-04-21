@@ -76,8 +76,17 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskHolder> {
         } else {
             int headerNumber = getNumberOfTasksAtDate(currentTask.getDeadlineDate());
             holder.taskDateHeader.setVisibility(View.VISIBLE);
-            holder.taskDateHeader.setText(headerDateFormat.format(LocalDate.parse(currentTask.getDeadlineDate(), saveDateFormat))
-                    + " (" + headerNumber + ")");
+
+            if (currentTask.getDeadlineDate().equals(saveDateFormat.format(LocalDate.now()))){
+                holder.taskDateHeader.setText("Today (" + headerNumber + ")");
+            } else if (currentTask.getDeadlineDate().equals(saveDateFormat.format(LocalDate.now().plusDays(1)))){
+                holder.taskDateHeader.setText("Tomorrow (" + headerNumber + ")");
+            } else {
+                holder.taskDateHeader.setText(headerDateFormat.format(LocalDate.parse(currentTask.getDeadlineDate(), saveDateFormat))
+                        + " (" + headerNumber + ")");
+            }
+
+
         }
 
         if(currentTask.getComplete() == true){
