@@ -348,13 +348,14 @@ public class TaskFragment extends Fragment {
     }
 
     private List<Task> prioritiseTasks(List<Task> tasks) {
-        List<String> matrixCategoryOrder = Arrays.asList("Do", "Schedule", "Delegate", "Delete"); //This is the order we will prioritise our tasks by (same as elsewhere in app)
+        //This is the order we will prioritise our tasks by (same as elsewhere in app)
+        List<String> matrixCategoryOrder = Arrays.asList("Do", "Schedule", "Delegate", "Delete");
         List<Task> prioritisedTasks = tasks;
         Collections.sort(prioritisedTasks, new Comparator<Task>() {
             @Override
             public int compare(Task t1, Task t2) {
 
-
+                //Check if we are sorting by due date, if so compare dates, if dates are difference return earliest
                 if (sortMode.equals("MatrixDue")){
                     int deadlineImportance = Integer.compare(Integer.valueOf(t1.getDeadlineDate()), Integer.valueOf(t2.getDeadlineDate()));
                     if (deadlineImportance != 0){
@@ -379,8 +380,6 @@ public class TaskFragment extends Fragment {
 
                 }
                 return categoryImportance; //This will return if the categories are different
-
-                //Log.i("AHS", "Deadline importance of t1: " + t1.getDeadlineDate() + " t2: " + t2.getDeadlineDate() + " = " + deadlineImportance);
 
             }
         });

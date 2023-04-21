@@ -479,13 +479,13 @@ public class MatrixFragment extends Fragment {
         int quadrant;
 
         if (X < screenCenterX && Y < screenCenterY) {
-            quadrant = 1; // top-left
+            quadrant = 1; // top left quadrant
         } else if (X >= screenCenterX && Y < screenCenterY) {
-            quadrant = 2; // top-right
+            quadrant = 2; // top right quadrant
         } else if (X < screenCenterX && Y >= screenCenterY) {
-            quadrant = 3; // bottom-left
+            quadrant = 3; // bottom left quadrant
         } else {
-            quadrant = 4; // bottom-right
+            quadrant = 4; // bottom right quadrant
         }
 
         return quadrant;
