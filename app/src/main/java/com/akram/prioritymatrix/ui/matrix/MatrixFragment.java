@@ -234,8 +234,12 @@ public class MatrixFragment extends Fragment {
                 } else if (menuItem.getItemId() == R.id.cancelFilter){
                     selectedProjectString = "All";
                     selectedTimeString = "All";
-                    projectAutoComplete.setSelection(0);
-                    timeAutoComplete.setSelection(0);
+                    //projectAutoComplete.setSelection(0);
+                    //timeAutoComplete.setSelection(0);
+                    projectAutoComplete.setText("All");
+                    timeAutoComplete.setText("All");
+                    adapterProject.getFilter().filter(null);
+                    adapterTime.getFilter().filter(null);
                     plotTasks(filterTasks(allTasks));
                     cancelFilter.setVisible(false);
                 }
