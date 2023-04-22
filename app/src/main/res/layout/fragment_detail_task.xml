@@ -252,7 +252,8 @@
             android:backgroundTint="@color/blue"
             android:switchPadding="32dp"
             android:trackTint="@color/switch_track_color"
-            android:thumbTint="@color/switch_thumb_color"/>
+            android:thumbTint="@color/switch_thumb_color"
+            android:visibility="gone"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -264,7 +265,8 @@
             app:layout_constraintTop_toBottomOf="@+id/switchReminder"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:visibility="gone"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -277,7 +279,8 @@
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="16dp"
-            android:layout_marginRight="32dp"/>
+            android:layout_marginRight="32dp"
+            android:visibility="gone"/>
 
         <Button
             android:layout_width="match_parent"
@@ -286,7 +289,7 @@
             android:layout_marginBottom="16dp"
             android:layout_marginHorizontal="32dp"
             android:text="Save"
-            app:layout_constraintTop_toBottomOf="@id/textReminderTime"
+            app:layout_constraintTop_toBottomOf="@id/repeatButton"
             android:layout_marginTop="16dp"/>
 
 
