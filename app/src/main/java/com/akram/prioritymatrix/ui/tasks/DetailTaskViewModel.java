@@ -44,4 +44,6 @@ public class DetailTaskViewModel extends AndroidViewModel {
         return userProjects;
     }
 
+    public void insertProject(Project project){ projectRepository.insertProject(project);}
+
 }

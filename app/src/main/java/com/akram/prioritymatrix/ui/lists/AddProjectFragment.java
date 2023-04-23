@@ -66,13 +66,13 @@ public class AddProjectFragment extends Fragment {
                     //Check if we are updating project
                     if (currentProject != null){
 
-                        Project newProject = new Project(editName.getText().toString(), currentUser.getName());
+                        Project newProject = new Project(editName.getText().toString(), currentUser.getUserName());
                         newProject.setId(currentProject.getId());
                         addProjectViewModel.updateProject(newProject);
 
                     } else {
 
-                        Project newProject = new Project(editName.getText().toString(), currentUser.getName());
+                        Project newProject = new Project(editName.getText().toString(), currentUser.getUserName());
                         addProjectViewModel.insertProject(newProject);
 
                     }

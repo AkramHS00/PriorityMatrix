@@ -145,8 +145,16 @@ public class DetailTaskFragment extends Fragment {
             @Override
             public void onChanged(List<Project> projects) {
                 userProjects = projects;
+
+                //Check if user has any projects, if they don't, create a default project
+                if (userProjects.size() == 0){
+                    Project project = new Project("Default", currentUser.getUserName());
+                    detailTaskViewModel.insertProject(project);
+                    //userProjects.add(project);
+                }
+
                 //Log.i("AHS", "Set user projects");
-                for (Project p: projects) {
+                for (Project p: userProjects) {
                     projectStrings.add(p.getName().toString());
                     if (currentTask != null){
                         if (currentTask.getProjectId() == p.getId()){
