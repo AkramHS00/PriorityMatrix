@@ -19,6 +19,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.Settings;
 import android.util.Log;
@@ -33,6 +35,7 @@ import com.akram.prioritymatrix.MainActivity;
 import com.akram.prioritymatrix.R;
 import com.akram.prioritymatrix.database.Task;
 import com.akram.prioritymatrix.database.User;
+import com.akram.prioritymatrix.ui.tasks.TaskAdapter;
 import com.akram.prioritymatrix.ui.tasks.TaskViewModel;
 
 import java.util.ArrayList;
@@ -63,6 +66,9 @@ public class ReportFragment extends Fragment {
     LinearLayout textLinearLayout;
 
     List<Map.Entry<String, Long>> sortedMap;
+
+    RecyclerView appUsageRecyclerView;
+    private AppUsageAdapter appUsageAdapter;
 
 
     @Override
@@ -106,10 +112,26 @@ public class ReportFragment extends Fragment {
                 Log.i("AHS", "AppUsages is not null");
             }
 
-            reportViewModel.getSortedAppUsageStats().observe(getViewLifecycleOwner(), new Observer<List<Map.Entry<String, Long>>>() {
+            /*reportViewModel.getSortedAppUsageStats().observe(getViewLifecycleOwner(), new Observer<List<Map.Entry<String, Long>>>() {
                 @Override
                 public void onChanged(List<Map.Entry<String, Long>> appUsages) {
                     Log.i("AHS", "appUsages live data has changed");
+                    displayAppUsage(appUsages);
+                }
+            });*/
+
+            appUsageRecyclerView = getView().findViewById(R.id.appUsageRecyclerView);
+            appUsageRecyclerView.setVisibility(View.VISIBLE);
+
+            appUsageRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+            appUsageRecyclerView.setHasFixedSize(true);
+
+            appUsageAdapter = new AppUsageAdapter();
+            appUsageRecyclerView.setAdapter(appUsageAdapter);
+
+            reportViewModel.getSortedAppUsageStatsObjects().observe(getViewLifecycleOwner(), new Observer<List<AppUsage>>() {
+                @Override
+                public void onChanged(List<AppUsage> appUsages) {
                     displayAppUsage(appUsages);
                 }
             });
@@ -164,17 +186,18 @@ public class ReportFragment extends Fragment {
     }
 
 
-    void displayAppUsage(List<Map.Entry<String, Long>> appUsages){
+    void displayAppUsage(List<AppUsage> appUsages){
         int current = 0;
-        for (Map.Entry<String, Long> usage: appUsages){
-            Log.i("AHS", "App: " + usage.getKey() + "Time: " + usage.getValue());
 
+        for (AppUsage a : appUsages){
             TextView temp = (TextView) textLinearLayout.getChildAt(current);
             current++;
             if (temp != null){
-                temp.setText("App: " + usage.getKey() + " Time: " + usage.getValue());
+                temp.setText("App: " + a.getAppTitle() + " Time: " + a.getAppTime());
             }
-
+            Log.i("AHS", "AppUsage object tite: " + a.getAppTitle() + " time: " + a.getAppTime());
         }
+
+        appUsageAdapter.setAppUsages(appUsages);
     }
 }

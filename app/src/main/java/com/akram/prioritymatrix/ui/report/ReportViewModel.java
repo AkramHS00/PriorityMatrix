@@ -36,6 +36,7 @@ public class ReportViewModel extends AndroidViewModel {
 
 
     private MutableLiveData<List<Map.Entry<String, Long>>> sortedMap;
+    private MutableLiveData<List<AppUsage>> sortedAppUsages;
     //boolean for fragment to check if data has already been retrieved
     private boolean usagesRetrieved = false;
 
@@ -44,6 +45,7 @@ public class ReportViewModel extends AndroidViewModel {
 
         repository = new TaskRepository(application);
         sortedMap = new MutableLiveData<>();
+        sortedAppUsages = new MutableLiveData<>();
     }
 
     public LiveData<List<Task>> getUserTasks(String userName) {
@@ -83,18 +85,21 @@ public class ReportViewModel extends AndroidViewModel {
                 super.onPostExecute(appUsages);
 
                 Log.i("AHS", "Setting value of sorted map in onPostExecute");
-                sortedMap.setValue(sortAppUsages(appUsages, context));
-
+                //sortedMap.setValue(sortAppUsages(appUsages, context));
+                sortedAppUsages.setValue(sortAppUsages(appUsages, context));
             }
         }.execute();
     }
 
-    public List<Map.Entry<String, Long>> sortAppUsages(List<UsageStats> appUsages, Context context){
+    public List<AppUsage> sortAppUsages(List<UsageStats> appUsages, Context context){
 
         PackageManager packageManager = context.getPackageManager();
         List<Map.Entry<String, Long>> newSortedMap = new ArrayList<>();
+        List<AppUsage> newAppUsages = new ArrayList<>();
 
         HashMap<String, Long> unsortedAppTimes = new HashMap<>();
+
+        List<AppUsage> allAppUsages = new ArrayList<>();
         for (UsageStats s: appUsages){
             //Try to get app names from usage stats
 
@@ -108,6 +113,8 @@ public class ReportViewModel extends AndroidViewModel {
                 Drawable appIcon = packageManager.getApplicationIcon(appInfo);
                 unsortedAppTimes.put(appTitle, appTime);
                 //Log.i("AHS", "App: " + appTitle);
+                AppUsage appUsage = new AppUsage(appTitle, appTime, appIcon);
+                allAppUsages.add(appUsage);
             }  catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
@@ -120,16 +127,31 @@ public class ReportViewModel extends AndroidViewModel {
             newSortedMap = listedMap.stream()
                     .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                     .limit(5).collect(Collectors.toList());
+
+            for (Map.Entry<String, Long> e : newSortedMap){
+                for (AppUsage appUsage: allAppUsages){
+                    if (e.getKey().equals(appUsage.getAppTitle())){
+                        newAppUsages.add(appUsage);
+                    }
+                }
+            }
+
         }
 
-        return newSortedMap;
+        return newAppUsages;
     }
 
-    public LiveData<List<Map.Entry<String, Long>>> getSortedAppUsageStats(){
+    /*public LiveData<List<Map.Entry<String, Long>>> getSortedAppUsageStats(){
         return sortedMap;
+    }*/
+
+    public LiveData<List<AppUsage>> getSortedAppUsageStatsObjects(){
+        return sortedAppUsages;
     }
 
     public boolean isUsagesRetrieved() {
         return usagesRetrieved;
     }
+
+
 }
