@@ -111,11 +111,27 @@ public class ReportViewModel extends AndroidViewModel {
                 String appTitle = (String) packageManager.getApplicationLabel(appInfo);
                 Long appTime = s.getTotalTimeInForeground() / 1000;
                 Drawable appIcon = packageManager.getApplicationIcon(appInfo);
-                unsortedAppTimes.put(appTitle, appTime);
+
+                if (unsortedAppTimes.containsKey(appTitle)){
+                    unsortedAppTimes.put(appTitle, unsortedAppTimes.get(appTitle) + appTime);
+
+                    //If the there is already an instance of the app, add the time to it instead of creating a new one
+                    for (AppUsage a: allAppUsages){
+                        if (appTitle.equals(a.getAppTitle())){
+                            a.setAppTime(a.getAppTime() + appTime);
+                        }
+                    }
+
+                } else {
+                    unsortedAppTimes.put(appTitle, appTime);
+                    AppUsage appUsage = new AppUsage(appTitle, appTime, appIcon);
+                    allAppUsages.add(appUsage);
+                }
+
                 //Log.i("AHS", "App: " + appTitle);
-                AppUsage appUsage = new AppUsage(appTitle, appTime, appIcon);
-                allAppUsages.add(appUsage);
+
             }  catch (PackageManager.NameNotFoundException e) {
+                Log.i("AHS", "Try failed");
                 e.printStackTrace();
             }
         }

@@ -1,200 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.report.ReportFragment">
+    android:layout_width="match_parent">
 
-    <TextView
-        android:id="@+id/headerText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Monthly Report"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="16dp"/>
-
-
-    <ProgressBar
-        android:id="@+id/completedTasksProgress"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:indeterminateOnly="false"
-        android:max="100"
-        android:progress="60"
-        android:progressDrawable="@drawable/custom_progress"
-        app:layout_constraintEnd_toStartOf="@id/currentTasksProgress"
-        app:layout_constraintTop_toBottomOf="@+id/headerText"
-        android:layout_marginTop="72dp"/>
-
-    <TextView
-        android:id="@+id/completedTasksProgressText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="25/25"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toBottomOf="@+id/completedTasksProgress"
-        app:layout_constraintEnd_toEndOf="@+id/completedTasksProgress"
-        app:layout_constraintStart_toStartOf="@+id/completedTasksProgress"
-        app:layout_constraintTop_toTopOf="@+id/completedTasksProgress" />
-
-    <TextView
-        android:id="@+id/completedTasksProgressHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Completed"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="@+id/completedTasksProgress"
-        app:layout_constraintStart_toStartOf="@+id/completedTasksProgress"
-        app:layout_constraintTop_toBottomOf="@+id/completedTasksProgress"
-        android:textSize="18dp"/>
-
-
-
-
-    <ProgressBar
-        android:id="@+id/currentTasksProgress"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:indeterminateOnly="false"
-        android:max="100"
-        android:progress="60"
-        android:progressDrawable="@drawable/custom_progress_current"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerText"
-        android:layout_marginTop="8dp"/>
-
-    <TextView
-        android:id="@+id/currentTasksProgressText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="25/25"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toBottomOf="@+id/currentTasksProgress"
-        app:layout_constraintEnd_toEndOf="@+id/currentTasksProgress"
-        app:layout_constraintStart_toStartOf="@+id/currentTasksProgress"
-        app:layout_constraintTop_toTopOf="@+id/currentTasksProgress" />
-
-    <TextView
-        android:id="@+id/currentTasksProgressHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="In Progress"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="@+id/currentTasksProgress"
-        app:layout_constraintStart_toStartOf="@+id/currentTasksProgress"
-        app:layout_constraintTop_toBottomOf="@+id/currentTasksProgress"
-        android:textSize="18dp"/>
-
-
-
-
-    <ProgressBar
-        android:id="@+id/overdueTasksProgress"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:indeterminateOnly="false"
-        android:max="100"
-        android:progress="60"
-        android:progressDrawable="@drawable/custom_progress_overdue"
-        app:layout_constraintStart_toEndOf="@+id/currentTasksProgress"
-        app:layout_constraintTop_toBottomOf="@+id/headerText"
-        android:layout_marginTop="72dp"/>
-
-    <TextView
-        android:id="@+id/overdueTasksProgressText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="25/25"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toBottomOf="@+id/overdueTasksProgress"
-        app:layout_constraintEnd_toEndOf="@+id/overdueTasksProgress"
-        app:layout_constraintStart_toStartOf="@+id/overdueTasksProgress"
-        app:layout_constraintTop_toTopOf="@+id/overdueTasksProgress" />
-
-    <TextView
-        android:id="@+id/overdueTasksProgressHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Overdue"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="@+id/overdueTasksProgress"
-        app:layout_constraintStart_toStartOf="@+id/overdueTasksProgress"
-        app:layout_constraintTop_toBottomOf="@+id/overdueTasksProgress"
-        android:textSize="18dp"/>
-
-
-    <TextView
-        android:id="@+id/recyclerViewHeader"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:text="Top 5 Used Apps"
-        app:layout_constraintTop_toBottomOf="@+id/overdueTasksProgressHeader"
-        android:layout_marginTop="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:gravity="center"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/appUsageRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerViewHeader"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginTop="16dp"
-        tools:listitem="@layout/app_usage_item"/>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/appUsageRecyclerView"
-        android:orientation="vertical"
-        android:id="@+id/textLinearLayout"
-        >
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        tools:context=".ui.report.ReportFragment">
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/headerText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/text1"
-            android:text="test"
-            />
+            android:text="Monthly Report"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="16dp"/>
+
+
+        <ProgressBar
+            android:id="@+id/completedTasksProgress"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:indeterminateOnly="false"
+            android:max="100"
+            android:progress="60"
+            android:progressDrawable="@drawable/custom_progress"
+            app:layout_constraintEnd_toStartOf="@id/currentTasksProgress"
+            app:layout_constraintTop_toBottomOf="@+id/headerText"
+            android:layout_marginTop="72dp"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/completedTasksProgressText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/text2"
-            android:text="test"
-            />
+            android:text="25/25"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintBottom_toBottomOf="@+id/completedTasksProgress"
+            app:layout_constraintEnd_toEndOf="@+id/completedTasksProgress"
+            app:layout_constraintStart_toStartOf="@+id/completedTasksProgress"
+            app:layout_constraintTop_toTopOf="@+id/completedTasksProgress" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/completedTasksProgressHeader"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/text3"
-            android:text="test"
-            />
+            android:text="Completed"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintEnd_toEndOf="@+id/completedTasksProgress"
+            app:layout_constraintStart_toStartOf="@+id/completedTasksProgress"
+            app:layout_constraintTop_toBottomOf="@+id/completedTasksProgress"
+            android:textSize="18dp"/>
+
+
+
+
+        <ProgressBar
+            android:id="@+id/currentTasksProgress"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:indeterminateOnly="false"
+            android:max="100"
+            android:progress="60"
+            android:progressDrawable="@drawable/custom_progress_current"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/headerText"
+            android:layout_marginTop="8dp"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/currentTasksProgressText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/text4"
-            android:text="test"
-            />
+            android:text="25/25"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintBottom_toBottomOf="@+id/currentTasksProgress"
+            app:layout_constraintEnd_toEndOf="@+id/currentTasksProgress"
+            app:layout_constraintStart_toStartOf="@+id/currentTasksProgress"
+            app:layout_constraintTop_toTopOf="@+id/currentTasksProgress" />
+
         <TextView
+            android:id="@+id/currentTasksProgressHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="In Progress"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintEnd_toEndOf="@+id/currentTasksProgress"
+            app:layout_constraintStart_toStartOf="@+id/currentTasksProgress"
+            app:layout_constraintTop_toBottomOf="@+id/currentTasksProgress"
+            android:textSize="18dp"/>
+
+
+
+
+        <ProgressBar
+            android:id="@+id/overdueTasksProgress"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:indeterminateOnly="false"
+            android:max="100"
+            android:progress="60"
+            android:progressDrawable="@drawable/custom_progress_overdue"
+            app:layout_constraintStart_toEndOf="@+id/currentTasksProgress"
+            app:layout_constraintTop_toBottomOf="@+id/headerText"
+            android:layout_marginTop="72dp"/>
+
+        <TextView
+            android:id="@+id/overdueTasksProgressText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="25/25"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintBottom_toBottomOf="@+id/overdueTasksProgress"
+            app:layout_constraintEnd_toEndOf="@+id/overdueTasksProgress"
+            app:layout_constraintStart_toStartOf="@+id/overdueTasksProgress"
+            app:layout_constraintTop_toTopOf="@+id/overdueTasksProgress" />
+
+        <TextView
+            android:id="@+id/overdueTasksProgressHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Overdue"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintEnd_toEndOf="@+id/overdueTasksProgress"
+            app:layout_constraintStart_toStartOf="@+id/overdueTasksProgress"
+            app:layout_constraintTop_toBottomOf="@+id/overdueTasksProgress"
+            android:textSize="18dp"/>
+
+
+        <TextView
+            android:id="@+id/recyclerViewHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/text5"
-            android:text="test"
-            />
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:text="Top 5 Used Apps"
+            app:layout_constraintTop_toBottomOf="@+id/overdueTasksProgressHeader"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:gravity="center"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/appUsageRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerViewHeader"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="16dp"
+            tools:listitem="@layout/app_usage_item"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/appUsageRecyclerView"
+            android:orientation="vertical"
+            android:id="@+id/textLinearLayout"
+            >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text1"
+                android:text="test"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text2"
+                android:text="test"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text3"
+                android:text="test"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text4"
+                android:text="test"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text5"
+                android:text="test"
+                />
 
 
 
-    </LinearLayout>
+        </LinearLayout>
 
 
 
@@ -202,4 +207,7 @@
 
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
+

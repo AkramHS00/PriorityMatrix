@@ -132,7 +132,8 @@ public class ReportFragment extends Fragment {
             reportViewModel.getSortedAppUsageStatsObjects().observe(getViewLifecycleOwner(), new Observer<List<AppUsage>>() {
                 @Override
                 public void onChanged(List<AppUsage> appUsages) {
-                    displayAppUsage(appUsages);
+                    //displayAppUsage(appUsages);
+                    appUsageAdapter.setAppUsages(appUsages);
                 }
             });
         }
@@ -198,6 +199,6 @@ public class ReportFragment extends Fragment {
             Log.i("AHS", "AppUsage object tite: " + a.getAppTitle() + " time: " + a.getAppTime());
         }
 
-        appUsageAdapter.setAppUsages(appUsages);
+
     }
 }
