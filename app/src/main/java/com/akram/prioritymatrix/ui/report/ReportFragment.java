@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.akram.prioritymatrix.MainActivity;
 import com.akram.prioritymatrix.R;
@@ -62,13 +63,12 @@ public class ReportFragment extends Fragment {
     ProgressBar completedTasksProgress, overdueTasksProgress, currentTasksProgress;
     TextView completedTasksProgressText, overdueTasksProgressText, currentTasksProgressText;
 
-    TextView text1,text2,text3,text4,text5;
-    LinearLayout textLinearLayout;
-
     List<Map.Entry<String, Long>> sortedMap;
 
     RecyclerView appUsageRecyclerView;
     private AppUsageAdapter appUsageAdapter;
+
+    private static final int REQUEST_USAGE_ACCESS_SETTINGS_PERMISSION = 1;
 
 
     @Override
@@ -84,61 +84,12 @@ public class ReportFragment extends Fragment {
         reportViewModel =
                 new ViewModelProvider(this).get(ReportViewModel.class);
 
-
-        textLinearLayout = getView().findViewById(R.id.textLinearLayout);
-        text1 = getView().findViewById(R.id.text1);
-        text2 = getView().findViewById(R.id.text2);
-        text3 = getView().findViewById(R.id.text3);
-        text4 = getView().findViewById(R.id.text4);
-        text5 = getView().findViewById(R.id.text5);
-
-
-        //AppOpsManager code taken from
-        //https://stackoverflow.com/questions/28921136/how-to-check-if-android-permission-package-usage-stats-permission-is-given
-        AppOpsManager appOps = (AppOpsManager) getActivity()
-                .getSystemService(Context.APP_OPS_SERVICE);
-        int mode = appOps.checkOpNoThrow("android:get_usage_stats",
-                android.os.Process.myUid(), getActivity().getPackageName());
-        boolean granted = mode == AppOpsManager.MODE_ALLOWED;
-
-        if (!granted){
+        if (!checkPermissionsGranted()){
             Intent usageRequest = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-            startActivity(usageRequest);
+            startActivityForResult(usageRequest, REQUEST_USAGE_ACCESS_SETTINGS_PERMISSION);
         } else {
-            if (!reportViewModel.isUsagesRetrieved()){
-                Log.i("AHS", "AppUsages is null, retrieving from system.");
-                reportViewModel.retrieveUsageStats(getActivity());
-            } else {
-                Log.i("AHS", "AppUsages is not null");
-            }
-
-            /*reportViewModel.getSortedAppUsageStats().observe(getViewLifecycleOwner(), new Observer<List<Map.Entry<String, Long>>>() {
-                @Override
-                public void onChanged(List<Map.Entry<String, Long>> appUsages) {
-                    Log.i("AHS", "appUsages live data has changed");
-                    displayAppUsage(appUsages);
-                }
-            });*/
-
-            appUsageRecyclerView = getView().findViewById(R.id.appUsageRecyclerView);
-            appUsageRecyclerView.setVisibility(View.VISIBLE);
-
-            appUsageRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-            appUsageRecyclerView.setHasFixedSize(true);
-
-            appUsageAdapter = new AppUsageAdapter();
-            appUsageRecyclerView.setAdapter(appUsageAdapter);
-
-            reportViewModel.getSortedAppUsageStatsObjects().observe(getViewLifecycleOwner(), new Observer<List<AppUsage>>() {
-                @Override
-                public void onChanged(List<AppUsage> appUsages) {
-                    //displayAppUsage(appUsages);
-                    appUsageAdapter.setAppUsages(appUsages);
-                }
-            });
+            setupUsageRecyclerView();
         }
-
-
 
         completedTasksProgress = getView().findViewById(R.id.completedTasksProgress);
         completedTasksProgressText = getView().findViewById(R.id.completedTasksProgressText);
@@ -148,57 +99,96 @@ public class ReportFragment extends Fragment {
         currentTasksProgressText = getView().findViewById(R.id.currentTasksProgressText);
 
         currentUser = ((MainActivity) getActivity()).getCurrentUser();
-        reportViewModel.getUserTasks(currentUser.getUserName()).observe(getActivity(), new Observer<List<Task>>() {
-            @Override
-            public void onChanged(List<Task> tasks) {
-                userTasks = tasks;
+        if (currentUser !=null){
+            reportViewModel.getUserTasks(currentUser.getUserName()).observe(getActivity(), new Observer<List<Task>>() {
+                @Override
+                public void onChanged(List<Task> tasks) {
+                    userTasks = tasks;
 
-                int completedTasks = 0;
-                int overdueTasks = 0;
-                int currentTasks = 0;
-                for (Task t: tasks){
-                    if (t.getComplete()){
-                        completedTasks++;
+                    int completedTasks = 0;
+                    int overdueTasks = 0;
+                    int currentTasks = 0;
+                    for (Task t: tasks){
+                        if (t.getComplete()){
+                            completedTasks++;
+                        }
+                        if (t.isOverDue()){
+                            overdueTasks++;
+                        }
+                        if (!t.isOverDue() && !t.getComplete()){
+                            currentTasks++;
+                        }
                     }
-                    if (t.isOverDue()){
-                        overdueTasks++;
-                    }
-                    if (!t.isOverDue() && !t.getComplete()){
-                        currentTasks++;
-                    }
+                    completedTaskValue = (int)(((float) completedTasks/ (float) tasks.size()) * 100);
+                    completedTasksProgress.setProgress((int) completedTaskValue);
+                    completedTasksProgressText.setText(String.valueOf(completedTasks) + "/" + String.valueOf(tasks.size()));
+
+                    overdueTaskValue = (int)(((float) overdueTasks/ (float) tasks.size()) * 100);
+                    overdueTasksProgress.setProgress((int) overdueTaskValue);
+                    overdueTasksProgressText.setText(String.valueOf(overdueTasks) + "/" + String.valueOf(tasks.size()));
+
+                    currentTaskValue = (int)(((float) currentTasks/ (float) tasks.size()) * 100);
+                    currentTasksProgress.setProgress((int) currentTaskValue);
+                    currentTasksProgressText.setText(String.valueOf(currentTasks) + "/" + String.valueOf(tasks.size()));
                 }
-                completedTaskValue = (int)(((float) completedTasks/ (float) tasks.size()) * 100);
-                completedTasksProgress.setProgress((int) completedTaskValue);
-                completedTasksProgressText.setText(String.valueOf(completedTasks) + "/" + String.valueOf(tasks.size()));
-
-                overdueTaskValue = (int)(((float) overdueTasks/ (float) tasks.size()) * 100);
-                overdueTasksProgress.setProgress((int) overdueTaskValue);
-                overdueTasksProgressText.setText(String.valueOf(overdueTasks) + "/" + String.valueOf(tasks.size()));
-
-                currentTaskValue = (int)(((float) currentTasks/ (float) tasks.size()) * 100);
-                currentTasksProgress.setProgress((int) currentTaskValue);
-                currentTasksProgressText.setText(String.valueOf(currentTasks) + "/" + String.valueOf(tasks.size()));
-            }
-        });
-
-
-
-
+            });
+        }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-    void displayAppUsage(List<AppUsage> appUsages){
-        int current = 0;
 
-        for (AppUsage a : appUsages){
-            TextView temp = (TextView) textLinearLayout.getChildAt(current);
-            current++;
-            if (temp != null){
-                temp.setText("App: " + a.getAppTitle() + " Time: " + a.getAppTime());
+        if(requestCode == REQUEST_USAGE_ACCESS_SETTINGS_PERMISSION){
+            if (checkPermissionsGranted()){
+                //Toast.makeText(getActivity(),"Permissions granted", Toast.LENGTH_SHORT).show();
+                setupUsageRecyclerView();
+            } else {
+                Toast.makeText(getActivity(),"Permissions not granted", Toast.LENGTH_SHORT).show();
             }
-            Log.i("AHS", "AppUsage object tite: " + a.getAppTitle() + " time: " + a.getAppTime());
         }
 
-
     }
+
+    //Check if the user has permitted the app access to usage stats
+    //AppOpsManager code taken from
+    //https://stackoverflow.com/questions/28921136/how-to-check-if-android-permission-package-usage-stats-permission-is-given
+    public boolean checkPermissionsGranted(){
+        AppOpsManager appOps = (AppOpsManager) getActivity()
+                .getSystemService(Context.APP_OPS_SERVICE);
+        int mode = appOps.checkOpNoThrow("android:get_usage_stats",
+                android.os.Process.myUid(), getActivity().getPackageName());
+        boolean granted = mode == AppOpsManager.MODE_ALLOWED;
+        return granted;
+    }
+
+    //Gets usage stats from viewmodel if it exists, if not calls it from system on background thread
+    //Sets up recycler view and adapter
+    private void setupUsageRecyclerView(){
+        if (!reportViewModel.isUsagesRetrieved()){
+            Log.i("AHS", "AppUsages is null, retrieving from system.");
+            reportViewModel.retrieveUsageStats(getActivity());
+        } else {
+            Log.i("AHS", "AppUsages is not null");
+        }
+
+        appUsageRecyclerView = getView().findViewById(R.id.appUsageRecyclerView);
+        appUsageRecyclerView.setVisibility(View.VISIBLE);
+
+        appUsageRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        appUsageRecyclerView.setHasFixedSize(true);
+
+        appUsageAdapter = new AppUsageAdapter();
+        appUsageRecyclerView.setAdapter(appUsageAdapter);
+
+        reportViewModel.getSortedAppUsageStatsObjects().observe(getViewLifecycleOwner(), new Observer<List<AppUsage>>() {
+            @Override
+            public void onChanged(List<AppUsage> appUsages) {
+                //displayAppUsage(appUsages);
+                appUsageAdapter.setAppUsages(appUsages);
+            }
+        });
+    }
+
 }

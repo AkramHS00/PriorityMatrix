@@ -50,7 +50,7 @@
     <fragment
         android:id="@+id/navigation_report"
         android:name="com.akram.prioritymatrix.ui.report.ReportFragment"
-        android:label="Report"
+        android:label="Monthly Report"
         tools:layout="@layout/fragment_report" />
     <fragment
         android:id="@+id/navigation_login"
