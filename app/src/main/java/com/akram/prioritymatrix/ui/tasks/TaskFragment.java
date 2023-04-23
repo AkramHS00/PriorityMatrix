@@ -264,7 +264,7 @@ public class TaskFragment extends Fragment {
                     //Call function to split tasks into tabs
                     splitTasks(prioritisedTasks);
 
-                    createRepeatingTasks(tasks);
+                    //createRepeatingTasks(tasks);
 
                 }
             });
@@ -291,6 +291,7 @@ public class TaskFragment extends Fragment {
                     task.setCompletionDate(saveDateFormat.format(todaysDate));
                     task.setComplete(true);
                     taskViewModel.updateTask(task);
+                    createRepeatingTasks(userTasks);
                     Toast.makeText(getActivity(), "Task completed.", Toast.LENGTH_SHORT).show();
                     //createRepeatingTasks(userTasks);
                 }
@@ -306,6 +307,7 @@ public class TaskFragment extends Fragment {
                     task.setCompletionDate("");
                     task.setComplete(false);
                     taskViewModel.updateTask(task);
+                    createRepeatingTasks(userTasks);
                     Toast.makeText(getActivity(), "Task archived.", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -598,7 +600,7 @@ public class TaskFragment extends Fragment {
             //Check if the task is complete or overdue and repeating and not completed today
             if ((t.getComplete() || t.isOverDue()) && t.getRepeats() != null && !t.getRepeats().equals("") && t.isOriginal()){
 
-                Log.i("AHS", "Updating task repeater!");
+                Log.i("AHS", "Updating task repeater! with task " + t.getTitle());
 
                 //Get previous due date of task
                 LocalDate taskDeadline = LocalDate.parse(t.getDeadlineDate(), saveDateFormat);
@@ -609,13 +611,21 @@ public class TaskFragment extends Fragment {
                 LocalDate todaysDate = LocalDate.now();
 
                 //Change from todays date to taskDeadlineDate
-                repeatValues.put("Every Monday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.MONDAY)));
-                repeatValues.put("Every Tuesday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.TUESDAY)));
-                repeatValues.put("Every Wednesday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY)));
-                repeatValues.put("Every Thursday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.THURSDAY)));
-                repeatValues.put("Every Friday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.FRIDAY)));
-                repeatValues.put("Every Saturday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.SATURDAY)));
-                repeatValues.put("Every Sunday",taskDeadline.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)));
+                //If task is overdue we will get the next day from today, else we will get the next deadline
+                //from the tasks deadline, this is to avoid creating overdue tasks
+                LocalDate repeatFromDate;
+                if (t.isOverDue()){
+                    repeatFromDate = LocalDate.now();
+                } else {
+                    repeatFromDate = taskDeadline;
+                }
+                repeatValues.put("Every Monday",repeatFromDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY)));
+                repeatValues.put("Every Tuesday",repeatFromDate.with(TemporalAdjusters.next(DayOfWeek.TUESDAY)));
+                repeatValues.put("Every Wednesday",repeatFromDate.with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY)));
+                repeatValues.put("Every Thursday",repeatFromDate.with(TemporalAdjusters.next(DayOfWeek.THURSDAY)));
+                repeatValues.put("Every Friday",repeatFromDate.with(TemporalAdjusters.next(DayOfWeek.FRIDAY)));
+                repeatValues.put("Every Saturday",repeatFromDate.with(TemporalAdjusters.next(DayOfWeek.SATURDAY)));
+                repeatValues.put("Every Sunday",repeatFromDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)));
 
 
                 //Create an arraylist of all the repeats selected for the task
@@ -656,13 +666,14 @@ public class TaskFragment extends Fragment {
                 taskViewModel.updateTask(t);
 
 
-                Task newTask = new Task(currentUser.getName().toString(), t.getTitle(),
+                Task newTask = new Task(currentUser.getUserName(), t.getTitle(),
                         t.getDescription(), t.isAddDeadline(),
                         saveDateFormat.format(targetDate),
                         t.getDeadlineTime(), t.isAddReminder(),
                         t.getReminderDate(), t.getReminderTime(),
                         false, t.getCategory(),
-                        t.getProjectId(), -1, -1, t.getReminders(), t.getRepeats(), false, "", true);
+                        t.getProjectId(), -1, -1, t.getReminders(), t.getRepeats(),
+                        false, "", true);
 
                 taskViewModel.insertTask(newTask);
 
