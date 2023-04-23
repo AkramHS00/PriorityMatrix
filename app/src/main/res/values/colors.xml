@@ -16,10 +16,11 @@
     <color name = "light_green">#90EE90</color>
     <color name = "light_red">#FFCCCB</color>
     <color name = "light_blue">#ADD8E6</color>
-    <color name = "light_yellow">#FFFFE0</color>
+    <color name = "light_yellow">#FFFBC8</color>
     <color name = "red">#FF0000</color>
     <color name = "green">#00FF00</color>
     <color name = "yellow">#FEC20C</color>
+    <color name = "light_orange">#ffb990</color>
 
 
 
