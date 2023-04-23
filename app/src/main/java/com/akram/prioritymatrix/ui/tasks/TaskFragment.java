@@ -76,6 +76,9 @@ public class TaskFragment extends Fragment {
     AlertDialog sortDialog;
     String sortMode = "MatrixDue";
 
+    ConstraintLayout taskLogin;
+    TextView taskLogout;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -166,6 +169,18 @@ public class TaskFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         currentUser = ((MainActivity) getActivity()).getCurrentUser();
+        taskLogin = getView().findViewById(R.id.taskLogin);
+        taskLogout = getView().findViewById(R.id.taskLogout);
+
+        if (currentUser!= null) {
+            taskLogin.setVisibility(View.VISIBLE);
+            taskLogout.setVisibility(View.GONE);
+        } else {
+            taskLogin.setVisibility(View.GONE);
+            taskLogout.setVisibility(View.VISIBLE);
+            NavHostFragment.findNavController(TaskFragment.this)
+                    .navigate(R.id.action_navigation_home_to_loginFragment);
+        }
 
         tabLayout = getView().findViewById(R.id.tabLayout);
 

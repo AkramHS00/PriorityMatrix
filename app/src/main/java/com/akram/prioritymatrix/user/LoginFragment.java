@@ -1,5 +1,7 @@
 package com.akram.prioritymatrix.user;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
@@ -35,6 +37,7 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
@@ -44,6 +47,14 @@ public class LoginFragment extends Fragment {
 
         loginViewModel = new ViewModelProvider(getActivity()).get(LoginViewModel.class);
 
+        //Hide back arrow
+        ActionBar actionBar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(false);
+        } else {
+            Log.i("AHS","Login action bar is null");
+        }
+
         //Hide navbar
         restoreNav = true;
         BottomNavigationView navBar = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
@@ -51,6 +62,8 @@ public class LoginFragment extends Fragment {
             if(navBar.getVisibility() == View.VISIBLE){
                 navBar.setVisibility(View.GONE);
             }
+        }else {
+            Log.i("AHS","Login nav bar is null");
         }
 
 
@@ -111,5 +124,29 @@ public class LoginFragment extends Fragment {
             navBar.setVisibility(View.VISIBLE);
         }
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        //Hide back arrow
+        ActionBar actionBar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(false);
+        } else {
+            Log.i("AHS","Login action bar is null");
+        }
+
+        //Hide navbar
+        restoreNav = true;
+        BottomNavigationView navBar = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
+        if(navBar!=null){
+            if(navBar.getVisibility() == View.VISIBLE){
+                navBar.setVisibility(View.GONE);
+            }
+        }else {
+            Log.i("AHS","Login nav bar is null");
+        }
     }
 }
