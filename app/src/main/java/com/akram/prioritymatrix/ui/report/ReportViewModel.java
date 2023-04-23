@@ -65,6 +65,8 @@ public class ReportViewModel extends AndroidViewModel {
     public void retrieveUsageStats(Context context){
         new AsyncTask<Void, Void, List<UsageStats>>(){
 
+            List<AppUsage> newAppUsages = new ArrayList<>();
+
             @Override
             protected List<UsageStats> doInBackground(Void... voids) {
                 PackageManager packageManager = context.getPackageManager();
@@ -76,6 +78,9 @@ public class ReportViewModel extends AndroidViewModel {
 
                 Log.i("AHS", "Retrieved app usages in async task!");
                 usagesRetrieved = true;
+
+                newAppUsages = sortAppUsages(appUsages, context);
+
                 return appUsages;
             }
 
@@ -86,7 +91,7 @@ public class ReportViewModel extends AndroidViewModel {
 
                 Log.i("AHS", "Setting value of sorted map in onPostExecute");
                 //sortedMap.setValue(sortAppUsages(appUsages, context));
-                sortedAppUsages.setValue(sortAppUsages(appUsages, context));
+                sortedAppUsages.setValue(newAppUsages);
             }
         }.execute();
     }
