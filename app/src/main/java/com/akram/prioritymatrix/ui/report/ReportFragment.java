@@ -45,8 +45,8 @@ import java.util.stream.Collectors;
 
 public class ReportFragment extends Fragment {
 
-    private ReportViewModel mViewModel;
-    private TaskViewModel tempViewModel;
+
+    private ReportViewModel reportViewModel;
 
     private User currentUser;
 
@@ -60,6 +60,9 @@ public class ReportFragment extends Fragment {
     TextView completedTasksProgressText, overdueTasksProgressText, currentTasksProgressText;
 
     TextView text1,text2,text3,text4,text5;
+    LinearLayout textLinearLayout;
+
+    List<Map.Entry<String, Long>> sortedMap;
 
 
     @Override
@@ -72,11 +75,11 @@ public class ReportFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        reportViewModel =
+                new ViewModelProvider(this).get(ReportViewModel.class);
 
 
-        LinearLayout textLinearLayout;
         textLinearLayout = getView().findViewById(R.id.textLinearLayout);
-        int current = 0;
         text1 = getView().findViewById(R.id.text1);
         text2 = getView().findViewById(R.id.text2);
         text3 = getView().findViewById(R.id.text3);
@@ -96,57 +99,23 @@ public class ReportFragment extends Fragment {
             Intent usageRequest = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             startActivity(usageRequest);
         } else {
-            PackageManager packageManager = getActivity().getPackageManager();
-            UsageStatsManager usageStatsManager = (UsageStatsManager) getActivity().getSystemService(Context.USAGE_STATS_SERVICE);
-            Calendar date = Calendar.getInstance();
-            date.add(Calendar.MONTH, -1);
-            //Get app usage times from the past month
-            List<UsageStats> appUsages = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_MONTHLY, date.getTimeInMillis(), System.currentTimeMillis());
-
-            HashMap<String, Long> unsortedAppTimes = new HashMap<>();
-            for (UsageStats s: appUsages){
-                //Try to get app names from usage stats
-
-                try {
-                    String appName = s.getPackageName();
-                    //Get app info
-                    ApplicationInfo appInfo = packageManager.getApplicationInfo(appName, PackageManager.GET_META_DATA);
-                    //Get components of app info
-                    String appTitle = (String) packageManager.getApplicationLabel(appInfo);
-                    Long appTime = s.getTotalTimeInForeground() / 1000;
-                    Drawable appIcon = packageManager.getApplicationIcon(appInfo);
-                    unsortedAppTimes.put(appTitle, appTime);
-                    //Log.i("AHS", "App: " + appTitle);
-                }  catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
+            if (!reportViewModel.isUsagesRetrieved()){
+                Log.i("AHS", "AppUsages is null, retrieving from system.");
+                reportViewModel.retrieveUsageStats(getActivity());
+            } else {
+                Log.i("AHS", "AppUsages is not null");
             }
 
-            if (unsortedAppTimes != null){
-                //Create list of hashmap entries for sorting
-                List<Map.Entry<String, Long>> listedMap = new ArrayList<>(unsortedAppTimes.entrySet());
-
-                List<Map.Entry<String, Long>> sortedMap = listedMap.stream()
-                        .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                        .limit(5).collect(Collectors.toList());
-
-                for (Map.Entry<String, Long> e: sortedMap){
-                    Log.i("AHS", "App: " + e.getKey() + "Time: " + e.getValue());
-
-                    TextView temp = (TextView) textLinearLayout.getChildAt(current);
-                    current++;
-                    if (temp != null){
-                        temp.setText("App: " + e.getKey() + " Time: " + e.getValue());
-                    }
-
+            reportViewModel.getSortedAppUsageStats().observe(getViewLifecycleOwner(), new Observer<List<Map.Entry<String, Long>>>() {
+                @Override
+                public void onChanged(List<Map.Entry<String, Long>> appUsages) {
+                    Log.i("AHS", "appUsages live data has changed");
+                    displayAppUsage(appUsages);
                 }
-            }
+            });
         }
 
 
-
-        tempViewModel =
-                new ViewModelProvider(this).get(TaskViewModel.class);
 
         completedTasksProgress = getView().findViewById(R.id.completedTasksProgress);
         completedTasksProgressText = getView().findViewById(R.id.completedTasksProgressText);
@@ -156,7 +125,7 @@ public class ReportFragment extends Fragment {
         currentTasksProgressText = getView().findViewById(R.id.currentTasksProgressText);
 
         currentUser = ((MainActivity) getActivity()).getCurrentUser();
-        tempViewModel.getUserTasks(currentUser.getUserName()).observe(getActivity(), new Observer<List<Task>>() {
+        reportViewModel.getUserTasks(currentUser.getUserName()).observe(getActivity(), new Observer<List<Task>>() {
             @Override
             public void onChanged(List<Task> tasks) {
                 userTasks = tasks;
@@ -192,5 +161,20 @@ public class ReportFragment extends Fragment {
 
 
 
+    }
+
+
+    void displayAppUsage(List<Map.Entry<String, Long>> appUsages){
+        int current = 0;
+        for (Map.Entry<String, Long> usage: appUsages){
+            Log.i("AHS", "App: " + usage.getKey() + "Time: " + usage.getValue());
+
+            TextView temp = (TextView) textLinearLayout.getChildAt(current);
+            current++;
+            if (temp != null){
+                temp.setText("App: " + usage.getKey() + " Time: " + usage.getValue());
+            }
+
+        }
     }
 }
