@@ -47,9 +47,12 @@ public class LoginFragment extends Fragment {
         //Hide navbar
         restoreNav = true;
         BottomNavigationView navBar = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
-        if(navBar.getVisibility() == View.VISIBLE){
-            navBar.setVisibility(View.GONE);
+        if(navBar!=null){
+            if(navBar.getVisibility() == View.VISIBLE){
+                navBar.setVisibility(View.GONE);
+            }
         }
+
 
         //Set views
         Button loginBtn = (Button) getView().findViewById(R.id.loginBtn);
