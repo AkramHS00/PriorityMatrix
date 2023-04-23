@@ -121,6 +121,54 @@
             app:layout_constraintTop_toBottomOf="@+id/overdueTasksProgress"
             android:textSize="18dp"/>
 
+        <TextView
+            android:id="@+id/busiestDayText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/overdueTasksProgressHeader"
+            android:text="Your busiest day is: "
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/light_yellow"
+            android:padding="8dp"
+            android:drawableLeft="@drawable/info_icon"
+            android:drawableTint="@color/dark_grey"
+            android:drawablePadding="8dp"
+            />
+
+        <TextView
+            android:id="@+id/overdueCategoryText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/busiestDayText"
+            android:text="The most overdue category is: "
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/light_red"
+            android:padding="8dp"
+            android:drawableLeft="@drawable/cancel_icon"
+            android:drawableTint="@color/dark_grey"
+            android:drawablePadding="8dp"/>
+
+
+        <TextView
+            android:id="@+id/popularCategoryText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/overdueCategoryText"
+            android:text="The most popular category is: "
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/light_yellow"
+            android:padding="8dp"
+            android:drawableLeft="@drawable/increase_icon"
+            android:drawableTint="@color/dark_grey"
+            android:drawablePadding="8dp"/>
+
+
 
         <TextView
             android:id="@+id/recyclerViewHeader"
@@ -128,7 +176,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:text="Top 5 Used Apps"
-            app:layout_constraintTop_toBottomOf="@+id/overdueTasksProgressHeader"
+            app:layout_constraintTop_toBottomOf="@+id/popularCategoryText"
             android:layout_marginTop="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

@@ -39,6 +39,9 @@ import com.akram.prioritymatrix.database.User;
 import com.akram.prioritymatrix.ui.tasks.TaskAdapter;
 import com.akram.prioritymatrix.ui.tasks.TaskViewModel;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -59,6 +62,7 @@ public class ReportFragment extends Fragment {
     private float currentTaskValue;
 
     private List<Task> userTasks = new ArrayList<>();
+    private List<Task> monthlyTasks = new ArrayList<>();
 
     ProgressBar completedTasksProgress, overdueTasksProgress, currentTasksProgress;
     TextView completedTasksProgressText, overdueTasksProgressText, currentTasksProgressText;
@@ -69,6 +73,9 @@ public class ReportFragment extends Fragment {
     private AppUsageAdapter appUsageAdapter;
 
     private static final int REQUEST_USAGE_ACCESS_SETTINGS_PERMISSION = 1;
+
+    TextView busiestDayText, overdueCategoryText, popularCategoryText;
+    DateTimeFormatter saveDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 
     @Override
@@ -98,41 +105,85 @@ public class ReportFragment extends Fragment {
         currentTasksProgress = getView().findViewById(R.id.currentTasksProgress);
         currentTasksProgressText = getView().findViewById(R.id.currentTasksProgressText);
 
+
+        busiestDayText = getView().findViewById(R.id.busiestDayText);
+        overdueCategoryText = getView().findViewById(R.id.overdueCategoryText);
+        popularCategoryText = getView().findViewById(R.id.popularCategoryText);
+
+
         currentUser = ((MainActivity) getActivity()).getCurrentUser();
         if (currentUser !=null){
-            reportViewModel.getUserTasks(currentUser.getUserName()).observe(getActivity(), new Observer<List<Task>>() {
+            reportViewModel.getUserTasks(currentUser.getUserName()).observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(List<Task> tasks) {
-                    userTasks = tasks;
+                    /*userTasks = tasks;
 
-                    int completedTasks = 0;
-                    int overdueTasks = 0;
-                    int currentTasks = 0;
-                    for (Task t: tasks){
-                        if (t.getComplete()){
-                            completedTasks++;
+                    for (Task t: userTasks){
+                        LocalDate taskDeadline = LocalDate.parse(t.getDeadlineDate(), saveDateFormat);
+                        if (taskDeadline.getMonthValue() == LocalDate.now().getMonthValue()){
+                            monthlyTasks.add(t);
                         }
-                        if (t.isOverDue()){
-                            overdueTasks++;
-                        }
-                        if (!t.isOverDue() && !t.getComplete()){
-                            currentTasks++;
-                        }
-                    }
-                    completedTaskValue = (int)(((float) completedTasks/ (float) tasks.size()) * 100);
-                    completedTasksProgress.setProgress((int) completedTaskValue);
-                    completedTasksProgressText.setText(String.valueOf(completedTasks) + "/" + String.valueOf(tasks.size()));
+                    }*/
 
-                    overdueTaskValue = (int)(((float) overdueTasks/ (float) tasks.size()) * 100);
-                    overdueTasksProgress.setProgress((int) overdueTaskValue);
-                    overdueTasksProgressText.setText(String.valueOf(overdueTasks) + "/" + String.valueOf(tasks.size()));
+                    monthlyTasks = reportViewModel.getMonthsTasks(tasks);
+                    updateReport(monthlyTasks);
 
-                    currentTaskValue = (int)(((float) currentTasks/ (float) tasks.size()) * 100);
-                    currentTasksProgress.setProgress((int) currentTaskValue);
-                    currentTasksProgressText.setText(String.valueOf(currentTasks) + "/" + String.valueOf(tasks.size()));
+
                 }
             });
         }
+    }
+
+    //Set up report UI
+    private void updateReport(List<Task> tasks){
+
+        int completedTasks = 0;
+        int overdueTasks = 0;
+        int currentTasks = 0;
+        for (Task t: monthlyTasks){
+            if (t.getComplete()){
+                completedTasks++;
+            }
+            if (t.isOverDue() && !t.getComplete()){
+                overdueTasks++;
+            }
+            if (!t.isOverDue() && !t.getComplete()){
+                currentTasks++;
+            }
+        }
+        completedTaskValue = (int)(((float) completedTasks/ (float) tasks.size()) * 100);
+        completedTasksProgress.setProgress((int) completedTaskValue);
+        completedTasksProgressText.setText(String.valueOf(completedTasks) + "/" + String.valueOf(tasks.size()));
+
+        overdueTaskValue = (int)(((float) overdueTasks/ (float) tasks.size()) * 100);
+        overdueTasksProgress.setProgress((int) overdueTaskValue);
+        overdueTasksProgressText.setText(String.valueOf(overdueTasks) + "/" + String.valueOf(tasks.size()));
+
+        currentTaskValue = (int)(((float) currentTasks/ (float) tasks.size()) * 100);
+        currentTasksProgress.setProgress((int) currentTaskValue);
+        currentTasksProgressText.setText(String.valueOf(currentTasks) + "/" + String.valueOf(tasks.size()));
+
+        //Set day population text
+        String mostPopularDay = reportViewModel.getMostPopularDay(monthlyTasks);
+        String leastPopularDay = reportViewModel.getLeastPopularDay(monthlyTasks);
+        busiestDayText.setText("Your busiest day this month is " + mostPopularDay +
+                " and your quietest day is " + leastPopularDay + ".");
+
+        //Set most overdue text
+        String mostOverdueCategory = reportViewModel.getMostOverdueCategory(monthlyTasks);
+        if (mostOverdueCategory.equals("null")){
+            overdueCategoryText.setText("Congratulations! You have completed every task on time this month.");
+            overdueCategoryText.setBackgroundColor(getResources().getColor(R.color.light_green));
+        } else {
+            overdueCategoryText.setText("You are more likely to miss task deadlines if they are in the " + mostOverdueCategory + " category.");
+            overdueCategoryText.setBackgroundColor(getResources().getColor(R.color.light_red));
+        }
+
+
+        //Set popular category text
+        String mostPopularCategory = reportViewModel.getMostPopularCategory(monthlyTasks);
+        popularCategoryText.setText("Over the past month, you have had more " + mostPopularCategory +
+                " tasks than any other category.");
     }
 
     @Override

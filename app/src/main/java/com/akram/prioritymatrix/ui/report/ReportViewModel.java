@@ -21,6 +21,9 @@ import androidx.lifecycle.ViewModel;
 import com.akram.prioritymatrix.database.Task;
 import com.akram.prioritymatrix.database.TaskRepository;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -39,6 +42,8 @@ public class ReportViewModel extends AndroidViewModel {
     private MutableLiveData<List<AppUsage>> sortedAppUsages;
     //boolean for fragment to check if data has already been retrieved
     private boolean usagesRetrieved = false;
+
+    DateTimeFormatter saveDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     public ReportViewModel(@NonNull Application application) {
         super(application);
@@ -136,7 +141,7 @@ public class ReportViewModel extends AndroidViewModel {
                 //Log.i("AHS", "App: " + appTitle);
 
             }  catch (PackageManager.NameNotFoundException e) {
-                Log.i("AHS", "Try failed");
+                //Log.i("AHS", "Try failed");
                 e.printStackTrace();
             }
         }
@@ -174,5 +179,165 @@ public class ReportViewModel extends AndroidViewModel {
         return usagesRetrieved;
     }
 
+    public List<Task> getMonthsTasks(List<Task> tasks){
 
+        List<Task> monthlyTasks = new ArrayList<>();
+
+        for (Task t: tasks){
+            LocalDate taskDeadline = LocalDate.parse(t.getDeadlineDate(), saveDateFormat);
+            if (taskDeadline.getMonthValue() == LocalDate.now().getMonthValue()){
+                monthlyTasks.add(t);
+            }
+        }
+
+        return monthlyTasks;
+
+    }
+
+    public String getMostPopularDay(List<Task> tasks){
+
+        HashMap<String, Integer> dayCount = new HashMap<>();
+        dayCount.put("SATURDAY" ,0);
+        dayCount.put("SUNDAY" ,0);
+        dayCount.put("MONDAY" ,0);
+        dayCount.put("TUESDAY" ,0);
+        dayCount.put("WEDNESDAY" ,0);
+        dayCount.put("THURSDAY" ,0);
+        dayCount.put("FRIDAY" ,0);
+        for (Task t: tasks){
+            LocalDate taskDeadline = LocalDate.parse(t.getDeadlineDate(), saveDateFormat);
+            DayOfWeek day = taskDeadline.getDayOfWeek();
+            dayCount.put(day.name(), dayCount.get(day.name()) + 1);
+        }
+        String mostPopularDay = null;
+        int highestNum = 0;
+
+        for (Map.Entry<String, Integer> entry : dayCount.entrySet()){
+
+            if(mostPopularDay == null){
+                mostPopularDay = entry.getKey();
+                highestNum = entry.getValue();
+            } else {
+                Log.i("AHS", "Else looping");
+                if (entry.getValue() >= highestNum){
+                    mostPopularDay = entry.getKey();
+                    highestNum = entry.getValue();
+                }
+            }
+        }
+
+        return mostPopularDay.substring(0, 1).toUpperCase() + mostPopularDay.substring(1).toLowerCase();
+
+    }
+
+    public String getLeastPopularDay(List<Task> tasks){
+
+        HashMap<String, Integer> dayCount = new HashMap<>();
+        dayCount.put("SATURDAY" ,0);
+        dayCount.put("SUNDAY" ,0);
+        dayCount.put("MONDAY" ,0);
+        dayCount.put("TUESDAY" ,0);
+        dayCount.put("WEDNESDAY" ,0);
+        dayCount.put("THURSDAY" ,0);
+        dayCount.put("FRIDAY" ,0);
+        for (Task t: tasks){
+            LocalDate taskDeadline = LocalDate.parse(t.getDeadlineDate(), saveDateFormat);
+            DayOfWeek day = taskDeadline.getDayOfWeek();
+            dayCount.put(day.name(), dayCount.get(day.name()) + 1);
+        }
+        String leastPopularDay = null;
+        int lowestNum = 0;
+
+        for (Map.Entry<String, Integer> entry : dayCount.entrySet()){
+
+            if(leastPopularDay == null){
+                Log.i("AHS", "leastpopularDay is null so setting to: " + entry.getKey());
+                leastPopularDay = entry.getKey();
+                lowestNum = entry.getValue();
+            } else {
+                Log.i("AHS", "Else looping");
+                if (entry.getValue() <= lowestNum){
+                    Log.i("AHS", "This else is lower than least popular day");
+                    leastPopularDay = entry.getKey();
+                    lowestNum = entry.getValue();
+                }
+            }
+        }
+
+        return leastPopularDay.substring(0, 1).toUpperCase() + leastPopularDay.substring(1).toLowerCase();
+    }
+
+    public String getMostOverdueCategory(List<Task> tasks){
+        HashMap<String, Integer> categoryOverdueCount = new HashMap<>();
+        categoryOverdueCount.put("Do", 0);
+        categoryOverdueCount.put("Schedule", 0);
+        categoryOverdueCount.put("Delegate", 0);
+        categoryOverdueCount.put("Delete", 0);
+
+        //Get number of overdue tasks per category
+        for (Task t: tasks){
+            if (t.isOverDue() && !t.getComplete()){
+                String category = t.getCategory();
+                categoryOverdueCount.put(category, categoryOverdueCount.get(category) + 1);
+                //Log.i("AHS", "Overdue task " + t.getTitle() + " " + t.getCategory());
+            }
+        }
+
+        String highestCategory = null;
+        int categoryCount = 0;
+
+        for (Map.Entry<String, Integer> entry : categoryOverdueCount.entrySet()){
+            if (highestCategory == null){
+                highestCategory = entry.getKey();
+                categoryCount = entry.getValue();
+                //Log.i("AHS", "Highest category is null so setting to " + entry.getKey());
+            } else {
+                if (entry.getValue() >= categoryCount){
+                    //Log.i("AHS", "This entry value is greater than category count " + entry.getKey() + " " + entry.getValue());
+                    highestCategory = entry.getKey();
+                    categoryCount = entry.getValue();
+                }
+            }
+        }
+
+        //Will = 0 if there are no overdue tasks, want to show this differently in report
+        if (categoryCount == 0){
+            return "null";
+        } else {
+            return highestCategory;
+        }
+
+
+    }
+
+    public String getMostPopularCategory(List<Task> tasks){
+        HashMap<String, Integer> categoryOverdueCount = new HashMap<>();
+        categoryOverdueCount.put("Do", 0);
+        categoryOverdueCount.put("Schedule", 0);
+        categoryOverdueCount.put("Delegate", 0);
+        categoryOverdueCount.put("Delete", 0);
+
+        //Get number of overdue tasks per category
+        for (Task t: tasks){
+            categoryOverdueCount.put(t.getCategory(), categoryOverdueCount.get(t.getCategory()) + 1);
+        }
+
+        String highestCategory = null;
+        int categoryCount = 0;
+
+        for (Map.Entry<String, Integer> entry : categoryOverdueCount.entrySet()){
+            if (highestCategory == null){
+                highestCategory = entry.getKey();
+                categoryCount = entry.getValue();
+            } else {
+                if (entry.getValue() >= categoryCount){
+                    Log.i("AHS", "This else is lower than least popular day");
+                    highestCategory = entry.getKey();
+                    categoryCount = entry.getValue();
+                }
+            }
+        }
+
+        return highestCategory;
+    }
 }
