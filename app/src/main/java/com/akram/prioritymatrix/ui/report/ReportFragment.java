@@ -116,14 +116,6 @@ public class ReportFragment extends Fragment {
             reportViewModel.getUserTasks(currentUser.getUserName()).observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(List<Task> tasks) {
-                    /*userTasks = tasks;
-
-                    for (Task t: userTasks){
-                        LocalDate taskDeadline = LocalDate.parse(t.getDeadlineDate(), saveDateFormat);
-                        if (taskDeadline.getMonthValue() == LocalDate.now().getMonthValue()){
-                            monthlyTasks.add(t);
-                        }
-                    }*/
 
                     monthlyTasks = reportViewModel.getMonthsTasks(tasks);
                     updateReport(monthlyTasks);
