@@ -684,10 +684,11 @@ public class DetailTaskFragment extends Fragment {
                             saveTimeFormat.format(deadlineTime), switchReminder.isChecked(), saveDateFormat.format(reminderDate), saveTimeFormat.format(reminderTime),
                             false, categoryAutoComplete.getText().toString(),
                             projectId, -1, -1, reminderSelectedString, repeatSelectedString, false, "", true);
-
+                    Log.i("AHS", "CREATED NEW TASK WITH DEADLINE DATE AND TIME: " + saveDateFormat.format(deadlineDate) + " " + saveTimeFormat.format(deadlineTime));
                     int taskId;
 
                     if (currentTask != null){
+                        Log.i("AHS", "CURRENT TASK IS NOT NULL ID = " + currentTask.getId());
                         newTask.setId(currentTask.getId());
                         //If the user has not edited the tasks category, keep the task poisiton in the matrix
                         if (newTask.getCategory().equals(currentTask.getCategory())){
@@ -695,12 +696,12 @@ public class DetailTaskFragment extends Fragment {
                             newTask.setPosY((currentTask.getPosY()));
                         }
                         detailTaskViewModel.updateTask(newTask);
-                        Toast.makeText(getActivity(), "Task updated successfully.", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getActivity(), "Task updated successfully.", Toast.LENGTH_SHORT).show();
 
                         taskId = currentTask.getId();
                     } else {
                         long id = detailTaskViewModel.insertTask(newTask);
-                        Toast.makeText(getActivity(), "New task added successfully.", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getActivity(), "New task added successfully.", Toast.LENGTH_SHORT).show();
 
                         taskId =(int) id;
                     }
@@ -799,19 +800,19 @@ public class DetailTaskFragment extends Fragment {
                                 //Log.i("AHS", "Alarm with intent id: " + String.valueOf(System.currentTimeMillis()+offset));
 
                                 String requestCodeString = String.valueOf(offset) + String.valueOf(taskId);
-                                Log.i("AHS", "Task id =" + String.valueOf(taskId));
-                                Log.i("AHS", "000 =" + String.valueOf(000));
-                                Log.i("AHS", "offset =" + String.valueOf(offset));
-                                Log.i("AHS", "Request code string =" + requestCodeString);
+                                //("AHS", "Task id =" + String.valueOf(taskId));
+                                //Log.i("AHS", "000 =" + String.valueOf(000));
+                                //Log.i("AHS", "offset =" + String.valueOf(offset));
+                                //Log.i("AHS", "Request code string =" + requestCodeString);
                                 int requestCode = Integer.parseInt(requestCodeString);
                                 offset++;
 
 
                                 PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-                                Log.i("AHS", "PENDING INTENT CREATED WITH REQUEST CODE: " + String.valueOf(requestCode));
+                                //Log.i("AHS", "PENDING INTENT CREATED WITH REQUEST CODE: " + String.valueOf(requestCode));
                                 AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
                                 alarmManager.setExact(AlarmManager.RTC_WAKEUP,millisUntilReminder , pendingIntent);
-                                Toast.makeText(getActivity(), "Notification set, millis = " + millisUntilReminder, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getActivity(), "Notification set, millis = " + millisUntilReminder, Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -835,7 +836,7 @@ public class DetailTaskFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String category = adapterView.getItemAtPosition(i).toString();
-                Toast.makeText(getActivity(), "Category = " + categoryAutoComplete.getText(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "Category = " + categoryAutoComplete.getText(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -923,9 +924,9 @@ public class DetailTaskFragment extends Fragment {
             if (pendingIntent != null) {
                 alarmManager.cancel(pendingIntent);
                 pendingIntent.cancel();
-                Log.i("AHS","AKRAM SHAH Pending intent cancelled for: " + String.valueOf(requestCode));
+                //Log.i("AHS","AKRAM SHAH Pending intent cancelled for: " + String.valueOf(requestCode));
             } else {
-                Log.i("AHS","AKRAM SHAH Pending intent is null for: " + String.valueOf(requestCode));
+                //Log.i("AHS","AKRAM SHAH Pending intent is null for: " + String.valueOf(requestCode));
             }
         }
 

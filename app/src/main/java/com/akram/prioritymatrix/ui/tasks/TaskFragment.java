@@ -54,6 +54,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class TaskFragment extends Fragment {
 
@@ -125,7 +126,7 @@ public class TaskFragment extends Fragment {
 
                         List<Task> searchTasks = new ArrayList<>();
                         for (Task t: prioritisedTasks){
-                            if (t.getTitle().contains(s)){
+                            if (t.getTitle().toLowerCase(Locale.ROOT).contains(s.toLowerCase(Locale.ROOT))){
                                 searchTasks.add(t);
                             }
                         }
@@ -147,11 +148,11 @@ public class TaskFragment extends Fragment {
                     ((MainActivity) getActivity()).logout();
                     NavHostFragment.findNavController(TaskFragment.this)
                             .navigate(R.id.action_navigation_home_to_loginFragment);
-                    Toast.makeText(getActivity(), "Logout button was pressed.", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getActivity(), "Logout button was pressed.", Toast.LENGTH_SHORT).show();
                 } else if (menuItem.getItemId() == R.id.login) {
                     NavHostFragment.findNavController(TaskFragment.this)
                             .navigate(R.id.action_navigation_home_to_loginFragment);
-                    Toast.makeText(getActivity(), "Login button was pressed.", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getActivity(), "Login button was pressed.", Toast.LENGTH_SHORT).show();
                 } else if (menuItem.getItemId() == R.id.sortIcon){
                     sortDialog.show();
                 }
@@ -169,15 +170,15 @@ public class TaskFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         currentUser = ((MainActivity) getActivity()).getCurrentUser();
-        taskLogin = getView().findViewById(R.id.taskLogin);
-        taskLogout = getView().findViewById(R.id.taskLogout);
+        //taskLogin = getView().findViewById(R.id.taskLogin);
+        //taskLogout = getView().findViewById(R.id.taskLogout);
 
         if (currentUser!= null) {
-            taskLogin.setVisibility(View.VISIBLE);
-            taskLogout.setVisibility(View.GONE);
+            //taskLogin.setVisibility(View.VISIBLE);
+            //taskLogout.setVisibility(View.GONE);
         } else {
-            taskLogin.setVisibility(View.GONE);
-            taskLogout.setVisibility(View.VISIBLE);
+            //taskLogin.setVisibility(View.GONE);
+            //taskLogout.setVisibility(View.VISIBLE);
             NavHostFragment.findNavController(TaskFragment.this)
                     .navigate(R.id.action_navigation_home_to_loginFragment);
         }
@@ -672,7 +673,7 @@ public class TaskFragment extends Fragment {
                         t.getDeadlineTime(), t.isAddReminder(),
                         t.getReminderDate(), t.getReminderTime(),
                         false, t.getCategory(),
-                        t.getProjectId(), -1, -1, t.getReminders(), t.getRepeats(),
+                        t.getProjectId(), t.getPosX(), t.getPosY(), t.getReminders(), t.getRepeats(),
                         false, "", true);
 
                 taskViewModel.insertTask(newTask);

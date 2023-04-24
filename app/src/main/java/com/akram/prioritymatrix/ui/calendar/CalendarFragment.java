@@ -3,7 +3,10 @@ package com.akram.prioritymatrix.ui.calendar;
 import static com.kizitonwose.calendar.core.ExtensionsKt.daysOfWeek;
 import static com.kizitonwose.calendar.core.ExtensionsKt.firstDayOfWeekFromLocale;
 
+import android.app.UiModeManager;
+import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -190,6 +194,13 @@ public class CalendarFragment extends Fragment {
 
                     } else {
                         //container.textView.setTextColor(Color.BLACK);
+                        //If we are in night mode make icons white so they are visible
+                        UiModeManager uiModeManager = (UiModeManager) getActivity().getSystemService(Context.UI_MODE_SERVICE);
+                        if (uiModeManager.getNightMode() == UiModeManager.MODE_NIGHT_YES){
+                            container.textView.setTextColor(Color.WHITE);
+                        } else {
+                            container.textView.setTextColor(Color.BLACK);
+                        }
                         container.textView.setBackground(null);
                         //container.taskDot.setVisibility(View.INVISIBLE); //Check if events on this date
 
