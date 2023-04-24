@@ -139,8 +139,7 @@
             android:layout_marginRight="24dp"
             android:layout_marginTop="32dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:buttonTint="@color/blue"
-            android:backgroundTint="@color/blue"
+            style="@style/SWITCH"
             android:switchPadding="32dp"
             android:trackTint="@color/switch_track_color"
             android:thumbTint="@color/switch_thumb_color"/>
@@ -150,12 +149,12 @@
             android:layout_height="wrap_content"
             android:id="@+id/textDeadlineDate"
             android:text="01/01/2023"
-            android:textColor="@color/black"
             android:textSize="20dp"
             app:layout_constraintTop_toBottomOf="@+id/switchDeadline"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            style="@style/MAIN_TEXT"/>
 
 
 
@@ -165,13 +164,13 @@
             android:layout_height="wrap_content"
             android:id="@+id/textDeadlineTime"
             android:text="00:00"
-            android:textColor="@color/black"
             android:textSize="20dp"
             app:layout_constraintTop_toBottomOf="@+id/switchDeadline"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="16dp"
-            android:layout_marginRight="32dp"/>
+            android:layout_marginRight="32dp"
+            style="@style/MAIN_TEXT"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

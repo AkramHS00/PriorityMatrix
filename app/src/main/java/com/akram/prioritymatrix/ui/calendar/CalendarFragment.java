@@ -189,7 +189,7 @@ public class CalendarFragment extends Fragment {
                         container.taskDeleteDot.setVisibility(View.GONE);
 
                     } else {
-                        container.textView.setTextColor(Color.BLACK);
+                        //container.textView.setTextColor(Color.BLACK);
                         container.textView.setBackground(null);
                         //container.taskDot.setVisibility(View.INVISIBLE); //Check if events on this date
 

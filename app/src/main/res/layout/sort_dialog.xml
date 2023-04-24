@@ -20,7 +20,7 @@
             app:layout_constraintStart_toEndOf="@+id/sortMatrixAndDueDateImage"
             android:layout_marginLeft="16dp"
             android:text="Matrix and due date"
-            android:textColor="@color/black"
+            style="@style/MAIN_TEXT"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
         <ImageView
@@ -63,7 +63,7 @@
             app:layout_constraintStart_toEndOf="@+id/sortMatrixImage"
             android:layout_marginLeft="16dp"
             android:text="Matrix"
-            android:textColor="@color/black"
+            style="@style/MAIN_TEXT"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
         <ImageView

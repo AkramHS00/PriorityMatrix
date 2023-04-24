@@ -12,7 +12,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginHorizontal="16dp"
         android:text="Filter by project:"
-        android:textColor="@color/black"
+        style="@style/MAIN_TEXT"
         android:textSize="20dp"
         android:id="@+id/matrixProjectText"
         />
@@ -51,7 +51,7 @@
         android:layout_marginTop="32dp"
         android:layout_marginHorizontal="16dp"
         android:text="Filter by time:"
-        android:textColor="@color/black"
+        style="@style/MAIN_TEXT"
         android:textSize="20dp"
         android:id="@+id/matrixTimeText"
         />

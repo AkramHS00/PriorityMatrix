@@ -13,10 +13,12 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -40,6 +42,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -75,6 +78,7 @@ public class DetailTaskFragment extends Fragment {
     private Switch switchDeadline, switchReminder;
     private TextView textDeadlineDate, textDeadlineTime, textReminderDate, textReminderTime, textReminderView, textRepeatView;
     private Button saveBtn;
+    private ImageView reminderIcon, repeatIcon;
 
     private ConstraintLayout reminderButton;
     private ConstraintLayout repeatButton;
@@ -103,6 +107,8 @@ public class DetailTaskFragment extends Fragment {
 
     ArrayAdapter<String> adapterCategories;
     ArrayAdapter<String> adapterProject;
+
+    boolean nightMode;
 
     //Variables for the reminder functionality
     private AlertDialog reminderDialog;
@@ -231,6 +237,17 @@ public class DetailTaskFragment extends Fragment {
 
         saveBtn = getView().findViewById(R.id.saveBtn);
 
+        reminderIcon = getView().findViewById(R.id.reminderIcon);
+        repeatIcon = getView().findViewById(R.id.repeatIcon);
+
+        //If we are in night mode make icons white so they are visible
+        UiModeManager uiModeManager = (UiModeManager) getActivity().getSystemService(Context.UI_MODE_SERVICE);
+        if (uiModeManager.getNightMode() == UiModeManager.MODE_NIGHT_YES){
+            nightMode = true;
+            reminderIcon.setColorFilter(ContextCompat.getColor(getActivity(), R.color.white), PorterDuff.Mode.SRC_IN);
+            repeatIcon.setColorFilter(ContextCompat.getColor(getActivity(), R.color.white), PorterDuff.Mode.SRC_IN);
+        }
+
         deadlineDate = LocalDate.now();
         deadlineTime = LocalTime.now();
         reminderDate = LocalDate.now();
@@ -280,6 +297,7 @@ public class DetailTaskFragment extends Fragment {
             }
         });
 
+
         deleteDialog = deleteBuilder.create();
 
         deleteDialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -291,6 +309,15 @@ public class DetailTaskFragment extends Fragment {
                     deleteButton.setBackgroundColor(Color.RED);
                 } else {
                     Log.i("AHS", "DELETE BUTTON IS NULL");
+                }
+                Button cancelButton = deleteDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                if (cancelButton != null){
+                    if (!nightMode){
+                        cancelButton.setTextColor(ContextCompat.getColor(getContext(), R.color.dark_grey));
+                    } else {
+                        cancelButton.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                    }
+
                 }
 
             }
@@ -331,7 +358,12 @@ public class DetailTaskFragment extends Fragment {
                 Button completeButton = completeDialog.getButton(DialogInterface.BUTTON_POSITIVE);
                 if (completeButton != null){
                     completeButton.setTextColor(Color.WHITE);
-                    completeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.blue));
+                    if (nightMode){
+                        completeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.purple_200));
+                    } else {
+                        completeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.blue));
+                    }
+
                 } else {
                     Log.i("AHS", "COMPLETE BUTTON IS NULL");
                 }

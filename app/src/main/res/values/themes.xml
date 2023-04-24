@@ -3,7 +3,7 @@
     <style name="Theme.PriorityMatrix" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/blue</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimaryVariant">@color/light_blue</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
@@ -30,4 +30,38 @@
         <item name="android:textSize">18sp</item>
 
     </style>
+
+
+    <!-- Light Mode -->
+    <style name="SCREEN_COLOR">
+        <item name = "android:background">#FFF</item>
+    </style>
+    <style name="TEXT_ON_BACKGROUND">
+        <item name = "android:textColor">#000</item>
+    </style>
+
+    <style name="MAIN_TEXT">
+        <item name = "android:textColor">#000</item>
+    </style>
+
+    <style name="SECONDARY_TEXT">
+        <item name = "android:textColor">#808080</item>
+    </style>
+
+    <style name="BUTTON">
+        <item name = "android:background">?attr/colorPrimary</item>
+    </style>
+
+    <style name="SWITCH">
+        <item name = "android:backgroundTint">?attr/colorPrimary</item>
+        <item name = "android:buttonTint">?attr/colorPrimary</item>
+
+        <item name = "android:trackTint">?attr/colorPrimary</item>
+        <item name = "android:thumbTint">?attr/colorPrimary</item>
+
+        android:trackTint="@color/switch_track_color"
+        android:thumbTint="@color/switch_thumb_color"
+    </style>
+
+
 </resources>

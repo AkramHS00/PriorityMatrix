@@ -135,6 +135,7 @@
             android:drawableLeft="@drawable/info_icon"
             android:drawableTint="@color/dark_grey"
             android:drawablePadding="8dp"
+            style="@style/SECONDARY_TEXT"
             />
 
         <TextView
@@ -150,7 +151,8 @@
             android:padding="8dp"
             android:drawableLeft="@drawable/cancel_icon"
             android:drawableTint="@color/dark_grey"
-            android:drawablePadding="8dp"/>
+            android:drawablePadding="8dp"
+            style="@style/SECONDARY_TEXT"/>
 
 
         <TextView
@@ -166,7 +168,8 @@
             android:padding="8dp"
             android:drawableLeft="@drawable/increase_icon"
             android:drawableTint="@color/dark_grey"
-            android:drawablePadding="8dp"/>
+            android:drawablePadding="8dp"
+            style="@style/SECONDARY_TEXT"/>
 
 
 
@@ -180,7 +183,8 @@
             android:layout_marginTop="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:gravity="center"/>
+            android:gravity="center"
+            style="@style/MAIN_TEXT"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/appUsageRecyclerView"

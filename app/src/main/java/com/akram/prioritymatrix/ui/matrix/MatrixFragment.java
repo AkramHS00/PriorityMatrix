@@ -377,7 +377,7 @@ public class MatrixFragment extends Fragment {
         //Build the filter dialog
         AlertDialog.Builder filterBuilder = new AlertDialog.Builder(getContext());
         View filterDialogLayout = LayoutInflater.from(getActivity()).inflate(R.layout.matrix_filter, null);
-        filterBuilder.setTitle("Filter tasks");
+        //filterBuilder.setTitle("Filter tasks");
         filterBuilder.setView(filterDialogLayout);
 
         projectAutoComplete = filterDialogLayout.findViewById(R.id.matrixProjectAutoComplete);
@@ -536,7 +536,8 @@ public class MatrixFragment extends Fragment {
             newTextView.setHorizontallyScrolling(false);
             newTextView.setMaxWidth(300);
             newTextView.setMinWidth(50);
-            newTextView.setBackground(getResources().getDrawable(R.drawable.edit_text_background));
+            //newTextView.setBackground(getResources().getDrawable(R.drawable.edit_text_background));
+            newTextView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.edit_text_background));
             newTextView.setPadding(16,16,16,16);
             newTextView.setTextColor(Color.BLACK);
 

@@ -12,7 +12,8 @@
         android:textSize="18sp"
         android:text="22"
         android:layout_margin="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        style="@style/MAIN_TEXT"/>
 
 
     <LinearLayout

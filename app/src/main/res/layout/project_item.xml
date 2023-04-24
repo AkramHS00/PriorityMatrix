@@ -32,6 +32,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_toStartOf="@+id/taskCounter"
+            style="@style/TEXT_ON_BACKGROUND"
             />
 
         <TextView
@@ -49,7 +50,7 @@
             android:background="@color/light_orange"
             android:padding="6dp"
             android:layout_marginHorizontal="2dp"
-
+            style="@style/TEXT_ON_BACKGROUND"
             />
 
 
@@ -64,7 +65,7 @@
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:progressBackgroundTint="@color/light_blue"
-        android:progressTint="@color/blue"/>
+        android:progressBackgroundTint="?attr/colorPrimaryVariant"
+        android:progressTint="?attr/colorPrimary"/>
 
 </androidx.cardview.widget.CardView>

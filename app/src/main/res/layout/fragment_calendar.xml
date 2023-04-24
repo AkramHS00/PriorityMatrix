@@ -29,7 +29,7 @@
         android:textAllCaps="true"
         android:textSize="16sp"
         android:text="1 Jan 2023"
-        android:textColor="@color/black"
+        style="@style/MAIN_TEXT"
         android:textStyle="bold"/>
 
     <androidx.recyclerview.widget.RecyclerView
