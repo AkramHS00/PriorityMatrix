@@ -110,7 +110,7 @@ public class TaskFragment extends Fragment {
                     menuWelcomeIcon.setVisible(true);
                     menuSearchIcon.setVisible(true);
                     menuSortIcon.setVisible(true);
-                    menuWelcomeIcon.setTitle("Welcome, " + currentUser.getName());
+                    menuWelcomeIcon.setTitle("Logged in as: " + currentUser.getName());
                 }
 
                 SearchView searchView = (SearchView) menuSearchIcon.getActionView();
