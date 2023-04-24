@@ -64,7 +64,7 @@
             android:layout_marginBottom="16dp"
             app:borderWidth="0dp"
             android:elevation="8dp"
-            android:backgroundTint="@color/blue"
+            android:backgroundTint="?attr/colorPrimary"
             android:scaleType="center"
             app:maxImageSize="32dp"/>
 

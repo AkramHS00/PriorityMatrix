@@ -118,7 +118,14 @@ public class ReportFragment extends Fragment {
                 public void onChanged(List<Task> tasks) {
 
                     monthlyTasks = reportViewModel.getMonthsTasks(tasks);
-                    updateReport(monthlyTasks);
+                    if (monthlyTasks.size() == 0){
+                        busiestDayText.setVisibility(View.GONE);
+                        overdueCategoryText.setVisibility(View.GONE);
+                        popularCategoryText.setVisibility(View.GONE);
+                    } else {
+                        updateReport(monthlyTasks);
+                    }
+
 
 
                 }
@@ -164,7 +171,7 @@ public class ReportFragment extends Fragment {
         //Set most overdue text
         String mostOverdueCategory = reportViewModel.getMostOverdueCategory(monthlyTasks);
         if (mostOverdueCategory.equals("null")){
-            overdueCategoryText.setText("Congratulations! You have completed every task on time this month.");
+            overdueCategoryText.setText("Congratulations! You have not missed any due dates this month.");
             overdueCategoryText.setBackgroundColor(getResources().getColor(R.color.light_green));
         } else {
             overdueCategoryText.setText("You are more likely to miss task deadlines if they are in the " + mostOverdueCategory + " category.");
