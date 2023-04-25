@@ -11,10 +11,10 @@
     app:cardCornerRadius="10dp"
     >
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/taskRelativeLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:padding="8dp"
         android:background="@drawable/edit_text_background">
 
@@ -22,16 +22,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/taskTitle"
-            android:maxLines="1"
+            android:maxLines="2"
             android:text="Title"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/categoryText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/categoryText"
+            app:layout_constraintTop_toTopOf="parent"
             android:ellipsize="end"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="48dp"
             android:textSize="16sp"
-            style="@style/TEXT_ON_BACKGROUND"/>
+            style="@style/TEXT_ON_BACKGROUND"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintRight_toLeftOf="@id/categoryText"/>
 
 
         <TextView
@@ -42,25 +44,26 @@
             android:maxLines="1"
             android:textSize="16sp"
             android:ellipsize="end"
-            android:layout_alignParentStart="true"
+            app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="8dp"
-            android:layout_below="@id/taskTitle"
+            app:layout_constraintTop_toBottomOf="@id/taskTitle"
             style="@style/SECONDARY_TEXT"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/categoryText"
-            android:text=""
+            android:text="SCHEDULE"
             android:maxLines="1"
             android:textSize="16sp"
             android:ellipsize="end"
-            android:layout_alignParentEnd="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:textAllCaps="true"
             android:textStyle="italic"
             android:layout_marginRight="8dp"
             style="@style/SECONDARY_TEXT"/>
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

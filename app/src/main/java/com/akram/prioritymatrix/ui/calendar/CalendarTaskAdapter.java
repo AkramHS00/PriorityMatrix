@@ -7,6 +7,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -69,7 +70,7 @@ public class CalendarTaskAdapter extends RecyclerView.Adapter<CalendarTaskAdapte
         private TextView deadlineTime;
         private TextView categoryText;
 
-        private RelativeLayout taskRelativeLayout;
+        private ConstraintLayout taskRelativeLayout;
 
         //Return the task the user clicked on
         public CalendarTaskHolder(@NonNull View itemView) {
